@@ -41,6 +41,7 @@ Route::middleware('trainer.auth')->prefix('trainer')->group(function () {
     Route::delete('/bookings/{id}',        [TrainerController::class, 'deleteBooking']);
     Route::post('/bookings/{id}/complete', [TrainerController::class, 'completeBooking']);
     Route::post('/bookings/{id}/cancel',   [TrainerController::class, 'cancelBooking']);
+    Route::post('/bookings/{id}/note',     [TrainerController::class, 'saveBookingNote']);
 
     // Availability & blocked
     Route::get('/availability',      [TrainerController::class, 'availability']);

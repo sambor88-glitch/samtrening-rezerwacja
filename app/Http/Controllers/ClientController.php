@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Booking;
+use App\Services\NotificationService;
 use App\Models\Package;
 use App\Models\Payment;
 use App\Models\Message;
@@ -13,6 +14,8 @@ use App\Models\ChatNotification;
 
 class ClientController extends Controller
 {
+    public function __construct(private NotificationService $notifications) {}
+
     private function clientSession(Request $request): array
     {
         return $request->session()->get('client');
@@ -46,6 +49,12 @@ class ClientController extends Controller
         $data['status']     = 'pending';
 
         $booking = Booking::create($data);
+
+        // Powiadom trenera o nowej rezerwacji
+        if ($booking->client_id) {
+            $this->notifications->trainerNewBooking($booking);
+        }
+
         return response()->json($booking, 201);
     }
 
@@ -64,6 +73,10 @@ class ClientController extends Controller
         }
 
         $booking->update(['status' => 'cancelled']);
+
+        // Powiadom trenera o odwołaniu
+        $this->notifications->trainerBookingCancelled($booking);
+
         return response()->json($booking);
     }
 
@@ -78,13 +91,14 @@ class ClientController extends Controller
             ->orderByDesc('time')
             ->get()
             ->map(fn($b) => [
-                'id'        => $b->id,
-                'date'      => $b->date,
-                'time'      => $b->time,
-                'duration'  => $b->duration,
-                'status'    => $b->status,
-                'completed' => $b->completed,
-                'note'      => $b->note,
+                'id'          => $b->id,
+                'date'        => $b->date,
+                'time'        => $b->time,
+                'duration'    => $b->duration,
+                'status'      => $b->status,
+                'completed'   => $b->completed,
+                'note'        => $b->note,
+                'trainer_note'=> $b->trainer_note,
             ]);
 
         $stats = [

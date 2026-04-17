@@ -722,6 +722,20 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--light);color:var(-
   </main>
 </div>
 
+<!-- MODAL: NOTATKA PO TRENINGU -->
+<div id="doneModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:28px;max-width:440px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.2);">
+    <h3 style="margin:0 0 8px;font-size:18px;">🏁 Oznacz trening jako zrealizowany</h3>
+    <p style="font-size:13px;color:#666;margin:0 0 16px;">Możesz dodać krótką notatkę widoczną dla klienta (opcjonalne).</p>
+    <input type="hidden" id="doneBookingId"/>
+    <textarea id="doneNoteText" rows="4" placeholder="Np. Świetny trening! Pracowaliśmy nad techniką przysiadu. Na następny raz: zwiększamy ciężar..." style="width:100%;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;"></textarea>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button onclick="submitMarkDone()" style="flex:1;background:linear-gradient(135deg,#6CC04A,#38a169);color:#fff;border:none;padding:11px;border-radius:8px;cursor:pointer;font-weight:700;font-size:14px;">✅ Zatwierdź</button>
+      <button onclick="document.getElementById('doneModal').style.display='none'" style="flex:1;background:#f5f5f5;border:none;padding:11px;border-radius:8px;cursor:pointer;font-size:14px;">Anuluj</button>
+    </div>
+  </div>
+</div>
+
 <!-- SMS MODAL -->
 <div class="ov" id="smsModal">
   <div class="modal">
@@ -1032,15 +1046,34 @@ async function chSt(id, status) {
   }
 }
 
-async function markDone(bookingId) {
-  if (!confirm('Oznaczyć trening jako zrealizowany?')) return;
+function markDone(bookingId) {
+  // Otwieramy modal notatki po treningu
+  document.getElementById('doneBookingId').value = bookingId;
+  document.getElementById('doneNoteText').value = '';
+  document.getElementById('doneModal').style.display = 'flex';
+}
+
+async function submitMarkDone() {
+  const bookingId = document.getElementById('doneBookingId').value;
+  const note = document.getElementById('doneNoteText').value.trim();
+  document.getElementById('doneModal').style.display = 'none';
+
   try {
-    const res = await fetch(`/api/trainer/booking/${bookingId}`, {method:'PATCH', headers:hdr(), body:JSON.stringify({status:'completed'})});
-    if (!res.ok) throw new Error('HTTP '+res.status);
+    // Oznacz jako ukończony
+    await fetch(`/api/trainer/bookings/${bookingId}/complete`, {
+      method: 'POST', headers: hdr(), credentials: 'include'
+    });
+    // Zapisz notatkę jeśli wpisano
+    if (note) {
+      await fetch(`/api/trainer/bookings/${bookingId}/note`, {
+        method: 'POST', headers: hdr(), credentials: 'include',
+        body: JSON.stringify({ note })
+      });
+    }
   } catch(e) {
     LocalApi.markTrainingCompleted(bookingId, myTrainerId);
   }
-  // Auto-use package session if not already used
+
   const usedPkg = LocalApi.autoUsePackageForBooking ? LocalApi.autoUsePackageForBooking(bookingId) : null;
   if (usedPkg) {
     const rem = usedPkg.totalSessions - usedPkg.usedSessions;

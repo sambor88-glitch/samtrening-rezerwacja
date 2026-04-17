@@ -2834,6 +2834,7 @@
               <div style="flex:1;">
                 <div style="font-weight:600;font-size:14px;">${dateStr}${b.time ? ' o ' + b.time : ''}</div>
                 <div style="font-size:12px;color:#888;margin-top:2px;">${b.duration ? b.duration + ' min' : ''} ${b.note ? '· ' + b.note : ''}</div>
+              ${b.trainer_note ? `<div style="margin-top:6px;background:#f0fff4;border-left:3px solid #16a34a;border-radius:4px;padding:6px 10px;font-size:12px;color:#166534;">💬 Notatka trenera: ${b.trainer_note}</div>` : ''}
               </div>
               <div style="text-align:right;">
                 <span style="color:${col};font-weight:600;font-size:13px;">${lbl}</span>

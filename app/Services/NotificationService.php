@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Client;
 use App\Models\Booking;
 use App\Models\Package;
+use App\Models\Trainer;
 
 class NotificationService
 {
@@ -84,6 +85,42 @@ class NotificationService
             "Przypomnienie: trening jutro o godz. {$booking->time}",
             'emails.booking_reminder',
             ['client' => $client, 'booking' => $booking, 'date' => $date]
+        );
+    }
+
+    // ─── Powiadomienie do trenera: nowa rezerwacja od klienta ────────────────
+
+    public function trainerNewBooking(Booking $booking): void
+    {
+        $trainer = Trainer::find($booking->trainer_id);
+        if (!$trainer?->email) return;
+
+        $client = Client::find($booking->client_id);
+        $date   = \Carbon\Carbon::parse($booking->date)->format('d.m.Y');
+
+        $this->sendEmail(
+            $trainer->email,
+            "Nowa rezerwacja od {$client?->name} – {$date} godz. {$booking->time}",
+            'emails.trainer_new_booking',
+            ['trainer' => $trainer, 'client' => $client, 'booking' => $booking, 'date' => $date]
+        );
+    }
+
+    // ─── Powiadomienie do trenera: klient odwołał trening ────────────────────
+
+    public function trainerBookingCancelled(Booking $booking): void
+    {
+        $trainer = Trainer::find($booking->trainer_id);
+        if (!$trainer?->email) return;
+
+        $client = Client::find($booking->client_id);
+        $date   = \Carbon\Carbon::parse($booking->date)->format('d.m.Y');
+
+        $this->sendEmail(
+            $trainer->email,
+            "Odwołanie treningu przez {$client?->name} – {$date} godz. {$booking->time}",
+            'emails.trainer_booking_cancelled',
+            ['trainer' => $trainer, 'client' => $client, 'booking' => $booking, 'date' => $date]
         );
     }
 

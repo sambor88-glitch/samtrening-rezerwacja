@@ -181,6 +181,15 @@ class TrainerController extends Controller
         return response()->json($booking);
     }
 
+    // POST /api/trainer/bookings/{id}/note
+    public function saveBookingNote(Request $request, string $id)
+    {
+        $tid     = $this->trainerId($request);
+        $booking = Booking::where('id', $id)->where('trainer_id', $tid)->firstOrFail();
+        $booking->update(['trainer_note' => $request->input('note', '')]);
+        return response()->json($booking);
+    }
+
     // POST /api/trainer/bookings/{id}/cancel
     public function cancelBooking(Request $request, string $id)
     {

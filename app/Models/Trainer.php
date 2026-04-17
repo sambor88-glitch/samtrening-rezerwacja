@@ -10,7 +10,7 @@ class Trainer extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $fillable = ['id', 'name', 'name_short', 'password_hash', 'role', 'color', 'gradient'];
+    protected $fillable = ['id', 'name', 'name_short', 'email', 'password_hash', 'role', 'color', 'gradient'];
     protected $hidden = ['password_hash'];
 
     public function clients() { return $this->hasMany(Client::class, 'trainer_id'); }

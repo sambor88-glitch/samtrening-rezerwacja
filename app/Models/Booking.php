@@ -12,7 +12,7 @@ class Booking extends Model
 
     protected $fillable = [
         'id', 'trainer_id', 'client_id', 'client_name', 'date', 'time',
-        'duration', 'type', 'status', 'completed', 'paid', 'package_id', 'price', 'note'
+        'duration', 'type', 'status', 'completed', 'paid', 'package_id', 'price', 'note', 'trainer_note'
     ];
 
     protected $casts = [
