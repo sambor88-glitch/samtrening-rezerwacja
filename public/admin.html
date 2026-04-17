@@ -308,6 +308,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--light);color:var(-
       <div class="sblbl">Komunikacja</div>
       <div class="ni" onclick="showSec('bulk',this)"><span class="ic">📡</span>Wysyłka Zbiorcza</div>
       <div class="sblbl">Trenerzy</div>
+      <div class="ni" onclick="showSec('trainers-mgmt',this)"><span class="ic">👨‍💼</span>Zarządzaj Trenerami</div>
       <div class="ni" onclick="showSec('avail-admin',this)"><span class="ic">🗓️</span>Dostępność Trenerów</div>
       <div class="sblbl">Kalendarze</div>
       <div class="ni" onclick="showSec('cal-kasia',this)"><span class="ic">📅</span>Kalendarz Kasi</div>
@@ -550,6 +551,12 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--light);color:var(-
       </div>
 
       <!-- DOSTĘPNOŚĆ TRENERÓW (ADMIN) -->
+      <!-- ZARZĄDZAJ TRENERAMI -->
+      <div id="sec-trainers-mgmt" class="section">
+        <h2 style="margin:0 0 18px;font-size:1.15rem;font-weight:800;">👨‍💼 Zarządzaj Trenerami</h2>
+        <div id="trainers-mgmt-list" style="display:flex;flex-direction:column;gap:14px;max-width:560px;"></div>
+      </div>
+
       <div id="sec-avail-admin" class="section">
         <div class="avadm-trainer-tabs" id="availAdminTabs">
           <button class="avt act" onclick="selectAvailAdminTrainer('kasia',this)">🎀 Kasia</button>
@@ -857,7 +864,7 @@ function showSec(sec, el) {
     cancelled:'Anulowane',manual:'Dodaj Rezerwację',financial:'Finanse i Statystyki',
     'cal-kasia':'Kalendarz – Kasia','cal-maciek':'Kalendarz – Maciek',
     clients:'Lista Klientów','client-accounts':'Konta Klientów',bulk:'Wysyłka Zbiorcza','avail-admin':'Dostępność Trenerów',impexp:'Import / Export',
-    settings:'Ustawienia i Ceny'};
+    settings:'Ustawienia i Ceny','trainers-mgmt':'Zarządzaj Trenerami'};
   document.getElementById('pageTitle').textContent = titles[sec]||'Rezerwacje';
   if (sec==='financial') renderFinancial();
   if (sec.startsWith('cal-')) renderCal(sec.replace('cal-',''));
@@ -866,6 +873,7 @@ function showSec(sec, el) {
   if (sec==='bulk') renderBulkPreview();
   if (sec==='avail-admin') { initAvailAdmin(); renderAvailAdminCal(); }
   if (sec==='settings') { initSettings(); }
+  if (sec==='trainers-mgmt') renderTrainersMgmt();
   renderAllLists();
 }
 
@@ -2279,6 +2287,99 @@ function adminRejectPayment(paymentId) {
 }
 
 setInterval(refresh, 20000);
+
+// ─── Zarządzanie Trenerami ────────────────────────────────────────────────────
+
+function renderTrainersMgmt() {
+  const trainers = allTrainers || LocalApi.getTrainersList() || [];
+  const container = document.getElementById('trainers-mgmt-list');
+  if (!trainers.length) {
+    container.innerHTML = '<p style="color:var(--gray)">Brak trenerów</p>';
+    return;
+  }
+  container.innerHTML = trainers.map(t => `
+    <div style="background:#fff;border:2px solid var(--border);border-radius:14px;padding:20px 24px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <div style="width:42px;height:42px;border-radius:50%;background:${t.gradient||t.color||'#e91e8c'};
+          display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:1.1rem;">
+          ${(t.name||t.id||'?')[0].toUpperCase()}
+        </div>
+        <div>
+          <div style="font-weight:800;font-size:1rem;">${esc(t.name||t.id)}</div>
+          <div style="font-size:.8rem;color:var(--gray);">ID: ${esc(t.id)}</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="password" id="pw-${t.id}" placeholder="Nowe hasło (min. 4 znaki)"
+            style="flex:1;padding:10px 14px;border:2px solid var(--border);border-radius:9px;
+            font-size:.9rem;font-family:inherit;outline:none;"
+            onkeydown="if(event.key==='Enter') changeTrainerPassword('${t.id}')">
+          <button onclick="togglePwVisibility('pw-${t.id}', this)"
+            style="padding:10px 12px;border:2px solid var(--border);border-radius:9px;
+            background:#fff;cursor:pointer;font-size:.9rem;">👁</button>
+          <button onclick="changeTrainerPassword('${t.id}')"
+            style="padding:10px 18px;background:var(--accent);color:#fff;border:none;
+            border-radius:9px;font-size:.87rem;font-weight:700;cursor:pointer;">
+            Zmień hasło
+          </button>
+        </div>
+        <div id="pw-msg-${t.id}" style="font-size:.82rem;min-height:18px;"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function togglePwVisibility(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
+async function changeTrainerPassword(trainerId) {
+  const input = document.getElementById('pw-' + trainerId);
+  const msgEl = document.getElementById('pw-msg-' + trainerId);
+  const password = input.value.trim();
+
+  if (password.length < 4) {
+    msgEl.style.color = '#e53935';
+    msgEl.textContent = '⚠️ Hasło musi mieć minimum 4 znaki.';
+    return;
+  }
+
+  msgEl.style.color = 'var(--gray)';
+  msgEl.textContent = 'Zapisywanie...';
+
+  try {
+    const res = await fetch(`/api/admin/trainers/${trainerId}`, {
+      method: 'PUT',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+
+    if (res.ok) {
+      input.value = '';
+      msgEl.style.color = '#388e3c';
+      msgEl.textContent = '✅ Hasło zostało zmienione.';
+      setTimeout(() => { msgEl.textContent = ''; }, 3000);
+    } else {
+      const data = await res.json().catch(() => ({}));
+      msgEl.style.color = '#e53935';
+      msgEl.textContent = '❌ ' + (data.error || 'Błąd serwera.');
+    }
+  } catch (e) {
+    // Fallback localStorage
+    msgEl.style.color = '#e53935';
+    msgEl.textContent = '❌ Brak połączenia z serwerem.';
+  }
+}
+
 </script>
 </body>
 </html>
