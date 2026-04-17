@@ -18,6 +18,7 @@ use App\Models\ClientNote;
 use App\Models\Measurement;
 use App\Models\ChatNotification;
 use App\Services\NotificationService;
+use Carbon\Carbon;
 
 class TrainerController extends Controller
 {
@@ -471,6 +472,101 @@ class TrainerController extends Controller
 
         $measurement = Measurement::create($data);
         return response()->json($measurement, 201);
+    }
+
+    // GET /api/trainer/stats
+    public function stats(Request $request)
+    {
+        $tid = $this->trainerId($request);
+
+        // Ostatnie 12 miesięcy
+        $months = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $months[] = Carbon::now()->subMonths($i)->format('Y-m');
+        }
+
+        $revenueByMonth = [];
+        $trainingsByMonth = [];
+
+        foreach ($months as $month) {
+            $start = $month . '-01';
+            $end   = Carbon::parse($start)->endOfMonth()->toDateString();
+
+            $revenueByMonth[$month] = Payment::where('trainer_id', $tid)
+                ->where('status', 'confirmed')
+                ->whereBetween('created_at', [$start . ' 00:00:00', $end . ' 23:59:59'])
+                ->sum('amount');
+
+            $trainingsByMonth[$month] = Booking::where('trainer_id', $tid)
+                ->where('completed', true)
+                ->whereBetween('date', [$start, $end])
+                ->count();
+        }
+
+        // Top klienci wg liczby treningów
+        $topClients = Booking::where('trainer_id', $tid)
+            ->where('completed', true)
+            ->whereNotNull('client_id')
+            ->selectRaw('client_id, COUNT(*) as total')
+            ->groupBy('client_id')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->with('client:id,name')
+            ->get()
+            ->map(fn($b) => ['name' => $b->client->name ?? '?', 'total' => $b->total]);
+
+        // Podsumowanie ogólne
+        $totalRevenue    = Payment::where('trainer_id', $tid)->where('status', 'confirmed')->sum('amount');
+        $totalTrainings  = Booking::where('trainer_id', $tid)->where('completed', true)->count();
+        $activeClients   = Client::where('trainer_id', $tid)->where('status', 'active')->count();
+        $pendingPayments = Payment::where('trainer_id', $tid)->where('status', 'pending')->sum('amount');
+
+        return response()->json([
+            'months'           => $months,
+            'revenueByMonth'   => array_values($revenueByMonth),
+            'trainingsByMonth' => array_values($trainingsByMonth),
+            'topClients'       => $topClients,
+            'totalRevenue'     => $totalRevenue,
+            'totalTrainings'   => $totalTrainings,
+            'activeClients'    => $activeClients,
+            'pendingPayments'  => $pendingPayments,
+        ]);
+    }
+
+    // GET /api/trainer/export/report?month=YYYY-MM
+    public function exportReport(Request $request)
+    {
+        $tid   = $this->trainerId($request);
+        $month = $request->query('month', Carbon::now()->format('Y-m'));
+
+        $start = $month . '-01';
+        $end   = Carbon::parse($start)->endOfMonth()->toDateString();
+
+        $trainer  = Trainer::find($tid);
+        $bookings = Booking::where('trainer_id', $tid)
+            ->whereBetween('date', [$start, $end])
+            ->orderBy('date')->orderBy('time')
+            ->with('client:id,name')
+            ->get();
+
+        $payments = Payment::where('trainer_id', $tid)
+            ->where('status', 'confirmed')
+            ->whereBetween('created_at', [$start . ' 00:00:00', $end . ' 23:59:59'])
+            ->with('client:id,name')
+            ->get();
+
+        $totalRevenue   = $payments->sum('amount');
+        $completedCount = $bookings->where('completed', true)->count();
+        $cancelledCount = $bookings->where('status', 'cancelled')->count();
+
+        $monthLabel = Carbon::parse($start)->locale('pl')->isoFormat('MMMM YYYY');
+
+        $html = view('reports.trainer_monthly', compact(
+            'trainer', 'bookings', 'payments',
+            'totalRevenue', 'completedCount', 'cancelledCount', 'monthLabel', 'month'
+        ))->render();
+
+        return response($html)->header('Content-Type', 'text/html; charset=utf-8');
     }
 
     // GET /api/trainer/plans/{clientId}

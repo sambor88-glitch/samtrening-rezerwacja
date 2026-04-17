@@ -372,6 +372,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--light);color:var(-
       <div class="ni" onclick="showSec('financial',this)"><span class="ic">💰</span>Moje Finanse</div>
       <div class="ni" onclick="showSec('client-payments',this)"><span class="ic">💳</span>Płatności Klientów<span class="nbdg" id="payBadge">0</span></div>
       <div class="ni" onclick="showSec('chat',this)"><span class="ic">💬</span>Chat z Klientami<span class="nbdg" id="chatBadge">0</span><span id="chatLamp" style="display:none;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-left:4px;animation:lampPulse 1.2s ease-in-out infinite;"></span></div>
+      <div class="ni" onclick="showSec('stats',this)"><span class="ic">📊</span>Statystyki</div>
       <div class="ni" onclick="showSec('profile',this)"><span class="ic">⚙️</span>Mój Profil</div>
     </nav>
     <div class="sbft"><button class="btn-lo" onclick="logout()">← Wyloguj się</button></div>
@@ -669,6 +670,54 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--light);color:var(-
         </div>
       </div>
 
+      <!-- STATYSTYKI -->
+      <div id="sec-stats" class="section">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;">
+          <div class="stat-card" style="flex:1;min-width:140px;background:#fff3f9;border:1.5px solid #e91e8c22;border-radius:12px;padding:18px;text-align:center;">
+            <div id="stTotalRevenue" style="font-size:28px;font-weight:700;color:#e91e8c;">—</div>
+            <div style="font-size:12px;color:#888;margin-top:4px;">Łączny przychód</div>
+          </div>
+          <div class="stat-card" style="flex:1;min-width:140px;background:#f0fff4;border:1.5px solid #22c55e22;border-radius:12px;padding:18px;text-align:center;">
+            <div id="stTotalTrainings" style="font-size:28px;font-weight:700;color:#16a34a;">—</div>
+            <div style="font-size:12px;color:#888;margin-top:4px;">Ukończone treningi</div>
+          </div>
+          <div class="stat-card" style="flex:1;min-width:140px;background:#f0f9ff;border:1.5px solid #3b82f622;border-radius:12px;padding:18px;text-align:center;">
+            <div id="stActiveClients" style="font-size:28px;font-weight:700;color:#2563eb;">—</div>
+            <div style="font-size:12px;color:#888;margin-top:4px;">Aktywni klienci</div>
+          </div>
+          <div class="stat-card" style="flex:1;min-width:140px;background:#fffbeb;border:1.5px solid #f59e0b22;border-radius:12px;padding:18px;text-align:center;">
+            <div id="stPendingPayments" style="font-size:28px;font-weight:700;color:#d97706;">—</div>
+            <div style="font-size:12px;color:#888;margin-top:4px;">Oczekujące płatności</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+          <div style="background:#fff;border:1.5px solid #eee;border-radius:12px;padding:16px;">
+            <div style="font-weight:600;margin-bottom:12px;">📈 Przychód miesięczny (zł)</div>
+            <canvas id="chartRevenue" height="200"></canvas>
+          </div>
+          <div style="background:#fff;border:1.5px solid #eee;border-radius:12px;padding:16px;">
+            <div style="font-weight:600;margin-bottom:12px;">🏋️ Treningi miesięcznie</div>
+            <canvas id="chartTrainings" height="200"></canvas>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+          <div style="background:#fff;border:1.5px solid #eee;border-radius:12px;padding:16px;">
+            <div style="font-weight:600;margin-bottom:12px;">🏆 Top klienci</div>
+            <div id="stTopClients"></div>
+          </div>
+          <div style="background:#fff;border:1.5px solid #eee;border-radius:12px;padding:16px;">
+            <div style="font-weight:600;margin-bottom:12px;">📄 Eksport raportu PDF</div>
+            <p style="font-size:13px;color:#666;margin-bottom:12px;">Wybierz miesiąc i wygeneruj raport do wydruku / zapisu jako PDF.</p>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <input type="month" id="exportMonth" style="padding:8px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;" />
+              <button onclick="exportPdfReport()" style="background:#e91e8c;color:#fff;border:none;padding:9px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">🖨️ Generuj raport</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </main>
 </div>
@@ -877,7 +926,7 @@ function showSec(sec, el) {
   document.getElementById('sec-'+sec).classList.add('act');
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('act'));
   if (el) el.classList.add('act');
-  const titles = {dashboard:'Dashboard',week:'Widok Tygodnia',pending:'Oczekujące Rezerwacje',confirmed:'Potwierdzone',all:'Wszystkie Rezerwacje',financial:'Moje Finanse',profile:'Mój Profil',availability:'Moja Dostępność','client-booking':'Rezerwuj dla Klienta',clients:'Lista Klientów',chat:'Chat z Klientami','client-payments':'Płatności Klientów'};
+  const titles = {dashboard:'Dashboard',week:'Widok Tygodnia',pending:'Oczekujące Rezerwacje',confirmed:'Potwierdzone',all:'Wszystkie Rezerwacje',financial:'Moje Finanse',profile:'Mój Profil',availability:'Moja Dostępność','client-booking':'Rezerwuj dla Klienta',clients:'Lista Klientów',chat:'Chat z Klientami','client-payments':'Płatności Klientów',stats:'Statystyki'};
   document.getElementById('pageTitle').textContent = titles[sec]||sec;
   if (sec==='financial') renderFinancial();
   if (sec==='week') { renderWeekView(); }
@@ -886,6 +935,7 @@ function showSec(sec, el) {
   if (sec==='clients') { renderClients(); renderTrBulkTpls(); renderTrBulkPreview(); }
   if (sec==='chat') { initChat(); }
   if (sec==='client-payments') { renderClientPayments(); }
+  if (sec==='stats') { loadStats(); }
 }
 
 // ── BOOKING CARD ──────────────────────────────────────────────────────────────
@@ -2912,6 +2962,97 @@ function deleteMeasurement(clientId, measId) {
   LocalApi.deleteMeasurement(clientId, measId);
   renderTanitaList(clientId);
 }
+
+// ── STATYSTYKI ────────────────────────────────────────────────────────────────
+let _chartRevenue = null, _chartTrainings = null;
+
+async function loadStats() {
+  try {
+    const r = await fetch('/api/trainer/stats', { credentials: 'include' });
+    if (!r.ok) throw new Error('Błąd pobierania statystyk');
+    const d = await r.json();
+
+    // Karty podsumowania
+    document.getElementById('stTotalRevenue').textContent    = (d.totalRevenue||0).toLocaleString('pl-PL') + ' zł';
+    document.getElementById('stTotalTrainings').textContent  = d.totalTrainings||0;
+    document.getElementById('stActiveClients').textContent   = d.activeClients||0;
+    document.getElementById('stPendingPayments').textContent = (d.pendingPayments||0).toLocaleString('pl-PL') + ' zł';
+
+    // Etykiety miesięcy (MM.YYYY)
+    const labels = (d.months||[]).map(m => {
+      const [y, mo] = m.split('-');
+      return mo + '.' + y;
+    });
+
+    // Wykres przychodów
+    const ctxR = document.getElementById('chartRevenue').getContext('2d');
+    if (_chartRevenue) _chartRevenue.destroy();
+    _chartRevenue = new Chart(ctxR, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Przychód (zł)',
+          data: d.revenueByMonth||[],
+          backgroundColor: 'rgba(233,30,140,0.7)',
+          borderRadius: 6,
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    // Wykres treningów
+    const ctxT = document.getElementById('chartTrainings').getContext('2d');
+    if (_chartTrainings) _chartTrainings.destroy();
+    _chartTrainings = new Chart(ctxT, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Treningi',
+          data: d.trainingsByMonth||[],
+          borderColor: '#16a34a',
+          backgroundColor: 'rgba(22,163,74,0.1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+    });
+
+    // Top klienci
+    const tc = document.getElementById('stTopClients');
+    if (!d.topClients || d.topClients.length === 0) {
+      tc.innerHTML = '<p style="color:#999;font-size:13px;">Brak danych</p>';
+    } else {
+      const max = d.topClients[0].total || 1;
+      tc.innerHTML = d.topClients.map((c, i) => `
+        <div style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px;">
+            <span>${i+1}. ${c.name}</span><span style="font-weight:600;">${c.total} treningów</span>
+          </div>
+          <div style="background:#eee;border-radius:6px;height:6px;">
+            <div style="background:#e91e8c;width:${Math.round(c.total/max*100)}%;height:6px;border-radius:6px;"></div>
+          </div>
+        </div>`).join('');
+    }
+
+    // Ustaw domyślny miesiąc eksportu
+    const now = new Date();
+    document.getElementById('exportMonth').value = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+function exportPdfReport() {
+  const month = document.getElementById('exportMonth').value;
+  if (!month) { alert('Wybierz miesiąc'); return; }
+  window.open('/api/trainer/export/report?month=' + month, '_blank');
+}
 </script>
 <div class="ov" id="trainPlanModal">
   <div class="modal" style="max-width:500px;">
@@ -2971,5 +3112,10 @@ function deleteMeasurement(clientId, measId) {
     </div>
   </div>
 </div>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(console.error);
+}
+</script>
 </body>
 </html>

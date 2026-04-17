@@ -71,11 +71,16 @@ Route::middleware('trainer.auth')->prefix('trainer')->group(function () {
     // Training plans
     Route::get('/plans/{clientId}',   [TrainerController::class, 'getPlans']);
     Route::post('/plans/{clientId}',  [TrainerController::class, 'savePlan']);
+
+    // Stats & export
+    Route::get('/stats',              [TrainerController::class, 'stats']);
+    Route::get('/export/report',      [TrainerController::class, 'exportReport']);
 });
 
 // ─── Client routes (requires client session) ──────────────────────────────────
 Route::middleware('client.auth')->prefix('client')->group(function () {
     Route::get('/sync',                   [ClientController::class, 'sync']);
+    Route::get('/history',                [ClientController::class, 'history']);
     Route::post('/bookings',              [ClientController::class, 'addBooking']);
     Route::put('/bookings/{id}/cancel',   [ClientController::class, 'cancelBooking']);
     Route::get('/messages',               [ClientController::class, 'getMessages']);
@@ -86,6 +91,7 @@ Route::middleware('client.auth')->prefix('client')->group(function () {
 // ─── Admin routes (requires admin session) ────────────────────────────────────
 Route::middleware('admin.auth')->prefix('admin')->group(function () {
     Route::get('/stats',              [AdminController::class, 'stats']);
+    Route::get('/export',             [AdminController::class, 'exportCsv']);
     Route::get('/trainers',           [AdminController::class, 'trainers']);
     Route::post('/trainers',          [AdminController::class, 'addTrainer']);
     Route::put('/trainers/{id}',      [AdminController::class, 'updateTrainer']);

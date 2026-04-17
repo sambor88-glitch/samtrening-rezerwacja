@@ -2,10 +2,10 @@
   "name": "SAMtrening",
   "short_name": "SAMtrening",
   "description": "System rezerwacji treningów personalnych SAMtrening",
-  "start_url": "/index.html",
+  "start_url": "/login",
   "display": "standalone",
-  "background_color": "#1a1a1a",
-  "theme_color": "#6CC04A",
+  "background_color": "#ffffff",
+  "theme_color": "#e91e8c",
   "orientation": "portrait-primary",
   "icons": [
     {

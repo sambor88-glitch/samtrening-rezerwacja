@@ -301,6 +301,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--light);color:var(-
       <div class="sblbl">Narzędzia</div>
       <div class="ni" onclick="showSec('manual',this)"><span class="ic">➕</span>Dodaj Rezerwację</div>
       <div class="ni" onclick="showSec('financial',this)"><span class="ic">💰</span>Finanse / Statystyki</div>
+      <div class="ni" onclick="showSec('dashboard-admin',this)"><span class="ic">📊</span>Dashboard</div>
+      <div class="ni" onclick="showSec('export-admin',this)"><span class="ic">⬇️</span>Eksport CSV</div>
       <div class="sblbl">Klienci Aplikacji</div>
       <div class="ni" onclick="showSec('client-accounts',this)"><span class="ic">👤</span>Konta Klientów<span class="nbdg" id="nbdgClients" style="background:rgba(0,102,255,.25);color:#63b3ed;">0</span></div>
       <div class="sblbl">Klienci</div>
@@ -429,6 +431,66 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--light);color:var(-
           </div>
         </div>
         <div id="finContent"></div>
+      </div>
+
+      <!-- DASHBOARD ADMIN -->
+      <div id="sec-dashboard-admin" class="section">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;">
+          <div style="flex:1;min-width:130px;background:#fff3f9;border:1.5px solid #e91e8c22;border-radius:12px;padding:16px;text-align:center;">
+            <div id="adTotalRevenue" style="font-size:26px;font-weight:700;color:#e91e8c;">—</div>
+            <div style="font-size:12px;color:#888;margin-top:3px;">Łączny przychód</div>
+          </div>
+          <div style="flex:1;min-width:130px;background:#f0fff4;border:1.5px solid #22c55e22;border-radius:12px;padding:16px;text-align:center;">
+            <div id="adTotalTrainings" style="font-size:26px;font-weight:700;color:#16a34a;">—</div>
+            <div style="font-size:12px;color:#888;margin-top:3px;">Ukończone treningi</div>
+          </div>
+          <div style="flex:1;min-width:130px;background:#f0f9ff;border:1.5px solid #3b82f622;border-radius:12px;padding:16px;text-align:center;">
+            <div id="adTotalClients" style="font-size:26px;font-weight:700;color:#2563eb;">—</div>
+            <div style="font-size:12px;color:#888;margin-top:3px;">Klientów</div>
+          </div>
+          <div style="flex:1;min-width:130px;background:#fdf4ff;border:1.5px solid #a855f722;border-radius:12px;padding:16px;text-align:center;">
+            <div id="adTotalTrainers" style="font-size:26px;font-weight:700;color:#9333ea;">—</div>
+            <div style="font-size:12px;color:#888;margin-top:3px;">Trenerów</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+          <div style="background:#fff;border:1.5px solid #eee;border-radius:12px;padding:16px;">
+            <div style="font-weight:600;margin-bottom:12px;">📈 Przychody per trener (ostatnie 6 mies.)</div>
+            <canvas id="adChartRevenue" height="220"></canvas>
+          </div>
+          <div style="background:#fff;border:1.5px solid #eee;border-radius:12px;padding:16px;">
+            <div style="font-weight:600;margin-bottom:12px;">🏋️ Treningi per trener (ostatnie 6 mies.)</div>
+            <canvas id="adChartTrainings" height="220"></canvas>
+          </div>
+        </div>
+        <div style="background:#fff;border:1.5px solid #eee;border-radius:12px;padding:16px;">
+          <div style="font-weight:600;margin-bottom:12px;">💼 Podsumowanie per trener</div>
+          <div id="adTrainerSummary"></div>
+        </div>
+      </div>
+
+      <!-- EKSPORT CSV -->
+      <div id="sec-export-admin" class="section">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
+          <div style="background:#fff;border:1.5px solid #eee;border-radius:12px;padding:20px;">
+            <div style="font-size:32px;margin-bottom:8px;">📅</div>
+            <div style="font-weight:700;font-size:16px;margin-bottom:6px;">Rezerwacje</div>
+            <p style="font-size:13px;color:#666;margin-bottom:16px;">Eksportuj wszystkie rezerwacje do pliku CSV (ID, trener, klient, data, status).</p>
+            <button onclick="downloadCsv('bookings')" style="background:#e91e8c;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:600;width:100%;">⬇️ Pobierz CSV</button>
+          </div>
+          <div style="background:#fff;border:1.5px solid #eee;border-radius:12px;padding:20px;">
+            <div style="font-size:32px;margin-bottom:8px;">💳</div>
+            <div style="font-weight:700;font-size:16px;margin-bottom:6px;">Płatności</div>
+            <p style="font-size:13px;color:#666;margin-bottom:16px;">Eksportuj wszystkie płatności do pliku CSV (kwoty, status, trener, klient).</p>
+            <button onclick="downloadCsv('payments')" style="background:#16a34a;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:600;width:100%;">⬇️ Pobierz CSV</button>
+          </div>
+          <div style="background:#fff;border:1.5px solid #eee;border-radius:12px;padding:20px;">
+            <div style="font-size:32px;margin-bottom:8px;">👥</div>
+            <div style="font-weight:700;font-size:16px;margin-bottom:6px;">Klienci</div>
+            <p style="font-size:13px;color:#666;margin-bottom:16px;">Eksportuj bazę klientów do pliku CSV (imię, trener, email, telefon, status).</p>
+            <button onclick="downloadCsv('clients')" style="background:#2563eb;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:600;width:100%;">⬇️ Pobierz CSV</button>
+          </div>
+        </div>
       </div>
 
       <!-- CALENDAR -->
@@ -864,7 +926,8 @@ function showSec(sec, el) {
     cancelled:'Anulowane',manual:'Dodaj Rezerwację',financial:'Finanse i Statystyki',
     'cal-kasia':'Kalendarz – Kasia','cal-maciek':'Kalendarz – Maciek',
     clients:'Lista Klientów','client-accounts':'Konta Klientów',bulk:'Wysyłka Zbiorcza','avail-admin':'Dostępność Trenerów',impexp:'Import / Export',
-    settings:'Ustawienia i Ceny','trainers-mgmt':'Zarządzaj Trenerami'};
+    settings:'Ustawienia i Ceny','trainers-mgmt':'Zarządzaj Trenerami',
+    'dashboard-admin':'Dashboard','export-admin':'Eksport CSV'};
   document.getElementById('pageTitle').textContent = titles[sec]||'Rezerwacje';
   if (sec==='financial') renderFinancial();
   if (sec.startsWith('cal-')) renderCal(sec.replace('cal-',''));
@@ -874,6 +937,7 @@ function showSec(sec, el) {
   if (sec==='avail-admin') { initAvailAdmin(); renderAvailAdminCal(); }
   if (sec==='settings') { initSettings(); }
   if (sec==='trainers-mgmt') renderTrainersMgmt();
+  if (sec==='dashboard-admin') loadAdminDashboard();
   renderAllLists();
 }
 
@@ -2380,6 +2444,117 @@ async function changeTrainerPassword(trainerId) {
   }
 }
 
+// ── ADMIN DASHBOARD ───────────────────────────────────────────────────────────
+let _adChartRevenue = null, _adChartTrainings = null;
+
+async function loadAdminDashboard() {
+  try {
+    const r = await fetch('/api/admin/stats', { headers: hdr() });
+    if (!r.ok) throw new Error('Błąd');
+    const d = await r.json();
+    const ov = d.overview || {};
+
+    document.getElementById('adTotalRevenue').textContent   = (ov.revenue||0).toLocaleString('pl-PL') + ' zł';
+    document.getElementById('adTotalTrainings').textContent = ov.completed||0;
+    document.getElementById('adTotalClients').textContent   = ov.clients||0;
+    document.getElementById('adTotalTrainers').textContent  = ov.trainers||0;
+
+    const labels = (d.months||[]).map(m => { const [y,mo] = m.split('-'); return mo+'.'+y; });
+
+    // Wykres przychodów
+    const ctxR = document.getElementById('adChartRevenue').getContext('2d');
+    if (_adChartRevenue) _adChartRevenue.destroy();
+    _adChartRevenue = new Chart(ctxR, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: (d.revenuePerTrainer||[]).map(t => ({
+          label: t.name,
+          data: t.data,
+          backgroundColor: (t.color||'#e91e8c') + 'bb',
+          borderRadius: 5,
+        }))
+      },
+      options: { responsive: true, scales: { y: { beginAtZero: true }, x: { stacked: false } }, plugins: { legend: { position: 'top' } } }
+    });
+
+    // Wykres treningów
+    const ctxT = document.getElementById('adChartTrainings').getContext('2d');
+    if (_adChartTrainings) _adChartTrainings.destroy();
+    _adChartTrainings = new Chart(ctxT, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: (d.trainingsPerTrainer||[]).map(t => ({
+          label: t.name,
+          data: t.data,
+          borderColor: t.color||'#e91e8c',
+          backgroundColor: (t.color||'#e91e8c') + '22',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+        }))
+      },
+      options: { responsive: true, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { position: 'top' } } }
+    });
+
+    // Tabela podsumowania per trener
+    const sumEl = document.getElementById('adTrainerSummary');
+    sumEl.innerHTML = `
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead>
+          <tr style="background:#f8f8f8;">
+            <th style="padding:10px;text-align:left;border-bottom:2px solid #eee;">Trener</th>
+            <th style="padding:10px;text-align:right;border-bottom:2px solid #eee;">Przychód (6 mies.)</th>
+            <th style="padding:10px;text-align:right;border-bottom:2px solid #eee;">Treningi (6 mies.)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${(d.revenuePerTrainer||[]).map((t, i) => {
+            const tr = (d.trainingsPerTrainer||[])[i] || {};
+            return `<tr>
+              <td style="padding:10px;border-bottom:1px solid #eee;">
+                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${t.color||'#e91e8c'};margin-right:8px;"></span>
+                ${t.name}
+              </td>
+              <td style="padding:10px;text-align:right;border-bottom:1px solid #eee;font-weight:600;">${(t.total||0).toLocaleString('pl-PL')} zł</td>
+              <td style="padding:10px;text-align:right;border-bottom:1px solid #eee;">${tr.total||0}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+
+  } catch(e) {
+    console.error('Dashboard error:', e);
+  }
+}
+
+// ── EKSPORT CSV ───────────────────────────────────────────────────────────────
+function downloadCsv(type) {
+  const url = '/api/admin/export?type=' + type;
+  const a = document.createElement('a');
+  a.href = url;
+  // Dodaj nagłówek autoryzacji przez fetch + blob
+  fetch(url, { headers: hdr(), credentials: 'include' })
+    .then(r => r.blob())
+    .then(blob => {
+      const burl = URL.createObjectURL(blob);
+      a.href = burl;
+      a.download = 'samtrening_' + type + '_' + new Date().toISOString().slice(0,10) + '.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(burl);
+    })
+    .catch(() => alert('Błąd pobierania pliku'));
+}
+
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(console.error);
+}
 </script>
 </body>
 </html>

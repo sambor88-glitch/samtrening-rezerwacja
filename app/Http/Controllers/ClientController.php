@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use App\Models\Booking;
 use App\Models\Package;
 use App\Models\Payment;
@@ -53,8 +54,47 @@ class ClientController extends Controller
     {
         $session = $this->clientSession($request);
         $booking = Booking::where('id', $id)->where('client_id', $session['id'])->firstOrFail();
+
+        // Sprawdź czy trening jest przynajmniej 24h w przyszłości
+        $trainingTime = Carbon::parse($booking->date . ' ' . ($booking->time ?? '00:00'));
+        if ($trainingTime->diffInHours(Carbon::now(), false) > -24) {
+            return response()->json([
+                'error' => 'Nie można odwołać treningu na mniej niż 24 godziny przed jego rozpoczęciem.'
+            ], 422);
+        }
+
         $booking->update(['status' => 'cancelled']);
         return response()->json($booking);
+    }
+
+    // GET /api/client/history
+    public function history(Request $request)
+    {
+        $session = $this->clientSession($request);
+        $cid     = $session['id'];
+
+        $bookings = Booking::where('client_id', $cid)
+            ->orderByDesc('date')
+            ->orderByDesc('time')
+            ->get()
+            ->map(fn($b) => [
+                'id'        => $b->id,
+                'date'      => $b->date,
+                'time'      => $b->time,
+                'duration'  => $b->duration,
+                'status'    => $b->status,
+                'completed' => $b->completed,
+                'note'      => $b->note,
+            ]);
+
+        $stats = [
+            'total'     => $bookings->count(),
+            'completed' => $bookings->where('completed', true)->count(),
+            'cancelled' => $bookings->where('status', 'cancelled')->count(),
+            'upcoming'  => $bookings->filter(fn($b) => !$b['completed'] && $b['status'] !== 'cancelled')->count(),
+        ];
+
+        return response()->json(['bookings' => $bookings, 'stats' => $stats]);
     }
 
     // GET /api/client/messages

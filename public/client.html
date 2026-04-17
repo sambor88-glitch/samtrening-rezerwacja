@@ -1025,6 +1025,9 @@
         <div class="nav-item" data-section="measurements">
           <span>📊</span>Wyniki pomiaru
         </div>
+        <div class="nav-item" data-section="history">
+          📜 Historia treningów
+        </div>
         <div class="nav-item" data-section="profile">
           👤 Mój profil
         </div>
@@ -1276,6 +1279,17 @@
               <div id="packagePrice" style="font-size:13px;color:var(--text-light);margin-bottom:12px;"></div>
               <button class="btn btn-primary btn-block" onclick="buyPackage()">💳 Kup pakiet</button>
             </div>
+          </div>
+        </div>
+
+        <!-- HISTORIA TRENINGÓW -->
+        <div id="sec-history" class="section">
+          <div class="bcard" style="margin-bottom:16px;">
+            <h2>📜 Historia treningów</h2>
+            <div id="historyStats" style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0;"></div>
+          </div>
+          <div class="bcard">
+            <div id="historyList"></div>
           </div>
         </div>
 
@@ -2390,7 +2404,8 @@
         chat: 'Chat',
         payments: 'Płatności',
         plans: 'Plan treningowy',
-        profile: 'Mój profil'
+        profile: 'Mój profil',
+        history: 'Historia treningów'
       };
       document.getElementById('topbarTitle').textContent = titles[name] || '';
 
@@ -2410,6 +2425,8 @@
       } else if (name === 'dashboard') {
         loadDashboard();
         loadPackageInfo();
+      } else if (name === 'history') {
+        loadHistory();
       }
     }
 
@@ -2769,6 +2786,90 @@
       a.href = m.data; a.download = (m.title||'pomiar_tanita')+'.pdf';
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
     }
+
+    // ── HISTORIA TRENINGÓW ────────────────────────────────────────────────
+    async function loadHistory() {
+      const el = document.getElementById('historyList');
+      const st = document.getElementById('historyStats');
+      el.innerHTML = '<p style="color:#999;text-align:center;padding:20px;">Ładowanie...</p>';
+      try {
+        const r = await fetch('/api/client/history', { credentials: 'include' });
+        const d = await r.json();
+
+        // Statystyki
+        const s = d.stats || {};
+        st.innerHTML = [
+          ['📅', 'Wszystkich', s.total||0],
+          ['✅', 'Ukończonych', s.completed||0],
+          ['❌', 'Odwołanych', s.cancelled||0],
+          ['⏳', 'Nadchodzących', s.upcoming||0],
+        ].map(([ic, lbl, val]) => `
+          <div style="background:#f9f9f9;border:1px solid #eee;border-radius:10px;padding:12px 18px;text-align:center;flex:1;min-width:110px;">
+            <div style="font-size:22px;">${ic}</div>
+            <div style="font-size:20px;font-weight:700;color:#e91e8c;">${val}</div>
+            <div style="font-size:11px;color:#888;">${lbl}</div>
+          </div>`).join('');
+
+        // Lista
+        if (!d.bookings || d.bookings.length === 0) {
+          el.innerHTML = '<p style="color:#999;text-align:center;padding:20px;">Brak historii treningów.</p>';
+          return;
+        }
+
+        el.innerHTML = d.bookings.map(b => {
+          const isPast = b.completed || new Date(b.date) < new Date();
+          const canCancel = !b.completed && b.status !== 'cancelled' &&
+            (new Date(b.date + 'T' + (b.time||'00:00')) - new Date()) > 24*3600*1000;
+          const statusMap = {
+            completed:  ['✅', '#16a34a', 'Ukończony'],
+            cancelled:  ['❌', '#dc2626', 'Odwołany'],
+            confirmed:  ['📌', '#2563eb', 'Potwierdzony'],
+            pending:    ['⏳', '#d97706', 'Oczekujący'],
+          };
+          const [ic, col, lbl] = statusMap[b.completed ? 'completed' : (b.status||'pending')] || ['❓','#888','Nieznany'];
+          const dateStr = new Date(b.date).toLocaleDateString('pl-PL', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+          return `
+            <div style="border:1.5px solid #eee;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;">
+              <div style="font-size:28px;">${ic}</div>
+              <div style="flex:1;">
+                <div style="font-weight:600;font-size:14px;">${dateStr}${b.time ? ' o ' + b.time : ''}</div>
+                <div style="font-size:12px;color:#888;margin-top:2px;">${b.duration ? b.duration + ' min' : ''} ${b.note ? '· ' + b.note : ''}</div>
+              </div>
+              <div style="text-align:right;">
+                <span style="color:${col};font-weight:600;font-size:13px;">${lbl}</span>
+                ${canCancel ? `<br><button onclick="cancelMyBooking('${b.id}')" style="margin-top:6px;background:#fee2e2;color:#dc2626;border:none;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Odwołaj</button>` : ''}
+              </div>
+            </div>`;
+        }).join('');
+
+      } catch(e) {
+        el.innerHTML = '<p style="color:#dc2626;text-align:center;padding:20px;">Błąd ładowania historii.</p>';
+      }
+    }
+
+    async function cancelMyBooking(id) {
+      if (!confirm('Odwołać ten trening? Pamiętaj, że można odwołać tylko do 24h przed treningiem.')) return;
+      try {
+        const r = await fetch('/api/client/bookings/' + id + '/cancel', {
+          method: 'PUT', credentials: 'include'
+        });
+        const d = await r.json();
+        if (!r.ok) {
+          showToast(d.error || 'Błąd odwołania', 'error');
+          return;
+        }
+        showToast('Trening odwołany', 'success');
+        loadHistory();
+      } catch(e) {
+        showToast('Błąd połączenia', 'error');
+      }
+    }
+
   </script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(console.error);
+}
+</script>
 </body>
 </html>
