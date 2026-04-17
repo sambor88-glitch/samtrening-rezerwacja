@@ -12,6 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Dodaj sesję do tras API (potrzebne dla logowania)
+        $middleware->api(prepend: [
+            \Illuminate\Session\Middleware\StartSession::class,
+        ]);
+
         $middleware->alias([
             'trainer.auth' => \App\Http\Middleware\TrainerAuth::class,
             'client.auth'  => \App\Http\Middleware\ClientAuth::class,
