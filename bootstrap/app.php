@@ -17,7 +17,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'client.auth'  => \App\Http\Middleware\ClientAuth::class,
             'admin.auth'   => \App\Http\Middleware\AdminAuth::class,
         ]);
-        $middleware->statefulApi();
     })
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
         // Przypomnienia 24h przed treningiem — codziennie o 10:00
