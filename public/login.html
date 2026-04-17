@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#6CC04A"/>
+<title>SAMtrening – Logowanie</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --green:#6CC04A;--gd:#58a63a;--gl:#e8f7e0;
+  --dark:#1a1a1a;--gray:#555;--light:#f5f5f5;
+  --border:#e0e0e0;--radius:14px;
+  --shadow:0 8px 32px rgba(0,0,0,.12);
+}
+body{
+  font-family:'Segoe UI',Arial,sans-serif;
+  background:linear-gradient(135deg,#f0faea 0%,#e8f4ff 50%,#f5f0ff 100%);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:20px;
+}
+
+/* ── CARD ── */
+.card{
+  background:#fff;border-radius:22px;box-shadow:var(--shadow);
+  width:100%;max-width:440px;overflow:hidden;
+  animation:fadeUp .4s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── HEADER ── */
+.card-header{
+  background:linear-gradient(135deg,var(--green) 0%,#4facfe 100%);
+  padding:32px 32px 24px;text-align:center;color:#fff;
+}
+.logo{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:8px;}
+.logo-circle{
+  width:52px;height:52px;background:rgba(255,255,255,.25);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:14px;letter-spacing:-0.5px;
+}
+.logo-text{font-size:1.6rem;font-weight:800;letter-spacing:-0.5px;}
+.logo-text span{opacity:.8;}
+.card-subtitle{opacity:.9;font-size:.92rem;margin-top:4px;}
+
+/* ── TABS ── */
+.tabs{display:flex;border-bottom:2px solid var(--border);}
+.tab{
+  flex:1;padding:14px 8px;text-align:center;cursor:pointer;
+  font-size:.87rem;font-weight:600;color:var(--gray);
+  border-bottom:3px solid transparent;margin-bottom:-2px;
+  transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;
+}
+.tab:hover{color:var(--green);background:#fafff8;}
+.tab.active{color:var(--green);border-bottom-color:var(--green);background:#fafff8;}
+.tab-icon{font-size:1.2rem;display:block;margin-bottom:3px;}
+
+/* ── PANELS ── */
+.panels{padding:28px 32px 32px;}
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* ── TRAINER CARDS ── */
+.trainer-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;
+}
+.trainer-card{
+  border:2px solid var(--border);border-radius:12px;padding:14px 10px;
+  cursor:pointer;text-align:center;transition:all .22s;background:#fff;
+}
+.trainer-card:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:0 4px 16px rgba(108,192,74,.15);}
+.trainer-card.sel{border-color:var(--green);background:var(--gl);}
+.trainer-card.sel .tc-av{box-shadow:0 0 0 3px var(--green);}
+.tc-av{
+  width:48px;height:48px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;color:#fff;font-size:.95rem;margin:0 auto 9px;
+  transition:box-shadow .2s;
+}
+.tc-name{font-size:.87rem;font-weight:700;color:var(--dark);line-height:1.2;}
+.tc-role{font-size:.68rem;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:3px;}
+
+/* ── FORM ── */
+.form-group{margin-bottom:18px;}
+.form-group label{
+  display:block;font-size:.82rem;font-weight:600;color:var(--gray);
+  margin-bottom:6px;letter-spacing:.3px;text-transform:uppercase;
+}
+.form-group input{
+  width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:10px;
+  font-size:.95rem;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s;
+  background:#fafafa;
+}
+.form-group input:focus{border-color:var(--green);background:#fff;box-shadow:0 0 0 3px rgba(108,192,74,.15);}
+
+/* ── BUTTON ── */
+.btn-login{
+  width:100%;padding:14px;background:var(--green);color:#fff;
+  border:none;border-radius:10px;font-size:1rem;font-weight:700;
+  cursor:pointer;font-family:inherit;letter-spacing:.3px;
+  transition:background .2s,transform .1s,box-shadow .2s;
+  box-shadow:0 4px 14px rgba(108,192,74,.35);
+}
+.btn-login:hover{background:var(--gd);transform:translateY(-1px);box-shadow:0 6px 18px rgba(108,192,74,.4);}
+.btn-login:active{transform:translateY(0);}
+.btn-login:disabled{background:#ccc;box-shadow:none;cursor:not-allowed;transform:none;}
+
+/* ── ERROR ── */
+.err{
+  background:#fff0f0;border:1.5px solid #fca5a5;color:#dc2626;
+  border-radius:8px;padding:10px 14px;font-size:.85rem;font-weight:600;
+  margin-bottom:16px;display:none;animation:shake .3s ease;
+}
+.err.show{display:block;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}50%{transform:translateX(-3px);}}
+
+/* ── ADMIN HINT ── */
+.hint{font-size:.78rem;color:#aaa;text-align:center;margin-top:16px;}
+.hint strong{color:#888;}
+
+/* ── LOADING SPINNER ── */
+.spinner{
+  display:inline-block;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);
+  border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;
+  vertical-align:middle;margin-right:8px;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── SEPARATOR ── */
+.sep{height:1px;background:var(--border);margin:22px 0;}
+
+/* ── FOOTER ── */
+.card-footer{
+  padding:14px 32px;border-top:1px solid var(--border);
+  text-align:center;font-size:.78rem;color:#bbb;background:#fafafa;
+}
+
+/* Responsive */
+@media(max-width:480px){
+  .card{border-radius:16px;}
+  .panels{padding:22px 20px 24px;}
+  .card-header{padding:24px 20px 20px;}
+  .trainer-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- HEADER -->
+  <div class="card-header">
+    <div class="logo">
+      <div class="logo-circle">sam</div>
+      <div class="logo-text"><span>sam</span>trening</div>
+    </div>
+    <div class="card-subtitle">Zaloguj się do swojego panelu</div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('trainer',this)">
+      <span class="tab-icon">🏋️</span>Trener
+    </button>
+    <button class="tab" onclick="switchTab('client',this)">
+      <span class="tab-icon">👤</span>Klient
+    </button>
+    <button class="tab" onclick="switchTab('admin',this)">
+      <span class="tab-icon">⚙️</span>Admin
+    </button>
+  </div>
+
+  <!-- PANELS -->
+  <div class="panels">
+
+    <!-- ERROR (shared) -->
+    <div class="err" id="errMsg"></div>
+
+    <!-- ── TRAINER PANEL ── -->
+    <div class="panel active" id="panel-trainer">
+      <div class="trainer-grid" id="trainerGrid">
+        <!-- filled by JS -->
+      </div>
+      <div class="form-group">
+        <label>Hasło</label>
+        <input type="password" id="trainerPw" placeholder="Hasło trenera"
+               onkeydown="if(event.key==='Enter')doLogin('trainer')"/>
+      </div>
+      <button class="btn-login" id="btnTrainer" onclick="doLogin('trainer')" disabled>
+        Zaloguj się →
+      </button>
+    </div>
+
+    <!-- ── CLIENT PANEL ── -->
+    <div class="panel" id="panel-client">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="clientEmail" placeholder="twój@email.pl"
+               onkeydown="if(event.key==='Enter')doLogin('client')"/>
+      </div>
+      <div class="form-group">
+        <label>Hasło</label>
+        <input type="password" id="clientPw" placeholder="Twoje hasło"
+               onkeydown="if(event.key==='Enter')doLogin('client')"/>
+      </div>
+      <button class="btn-login" id="btnClient" onclick="doLogin('client')">
+        Zaloguj się →
+      </button>
+      <div class="hint" style="margin-top:14px;">
+        Nie masz konta? Skontaktuj się z trenerem.
+      </div>
+    </div>
+
+    <!-- ── ADMIN PANEL ── -->
+    <div class="panel" id="panel-admin">
+      <div class="form-group">
+        <label>Hasło administratora</label>
+        <input type="password" id="adminPw" placeholder="Hasło dostępu"
+               onkeydown="if(event.key==='Enter')doLogin('admin')"/>
+      </div>
+      <button class="btn-login" id="btnAdmin" onclick="doLogin('admin')">
+        Zaloguj się →
+      </button>
+      <div class="hint">Domyślne: <strong>samtrening2024</strong></div>
+    </div>
+
+  </div><!-- /panels -->
+
+  <div class="card-footer">SAMtrening &copy; 2025 · Profesjonalny trening personalny</div>
+</div>
+
+<script src="local-api.js"></script>
+<script>
+// ── Config ────────────────────────────────────────────────────────────────────
+const IS_FILE = window.location.protocol === 'file:';
+const IS_PROD = !IS_FILE && !['localhost','127.0.0.1'].includes(window.location.hostname);
+const ADMIN_PASS_DEFAULT = 'samtrening2024';
+
+// Redirect URLs
+function panelUrl(role) {
+  if (IS_FILE) return role + '.html';
+  return '/' + role;
+}
+
+// ── Trainer list (fallback if API unavailable) ────────────────────────────────
+const TRAINERS_FALLBACK = {
+  kasia:  { id:'kasia',  name:'Katarzyna Janecka', initials:'KJ', color:'linear-gradient(135deg,#f093fb,#f5576c)', role:'Trenerka kobiet' },
+  maciek: { id:'maciek', name:'Maciej Samborski',  initials:'MS', color:'linear-gradient(135deg,#4facfe,#00f2fe)', role:'Trener personalny' },
+  kuba:   { id:'kuba',   name:'Kuba Samborski',    initials:'KS', color:'linear-gradient(135deg,#43e97b,#38f9d7)', role:'Trener personalny' },
+};
+
+let selTrainerId = null;
+let trainers = {};
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function switchTab(role, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + role).classList.add('active');
+  clearErr();
+  // Auto-focus first input
+  const inp = document.querySelector('#panel-' + role + ' input');
+  if (inp) setTimeout(() => inp.focus(), 50);
+}
+
+// ── Error display ─────────────────────────────────────────────────────────────
+function showErr(msg) {
+  const el = document.getElementById('errMsg');
+  el.textContent = msg;
+  el.classList.add('show');
+  // Re-trigger animation
+  el.style.animation = 'none'; el.offsetHeight; el.style.animation = '';
+}
+function clearErr() {
+  const el = document.getElementById('errMsg');
+  el.classList.remove('show');
+}
+
+// ── Render trainer cards ──────────────────────────────────────────────────────
+function renderTrainers(list) {
+  const grid = document.getElementById('trainerGrid');
+  const entries = Object.values(list);
+  grid.innerHTML = entries.map(t => `
+    <div class="trainer-card" id="tc-${t.id}" onclick="selectTrainer('${t.id}')">
+      <div class="tc-av" style="background:${t.color||'linear-gradient(135deg,#6CC04A,#4facfe)'}">
+        ${t.initials || (t.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}
+      </div>
+      <div class="tc-name">${t.name}</div>
+      <div class="tc-role">${t.role||'Trener'}</div>
+    </div>`).join('');
+}
+
+function selectTrainer(id) {
+  selTrainerId = id;
+  document.querySelectorAll('.trainer-card').forEach(c => c.classList.remove('sel'));
+  const card = document.getElementById('tc-' + id);
+  if (card) card.classList.add('sel');
+  document.getElementById('btnTrainer').disabled = false;
+  document.getElementById('trainerPw').focus();
+  clearErr();
+}
+
+// Load trainers from API or fallback
+async function loadTrainers() {
+  try {
+    const res = await fetch('/api/trainers');
+    if (res.ok) {
+      const list = await res.json();
+      if (list.length) {
+        list.forEach(t => {
+          const initials = (t.name||'').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+          trainers[t.id] = {
+            id: t.id, name: t.name, initials, role: t.role||'Trener',
+            color: TRAINERS_FALLBACK[t.id]?.color || 'linear-gradient(135deg,#6CC04A,#4facfe)',
+          };
+        });
+        renderTrainers(trainers);
+        return;
+      }
+    }
+  } catch(e) { /* offline – use fallback */ }
+  // Fallback: read from LocalApi or hardcoded list
+  const localList = LocalApi.getTrainersList ? LocalApi.getTrainersList() : [];
+  if (localList.length) {
+    localList.forEach(t => {
+      trainers[t.id] = {
+        id: t.id, name: t.name||t.nameShort, initials: (t.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(),
+        role: t.role||'Trener',
+        color: TRAINERS_FALLBACK[t.id]?.color || 'linear-gradient(135deg,#6CC04A,#4facfe)',
+      };
+    });
+    renderTrainers(trainers);
+  } else {
+    renderTrainers(TRAINERS_FALLBACK);
+    trainers = {...TRAINERS_FALLBACK};
+  }
+}
+
+// ── Set button loading state ──────────────────────────────────────────────────
+function setBtnLoading(btnId, loading, text) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  if (loading) {
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner"></span>Logowanie...`;
+  } else {
+    btn.disabled = false;
+    btn.textContent = text || 'Zaloguj się →';
+  }
+}
+
+// ── Main login dispatch ───────────────────────────────────────────────────────
+async function doLogin(role) {
+  clearErr();
+
+  if (role === 'trainer') {
+    if (!selTrainerId) { showErr('Wybierz trenera z listy.'); return; }
+    const pw = document.getElementById('trainerPw').value.trim();
+    if (!pw) { showErr('Wpisz hasło.'); document.getElementById('trainerPw').focus(); return; }
+    await loginTrainer(selTrainerId, pw);
+
+  } else if (role === 'client') {
+    const email = document.getElementById('clientEmail').value.trim();
+    const pw    = document.getElementById('clientPw').value.trim();
+    if (!email || !pw) { showErr('Wypełnij email i hasło.'); return; }
+    await loginClient(email, pw);
+
+  } else if (role === 'admin') {
+    const pw = document.getElementById('adminPw').value.trim();
+    if (!pw) { showErr('Wpisz hasło.'); document.getElementById('adminPw').focus(); return; }
+    await loginAdmin(pw);
+  }
+}
+
+// ── Trainer login ─────────────────────────────────────────────────────────────
+async function loginTrainer(id, pw) {
+  setBtnLoading('btnTrainer', true);
+  try {
+    // Try server
+    const res = await fetch('/api/trainer/login', {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ trainerId: id, password: pw })
+    });
+    const data = await res.json();
+    if (data.success) {
+      const trainer = data.trainer;
+      sessionStorage.setItem('trainer_token', data.token || id + ':' + pw);
+      sessionStorage.setItem('trainer_data',  JSON.stringify(trainer));
+      // Sync & redirect
+      LocalApi._syncDown && LocalApi._syncDown('trainer').catch(()=>{});
+      window.location.href = panelUrl('trainer');
+      return;
+    }
+    showErr('Nieprawidłowe hasło.');
+  } catch(e) {
+    // Fallback: local password check
+    const trainer = LocalApi.verifyTrainer(id, pw);
+    if (trainer) {
+      sessionStorage.setItem('trainer_token', id + ':' + pw);
+      sessionStorage.setItem('trainer_data',  JSON.stringify(trainer));
+      window.location.href = panelUrl('trainer');
+      return;
+    }
+    showErr('Nieprawidłowe hasło. (tryb offline)');
+  } finally {
+    setBtnLoading('btnTrainer', false);
+  }
+}
+
+// ── Client login ──────────────────────────────────────────────────────────────
+async function loginClient(email, pw) {
+  setBtnLoading('btnClient', true);
+  try {
+    const res = await fetch('/api/auth/client/login', {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password: pw })
+    });
+    const data = await res.json();
+    if (data.success) {
+      const client = data.client;
+      sessionStorage.setItem('client_token', client.id + ':' + email);
+      sessionStorage.setItem('client_data',  JSON.stringify(client));
+      LocalApi._syncDown && LocalApi._syncDown('client').catch(()=>{});
+      window.location.href = panelUrl('client');
+      return;
+    }
+    showErr(data.error || 'Nieprawidłowe dane logowania.');
+  } catch(e) {
+    // Fallback: local
+    const client = LocalApi.verifyClient ? LocalApi.verifyClient(email, pw) : null;
+    if (client) {
+      sessionStorage.setItem('client_token', client.id + ':' + email);
+      sessionStorage.setItem('client_data',  JSON.stringify(client));
+      window.location.href = panelUrl('client');
+      return;
+    }
+    showErr('Nieprawidłowe dane logowania. (tryb offline)');
+  } finally {
+    setBtnLoading('btnClient', false);
+  }
+}
+
+// ── Admin login ───────────────────────────────────────────────────────────────
+async function loginAdmin(pw) {
+  setBtnLoading('btnAdmin', true);
+  try {
+    const res = await fetch('/api/admin/login', {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password: pw })
+    });
+    const data = await res.json();
+    if (data.success) {
+      sessionStorage.setItem('admin_token', data.token || pw);
+      window.location.href = panelUrl('admin');
+      return;
+    }
+    showErr(data.error || 'Nieprawidłowe hasło administratora.');
+  } catch(e) {
+    // Fallback: check default password
+    if (pw === ADMIN_PASS_DEFAULT || pw === (sessionStorage.getItem('admin_pass_custom')||'')) {
+      sessionStorage.setItem('admin_token', pw);
+      window.location.href = panelUrl('admin');
+      return;
+    }
+    showErr('Nieprawidłowe hasło. (tryb offline)');
+  } finally {
+    setBtnLoading('btnAdmin', false);
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  // If already logged in – redirect directly
+  const trainerData = sessionStorage.getItem('trainer_data');
+  const clientData  = sessionStorage.getItem('client_data');
+  const adminTok    = sessionStorage.getItem('admin_token');
+
+  if (trainerData && sessionStorage.getItem('trainer_token')) {
+    window.location.href = panelUrl('trainer'); return;
+  }
+  if (clientData && sessionStorage.getItem('client_token')) {
+    window.location.href = panelUrl('client'); return;
+  }
+  if (adminTok) {
+    window.location.href = panelUrl('admin'); return;
+  }
+
+  // Check URL param ?role=client etc.
+  const urlRole = new URLSearchParams(window.location.search).get('role');
+  if (urlRole) {
+    const tab = document.querySelector(`.tab[onclick*="'${urlRole}'"]`);
+    if (tab) switchTab(urlRole, tab);
+  }
+
+  // Load trainers
+  loadTrainers();
+  // Focus first input
+  document.getElementById('trainerPw').focus();
+});
+</script>
+</body>
+</html>

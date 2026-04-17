@@ -1,0 +1,2975 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#6CC04A"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon-192.svg"/>
+<title>SAMtrening – Panel Trenera</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--green:#6CC04A;--gd:#58a63a;--gl:#e8f7e0;--dark:#1a1a1a;--gray:#555;--light:#f0f2f5;--white:#fff;--gs:#00B8D9;--ge:#0066FF;--border:#e0e0e0;--shadow:0 4px 24px rgba(0,0,0,.10);--r:12px;--sb:248px;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--light);color:var(--dark);min-height:100vh;}
+/* LOGIN */
+.lw{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a,#2d2d2d);}
+.lb{background:#fff;border-radius:18px;padding:44px 40px;width:400px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.ll{display:flex;align-items:center;gap:10px;margin-bottom:26px;}
+.lc{background:var(--green);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:13px;}
+.lt{font-size:1.3rem;font-weight:700;color:var(--dark);} .lt span{color:var(--green);}
+.lb h2{font-size:1.25rem;font-weight:800;margin-bottom:6px;}
+.lb .lsub{color:var(--gray);font-size:.88rem;margin-bottom:26px;}
+.trainer-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px;}
+.trainer-btn{border:2px solid var(--border);border-radius:12px;padding:15px 10px;cursor:pointer;text-align:center;transition:all .25s;background:#fff;}
+.trainer-btn:hover{border-color:var(--green);transform:translateY(-2px);}
+.trainer-btn.sel{border-color:var(--green);background:var(--gl);}
+.trainer-btn .tav{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:1rem;margin:0 auto 9px;}
+.trainer-btn.kasia .tav{background:linear-gradient(135deg,#f093fb,#f5576c);}
+.trainer-btn.maciek .tav{background:linear-gradient(135deg,#4facfe,#00f2fe);}
+.trainer-btn .tname{font-size:.9rem;font-weight:700;color:var(--dark);}
+.trainer-btn .trole{font-size:.7rem;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+.lb label{display:block;font-size:.84rem;font-weight:700;color:var(--dark);margin-bottom:6px;}
+.lb input{width:100%;padding:12px 15px;border:2px solid var(--border);border-radius:10px;font-size:1rem;outline:none;transition:border .2s;font-family:inherit;}
+.lb input:focus{border-color:var(--green);}
+.btn-li{width:100%;margin-top:13px;padding:13px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-li:hover{background:var(--gd);} .btn-li:disabled{background:#c5e4b4;cursor:not-allowed;}
+.le{color:#e53e3e;font-size:.82rem;margin-top:9px;display:none;}
+/* APP */
+.app{display:none;} .app.show{display:flex;min-height:100vh;}
+/* SIDEBAR */
+.sb{width:var(--sb);background:#1a1a1a;color:#fff;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;overflow-y:auto;}
+.sblogo{padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.1);}
+.sbtrainer{display:flex;align-items:center;gap:11px;}
+.sbav{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:1rem;flex-shrink:0;}
+.sbav.kasia{background:linear-gradient(135deg,#f093fb,#f5576c);}
+.sbav.maciek{background:linear-gradient(135deg,#4facfe,#00f2fe);}
+.sbname{font-size:.92rem;font-weight:700;color:#fff;}
+.sbrole{font-size:.68rem;color:rgba(255,255,255,.5);margin-top:1px;}
+.sbnav{padding:12px 0;flex:1;}
+.sblbl{font-size:.67rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;padding:7px 18px 3px;}
+.ni{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;color:rgba(255,255,255,.65);font-size:.86rem;font-weight:500;transition:all .2s;border-left:3px solid transparent;}
+.ni:hover{background:rgba(255,255,255,.05);color:#fff;}
+.ni.act{background:rgba(108,192,74,.12);color:var(--green);border-left-color:var(--green);}
+.ni .ic{font-size:.95rem;width:20px;text-align:center;}
+.nbdg{background:rgba(229,62,62,.25);color:#fc8181;font-size:.67rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;display:none;}
+.nbdg.show{display:inline-block;}
+.sbft{padding:13px 18px;border-top:1px solid rgba(255,255,255,.1);}
+.btn-lo{width:100%;padding:10px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.12);border-radius:8px;font-size:.82rem;cursor:pointer;transition:all .2s;font-family:inherit;}
+.btn-lo:hover{background:rgba(229,62,62,.15);color:#fc8181;}
+/* MAIN */
+.main{margin-left:var(--sb);flex:1;display:flex;flex-direction:column;}
+.topbar{background:#fff;padding:13px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:40;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+.topbar h1{font-size:1.08rem;font-weight:800;}
+.rb{background:none;border:1.5px solid var(--border);border-radius:8px;padding:7px 13px;font-size:.81rem;cursor:pointer;color:var(--gray);font-family:inherit;font-weight:600;transition:all .2s;}
+.rb:hover{border-color:var(--green);color:var(--green);}
+.content{padding:22px;flex:1;}
+.section{display:none;} .section.act{display:block;}
+/* DASHBOARD */
+.dash-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:22px;}
+@media(max-width:800px){.dash-stats{grid-template-columns:repeat(2,1fr);}}
+.dsc{background:#fff;border-radius:var(--r);padding:18px;box-shadow:var(--shadow);display:flex;align-items:center;gap:13px;}
+.dsi{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;}
+.ig{background:rgba(108,192,74,.12);} .iy{background:rgba(245,166,35,.12);} .ir{background:rgba(229,62,62,.10);}
+.dsn{font-size:1.65rem;font-weight:900;line-height:1;} .dsl{font-size:.73rem;color:var(--gray);font-weight:600;margin-top:3px;}
+.notif-bar{background:linear-gradient(90deg,rgba(245,166,35,.12),rgba(245,166,35,.04));border:1.5px solid #f5a623;border-radius:10px;padding:13px 17px;margin-bottom:18px;display:none;align-items:center;gap:11px;}
+.notif-bar.show{display:flex;}
+.notif-bar .ni-txt{flex:1;}
+.notif-bar .ni-title{font-size:.88rem;font-weight:700;color:#7d6000;}
+.notif-bar .ni-sub{font-size:.77rem;color:#b7791f;margin-top:1px;}
+.notif-bar button{padding:7px 15px;background:#f5a623;color:#fff;border:none;border-radius:8px;font-size:.81rem;font-weight:700;cursor:pointer;font-family:inherit;}
+/* BOOKINGS */
+.blist{display:flex;flex-direction:column;gap:11px;}
+.bcard{background:#fff;border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow);border-left:4px solid var(--border);}
+.bcard.s-pending{border-left-color:#f5a623;} .bcard.s-confirmed{border-left-color:var(--green);} .bcard.s-cancelled{border-left-color:#e53e3e;opacity:.65;}
+.bhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+.bname{font-size:.97rem;font-weight:800;margin-bottom:3px;}
+.bmeta{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:7px;}
+.mi{font-size:.79rem;color:var(--gray);} .mi a{color:var(--green);font-weight:700;text-decoration:none;}
+.btags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:5px;}
+.bdg{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.69rem;font-weight:700;letter-spacing:.3px;}
+.dp{background:#fff8e1;color:#b7791f;} .dc{background:var(--gl);color:var(--gd);} .dn{background:#fff5f5;color:#c53030;} .dt{background:rgba(0,102,255,.08);color:#0066FF;}
+.dl{background:#e8f0fe;color:#1a3c8f;} .do{background:rgba(108,192,74,.1);color:var(--gd);} .dm{background:rgba(245,166,35,.1);color:#b7791f;}
+.bcmsg{background:#f0f9ff;border-left:3px solid #0099ff;border-radius:6px;padding:7px 11px;font-size:.78rem;color:#1a5276;margin-top:7px;line-height:1.5;}
+.bactions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;}
+.bsm{padding:7px 12px;border-radius:8px;font-size:.73rem;font-weight:700;cursor:pointer;border:none;transition:all .2s;font-family:inherit;white-space:nowrap;}
+.bok{background:var(--gl);color:var(--gd);} .bok:hover{background:var(--green);color:#fff;}
+.bno{background:#fff5f5;color:#c53030;} .bno:hover{background:#e53e3e;color:#fff;}
+.bsms{background:linear-gradient(90deg,var(--gs),var(--ge));color:#fff;} .bsms:hover{opacity:.88;}
+.bsms:disabled{opacity:.45;cursor:not-allowed;}
+.bgcal{background:#4285F4;color:#fff;} .bgcal:hover{opacity:.88;}
+.bemail{background:#EA4335;color:#fff;} .bemail:hover{opacity:.88;}
+.bdt{font-size:.74rem;color:#aaa;margin-top:3px;}
+/* TODAY VIEW */
+.today-card{background:#fff;border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:18px;}
+.today-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.today-title{font-size:.97rem;font-weight:800;}
+.today-date{font-size:.8rem;color:var(--gray);}
+.today-empty{text-align:center;padding:20px;color:var(--gray);font-size:.87rem;}
+/* CLIENT LIST */
+.cl-search{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.cl-search input{flex:1;min-width:180px;padding:11px 15px;border:2px solid var(--border);border-radius:10px;font-size:.93rem;outline:none;font-family:inherit;background:#fff;}
+.cl-search input:focus{border-color:var(--green);}
+.cl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:18px;}
+.cc{background:#fff;border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow);}
+.ccn{font-size:1rem;font-weight:800;}
+.ccp{color:var(--gray);font-size:.82rem;margin:3px 0 8px;}
+.cc-stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.cc-stat{background:var(--light);border-radius:8px;padding:5px 11px;font-size:.78rem;font-weight:700;}
+.cc-note{margin-top:10px;}
+.cc-note label{font-size:.78rem;font-weight:700;color:var(--gray);display:block;margin-bottom:4px;}
+.cc-note textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.83rem;font-family:inherit;resize:vertical;min-height:60px;outline:none;}
+.cc-note textarea:focus{border-color:var(--green);}
+.cc-actions{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;}
+/* BULK TRAINER */
+.bulk-wrap-tr{background:#fff;border-radius:var(--r);padding:22px;box-shadow:var(--shadow);margin-top:18px;}
+.bulk-wrap-tr h3{font-size:.97rem;font-weight:800;margin-bottom:6px;}
+.bmode-btns{display:flex;gap:8px;margin:12px 0 10px;flex-wrap:wrap;}
+.bmode-btn{padding:7px 15px;border:2px solid var(--border);border-radius:9px;background:#fff;font-size:.83rem;font-weight:700;cursor:pointer;font-family:inherit;color:var(--dark);transition:all .2s;}
+.bmode-btn.act{border-color:var(--green);background:var(--gl);}
+.btgt-btn{padding:6px 13px;border:1.5px solid var(--border);border-radius:9px;background:#fff;font-size:.8rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;}
+.btgt-btn.act{border-color:#4285F4;background:#e8f0fe;color:#1a73e8;}
+.btpl{background:var(--light);border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-size:.8rem;cursor:pointer;font-family:inherit;font-weight:600;transition:all .2s;}
+.btpl:hover{border-color:var(--green);}
+.bprev-count{font-weight:700;color:var(--dark);}
+.smshistwrap{margin-top:7px;padding-top:7px;border-top:1px solid var(--border);}
+.smshtit{font-size:.68rem;color:#aaa;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.smshi{background:#f8f8f8;border-radius:6px;padding:5px 9px;font-size:.75rem;color:var(--gray);margin-bottom:3px;}
+.smshit{font-size:.67rem;color:#bbb;margin-top:2px;}
+.empty{text-align:center;padding:56px 20px;color:#bbb;}
+.empty .ei{font-size:2.8rem;margin-bottom:12px;}
+/* PROFILE SETTINGS */
+.profile-card{background:#fff;border-radius:var(--r);padding:28px;box-shadow:var(--shadow);max-width:600px;margin-bottom:20px;}
+.profile-card h2{font-size:1.2rem;font-weight:800;margin-bottom:6px;}
+.profile-card .sub{color:var(--gray);font-size:.87rem;margin-bottom:22px;}
+.fg{margin-bottom:16px;}
+.fg label{display:block;font-size:.83rem;font-weight:700;color:var(--dark);margin-bottom:5px;}
+.fg input{width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-size:.93rem;outline:none;transition:border .2s;font-family:inherit;color:var(--dark);}
+.fg input:focus{border-color:var(--green);}
+.fg .hint{font-size:.76rem;color:var(--gray);margin-top:4px;line-height:1.4;}
+.btn-sv{padding:11px 26px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:.93rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;}
+.btn-sv:hover{background:var(--gd);}
+.suc-msg{background:var(--gl);border:1.5px solid var(--green);border-radius:10px;padding:11px 17px;font-size:.86rem;color:var(--gd);font-weight:600;display:none;margin-top:13px;}
+/* FINANCIAL */
+.fin-header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.per-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.per-btn{padding:7px 13px;border:2px solid var(--border);border-radius:20px;font-size:.8rem;font-weight:700;cursor:pointer;background:#fff;color:var(--gray);transition:all .2s;font-family:inherit;}
+.per-btn:hover,.per-btn.act{border-color:var(--green);color:var(--gd);background:var(--gl);}
+.fin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+@media(max-width:700px){.fin-grid{grid-template-columns:1fr 1fr;}}
+.finc{background:#fff;border-radius:var(--r);padding:17px;box-shadow:var(--shadow);}
+.finc-icon{font-size:1.5rem;margin-bottom:7px;}
+.finc-val{font-size:1.5rem;font-weight:900;color:var(--dark);}
+.finc-lbl{font-size:.73rem;color:var(--gray);font-weight:600;margin-top:3px;}
+.finc-sub{font-size:.77rem;color:var(--green);font-weight:600;margin-top:3px;}
+/* SMS MODAL */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+.ov.show{display:flex;}
+.modal{background:#fff;border-radius:18px;padding:28px;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:mIn .3s ease;}
+@keyframes mIn{from{transform:scale(.92);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal h3{font-size:1.12rem;font-weight:800;margin-bottom:4px;}
+.msb{color:var(--gray);font-size:.83rem;margin-bottom:16px;line-height:1.4;}
+.modal label{display:block;font-size:.79rem;font-weight:700;margin-bottom:5px;color:var(--dark);}
+.modal input,.modal textarea{width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:10px;font-size:.88rem;font-family:inherit;outline:none;transition:border .2s;}
+.modal input:focus,.modal textarea:focus{border-color:var(--green);}
+.modal textarea{min-height:100px;resize:vertical;margin-bottom:10px;}
+.tpls-tabs{display:flex;gap:6px;margin-bottom:8px;}
+.tpltab{padding:5px 11px;border:1.5px solid var(--border);border-radius:20px;font-size:.73rem;cursor:pointer;font-family:inherit;font-weight:700;color:var(--gray);background:#fff;transition:all .2s;}
+.tpltab:hover,.tpltab.act{border-color:var(--green);color:var(--gd);background:var(--gl);}
+.tpls{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+.tpl{background:var(--light);border:1.5px solid var(--border);border-radius:8px;padding:5px 10px;font-size:.72rem;cursor:pointer;font-family:inherit;color:var(--gray);transition:all .2s;}
+.tpl:hover{border-color:var(--green);color:var(--gd);background:var(--gl);}
+.mft{display:flex;gap:10px;margin-top:4px;}
+.btn-mc{flex:1;padding:11px;background:var(--light);border:2px solid var(--border);border-radius:10px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;color:var(--gray);}
+.btn-ms{flex:2;padding:11px;background:linear-gradient(90deg,var(--gs),var(--ge));color:#fff;border:none;border-radius:10px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn-ms:hover{opacity:.9;} .btn-ms:disabled{opacity:.5;cursor:not-allowed;}
+.chs{font-size:.7rem;color:#aaa;text-align:right;margin-bottom:5px;}
+/* AVAILABILITY */
+.av-wrap{display:grid;grid-template-columns:1fr 1.3fr;gap:18px;align-items:start;}
+@media(max-width:900px){.av-wrap{grid-template-columns:1fr;}}
+.av-card{background:#fff;border-radius:var(--r);padding:20px;box-shadow:var(--shadow);}
+.av-card h3{font-size:1rem;font-weight:800;margin-bottom:4px;}
+.av-card .sub{font-size:.79rem;color:var(--gray);margin-bottom:14px;}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.cal-month{font-size:.97rem;font-weight:800;}
+.cal-nav{background:none;border:1.5px solid var(--border);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;font-family:inherit;transition:all .2s;}
+.cal-nav:hover{border-color:var(--green);color:var(--green);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-dow{text-align:center;font-size:.67rem;font-weight:700;color:var(--gray);padding:3px 0;text-transform:uppercase;}
+.cal-day{text-align:center;padding:7px 2px;border-radius:8px;font-size:.82rem;cursor:pointer;transition:all .2s;position:relative;border:1.5px solid transparent;}
+.cal-day:hover{background:var(--gl);border-color:var(--green);}
+.cal-day.today{font-weight:800;color:var(--green);}
+.cal-day.sel{background:var(--green);color:#fff;border-color:var(--gd);}
+.cal-day.has-av::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:5px;height:5px;background:var(--green);border-radius:50%;}
+.cal-day.sel.has-av::after{background:#fff;}
+.cal-day.empty{cursor:default;} .cal-day.past{color:#ccc;cursor:default;}
+.slot-panel{min-height:200px;}
+.slot-panel-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.slot-panel-top h4{font-size:.9rem;font-weight:800;}
+.slot-actions{display:flex;gap:6px;}
+.sa-btn{padding:5px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:.75rem;cursor:pointer;font-family:inherit;font-weight:700;color:var(--gray);background:#fff;transition:all .2s;}
+.sa-btn:hover{border-color:var(--green);color:var(--gd);}
+.slots-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:14px;}
+.slot-btn{padding:8px 4px;border:1.5px solid var(--border);border-radius:8px;font-size:.77rem;cursor:pointer;text-align:center;transition:all .2s;background:#fff;font-family:inherit;font-weight:600;}
+.slot-btn:hover{border-color:var(--green);background:var(--gl);}
+.slot-btn.on{background:var(--green);border-color:var(--gd);color:#fff;}
+.slot-btn.booked{background:#fff3f3;border-color:#fc8181;color:#c53030;cursor:not-allowed;}
+.btn-save-av{width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:.93rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;}
+.btn-save-av:hover{background:var(--gd);}
+/* BULK TEMPLATE */
+.bulk-card{background:#fff;border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-top:18px;}
+.bulk-card h3{font-size:1rem;font-weight:800;margin-bottom:4px;}
+.bulk-card .sub{font-size:.79rem;color:var(--gray);margin-bottom:14px;}
+.bulk-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:14px;}
+.bulk-day-col{text-align:center;}
+.bulk-day-name{font-size:.67rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.bulk-day-slots{display:flex;flex-direction:column;gap:3px;max-height:260px;overflow-y:auto;}
+.bds{padding:4px 2px;border:1.5px solid var(--border);border-radius:6px;font-size:.68rem;cursor:pointer;text-align:center;transition:all .2s;background:#fff;font-family:inherit;font-weight:600;}
+.bds:hover{border-color:var(--green);background:var(--gl);}
+.bds.on{background:var(--green);border-color:var(--gd);color:#fff;}
+.bulk-range{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.bulk-range label{font-size:.82rem;font-weight:700;white-space:nowrap;}
+.bulk-range input[type=date]{padding:7px 10px;border:2px solid var(--border);border-radius:8px;font-size:.82rem;font-family:inherit;outline:none;}
+.bulk-range input[type=date]:focus{border-color:var(--green);}
+.btn-apply-bulk{padding:10px 22px;background:linear-gradient(90deg,var(--gs),var(--ge));color:#fff;border:none;border-radius:10px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn-apply-bulk:hover{opacity:.9;}
+/* CLIENT BOOKING */
+.cb-wrap{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;}
+@media(max-width:900px){.cb-wrap{grid-template-columns:1fr;}}
+.cb-card{background:#fff;border-radius:var(--r);padding:20px;box-shadow:var(--shadow);}
+.cb-card h3{font-size:1rem;font-weight:800;margin-bottom:4px;}
+.cb-card .sub{font-size:.79rem;color:var(--gray);margin-bottom:14px;}
+.tt-toggle{display:flex;gap:6px;margin-bottom:14px;}
+.tt-btn{flex:1;padding:9px;border:2px solid var(--border);border-radius:10px;font-size:.8rem;font-weight:700;cursor:pointer;text-align:center;transition:all .2s;background:#fff;font-family:inherit;}
+.tt-btn:hover{border-color:var(--green);}
+.tt-btn.act{border-color:var(--green);background:var(--gl);color:var(--gd);}
+.selected-slots{margin-top:14px;border-top:1.5px solid var(--border);padding-top:13px;}
+.selected-slots h4{font-size:.82rem;font-weight:700;margin-bottom:8px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;}
+.ss-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.ss-chip{background:var(--gl);border:1.5px solid var(--green);border-radius:20px;padding:4px 10px;font-size:.77rem;font-weight:700;color:var(--gd);display:flex;align-items:center;gap:5px;}
+.ss-chip button{background:none;border:none;cursor:pointer;color:var(--gd);font-size:.8rem;padding:0;line-height:1;}
+.cb-slots-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:12px;}
+.cb-slot{padding:8px 4px;border:1.5px solid var(--border);border-radius:8px;font-size:.77rem;cursor:pointer;text-align:center;transition:all .2s;background:#fff;font-family:inherit;font-weight:600;}
+.cb-slot:hover{border-color:var(--green);background:var(--gl);}
+.cb-slot.sel{background:var(--green);border-color:var(--gd);color:#fff;}
+.cb-slot.busy{background:#fff3f3;border-color:#fc8181;color:#c53030;cursor:not-allowed;}
+.cb-slot.unavail{opacity:.35;cursor:not-allowed;}
+.btn-submit-cb{width:100%;padding:12px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;margin-top:10px;}
+.btn-submit-cb:hover{background:var(--gd);} .btn-submit-cb:disabled{background:#c5e4b4;cursor:not-allowed;}
+/* TOAST */
+.toast{position:fixed;bottom:26px;right:26px;background:#1a1a1a;color:#fff;padding:13px 18px;border-radius:10px;font-size:.87rem;font-weight:600;z-index:300;display:none;max-width:320px;line-height:1.4;}
+.toast.show{display:block;animation:tsu .3s ease;}
+.toast.err{background:#e53e3e;} .toast.ok{background:var(--green);}
+@keyframes tsu{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+/* WEEK VIEW */
+.wv-wrap{min-width:700px;overflow-x:auto;}
+.wv-header{display:grid;gap:1px;background:var(--border);border-radius:var(--r) var(--r) 0 0;overflow:hidden;}
+.wv-header-cell{background:#1a1a1a;color:#fff;padding:10px 6px;text-align:center;font-size:.78rem;font-weight:700;}
+.wv-header-cell.today-col{background:var(--green);}
+.wv-body{display:grid;gap:1px;background:var(--border);}
+.wv-time{background:#f8f8f8;padding:8px 6px;font-size:.72rem;color:var(--gray);font-weight:700;text-align:right;white-space:nowrap;}
+.wv-cell{min-height:38px;padding:2px;cursor:pointer;transition:background .12s;position:relative;}
+.wv-cell:hover{filter:brightness(.95);}
+.wv-cell.avail{background:#f0fff4;}
+.wv-cell.unavail{background:#fff5f5;}
+.wv-cell.today-col.avail{background:#e6fae9;}
+.wv-cell.today-col.unavail{background:#ffeef0;}
+.wv-tile{border-radius:5px;padding:3px 6px;font-size:.69rem;font-weight:700;line-height:1.25;margin-bottom:2px;cursor:pointer;}
+.wv-tile.t-confirmed{background:#dbeafe;color:#1e40af;border-left:3px solid #3b82f6;}
+.wv-tile.t-pending{background:#fef9c3;color:#854d0e;border-left:3px solid #eab308;}
+.wv-tile.t-cancelled{background:#fee2e2;color:#991b1b;border-left:3px solid #ef4444;text-decoration:line-through;opacity:.7;}
+.wv-avail-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#6CC04A;position:absolute;top:3px;right:3px;opacity:.5;}
+/* TOUCH SUPPORT */
+.cal-day, .slot-btn, .week-cell, .sa-btn, .per-btn, .bsm, .tpl, .btpl, .bmode-btn, .btgt-btn {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.week-cell { cursor: pointer; user-select: none; }
+.week-cell:active { opacity: 0.75; }
+/* CHAT TRAINER */
+.chat-layout{display:grid;grid-template-columns:280px 1fr;gap:16px;height:calc(100vh - 140px);}
+@media(max-width:800px){.chat-layout{grid-template-columns:1fr;height:auto;}}
+.chat-clients{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);overflow-y:auto;display:flex;flex-direction:column;}
+.chat-clients-hdr{padding:14px 16px;border-bottom:1px solid var(--border);font-size:.9rem;font-weight:800;}
+.chat-client-item{padding:13px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;display:flex;align-items:center;gap:10px;}
+.chat-client-item:hover{background:var(--light);}
+.chat-client-item.active{background:rgba(108,192,74,.1);border-left:3px solid var(--green);}
+.chat-client-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#6CC04A,#00f2fe);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.82rem;flex-shrink:0;}
+.chat-client-info{flex:1;min-width:0;}
+.chat-client-name{font-size:.88rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.chat-client-last{font-size:.74rem;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+.chat-unread-dot{min-width:20px;height:20px;background:#e53e3e;border-radius:50%;color:#fff;font-size:.68rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.chat-main{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);display:flex;flex-direction:column;}
+.chat-main-hdr{padding:14px 18px;border-bottom:1px solid var(--border);font-size:.92rem;font-weight:800;display:flex;align-items:center;gap:10px;}
+.chat-msgs{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px;}
+.chat-bubble{display:flex;gap:8px;max-width:78%;}
+.chat-bubble.trainer{align-self:flex-end;flex-direction:row-reverse;}
+.chat-bubble.client{align-self:flex-start;}
+.chat-btext{padding:10px 14px;border-radius:12px;font-size:.86rem;line-height:1.5;word-break:break-word;}
+.chat-bubble.client .chat-btext{background:var(--light);color:var(--dark);}
+.chat-bubble.trainer .chat-btext{background:var(--green);color:#fff;}
+.chat-btime{font-size:.69rem;color:#aaa;margin-top:3px;text-align:right;}
+.chat-input-row{padding:13px 16px;border-top:1px solid var(--border);display:flex;gap:8px;}
+.chat-input-row input{flex:1;padding:10px 14px;border:2px solid var(--border);border-radius:10px;font-size:.9rem;font-family:inherit;outline:none;transition:border .2s;}
+.chat-input-row input:focus{border-color:var(--green);}
+.chat-input-row button{padding:10px 20px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.chat-input-row button:hover{background:var(--gd);}
+.chat-empty{flex:1;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:.9rem;padding:40px;}
+.chat-no-clients{padding:30px;text-align:center;color:#bbb;font-size:.88rem;}
+@keyframes lampPulse {
+  0%,100%{opacity:1;transform:scale(1);}
+  50%{opacity:.4;transform:scale(.8);}
+}
+</style>
+<script src="local-api.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div class="lw" id="loginWrap">
+  <div class="lb">
+    <div class="ll"><div class="lc">sam</div><div class="lt"><span>sam</span>trening</div></div>
+    <h2>Panel Trenera</h2>
+    <div class="lsub">Wybierz swój profil</div>
+    <div class="trainer-btns" id="trainerBtns">
+      <div class="trainer-btn kasia" onclick="selectTrainer('kasia','Kasia')">
+        <div class="tav">KJ</div>
+        <div class="tname">Katarzyna Janecka</div>
+        <div class="trole">Trener</div>
+      </div>
+      <div class="trainer-btn maciek" onclick="selectTrainer('maciek','Maciek')">
+        <div class="tav">MS</div>
+        <div class="tname">Maciej Samborski</div>
+        <div class="trole">Trener</div>
+      </div>
+    </div>
+    <label>Hasło</label>
+    <input type="password" id="lpi" placeholder="Hasło trenera" onkeydown="if(event.key==='Enter')trainerLogin()"/>
+    <button class="btn-li" onclick="trainerLogin()" id="lbtn" disabled>Zaloguj się →</button>
+    <div class="le" id="le">Nieprawidłowe hasło.</div>
+  </div>
+</div>
+
+<div class="app" id="app">
+  <aside class="sb">
+    <div class="sblogo">
+      <div class="sbtrainer">
+        <div class="sbav" id="sbav"></div>
+        <div><div class="sbname" id="sbname"></div><div class="sbrole">Trener Personalny</div></div>
+      </div>
+    </div>
+    <nav class="sbnav">
+      <div class="sblbl">Rezerwacje</div>
+      <div class="ni act" onclick="showSec('dashboard',this)"><span class="ic">🏠</span>Dashboard</div>
+      <div class="ni" onclick="showSec('week',this)"><span class="ic">📆</span>Widok Tygodnia</div>
+      <div class="ni" onclick="showSec('pending',this)"><span class="ic">⏳</span>Oczekujące<span class="nbdg" id="nbdg">0</span></div>
+      <div class="ni" onclick="showSec('confirmed',this)"><span class="ic">✅</span>Potwierdzone</div>
+      <div class="ni" onclick="showSec('all',this)"><span class="ic">📋</span>Wszystkie</div>
+      <div class="sblbl">Planowanie</div>
+      <div class="ni" onclick="showSec('availability',this)"><span class="ic">📅</span>Moja Dostępność</div>
+      <div class="ni" onclick="showSec('client-booking',this)"><span class="ic">👤</span>Rezerwuj Klienta</div>
+      <div class="sblbl">Narzędzia</div>
+      <div class="ni" onclick="showSec('clients',this)"><span class="ic">👥</span>Lista Klientów</div>
+      <div class="ni" onclick="showSec('financial',this)"><span class="ic">💰</span>Moje Finanse</div>
+      <div class="ni" onclick="showSec('client-payments',this)"><span class="ic">💳</span>Płatności Klientów<span class="nbdg" id="payBadge">0</span></div>
+      <div class="ni" onclick="showSec('chat',this)"><span class="ic">💬</span>Chat z Klientami<span class="nbdg" id="chatBadge">0</span><span id="chatLamp" style="display:none;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-left:4px;animation:lampPulse 1.2s ease-in-out infinite;"></span></div>
+      <div class="ni" onclick="showSec('profile',this)"><span class="ic">⚙️</span>Mój Profil</div>
+    </nav>
+    <div class="sbft"><button class="btn-lo" onclick="logout()">← Wyloguj się</button></div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <h1 id="pageTitle">Dashboard</h1>
+      <div><button class="rb" onclick="refresh()">↻ Odśwież</button></div>
+    </div>
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div id="sec-dashboard" class="section act">
+        <div class="dash-stats">
+          <div class="dsc"><div class="dsi ig">📋</div><div><div class="dsn" id="ds-total">0</div><div class="dsl">Wszystkich</div></div></div>
+          <div class="dsc"><div class="dsi iy">⏳</div><div><div class="dsn" id="ds-pend">0</div><div class="dsl">Oczekuje</div></div></div>
+          <div class="dsc"><div class="dsi ir">🗓️</div><div><div class="dsn" id="ds-today">0</div><div class="dsl">Dzisiaj</div></div></div>
+        </div>
+        <!-- TODAY'S VIEW -->
+        <div class="today-card">
+          <div class="today-hdr">
+            <div class="today-title">📅 Dzisiejsze spotkania</div>
+            <div class="today-date" id="todayDateStr"></div>
+          </div>
+          <div id="todayList"></div>
+        </div>
+        <div class="notif-bar" id="notifBar">
+          <span style="font-size:1.4rem;">🔔</span>
+          <div class="ni-txt">
+            <div class="ni-title">Nowe oczekujące rezerwacje!</div>
+            <div class="ni-sub">Przejdź do zakładki Oczekujące, aby potwierdzić klientów.</div>
+          </div>
+          <button onclick="showSec('pending',document.querySelector('.ni:nth-child(2)'))">Przejdź →</button>
+        </div>
+        <div style="font-size:.82rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">⏳ Oczekujące rezerwacje</div>
+        <div class="blist" id="dashList"></div>
+      </div>
+
+      <!-- WEEK VIEW -->
+      <div id="sec-week" class="section">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+          <button class="cal-nav" onclick="weekNav(-1)" style="width:36px;height:36px;">‹</button>
+          <div id="weekTitle" style="font-size:1rem;font-weight:800;"></div>
+          <button class="cal-nav" onclick="weekNav(1)" style="width:36px;height:36px;">›</button>
+          <button class="rb" onclick="weekToday()" style="margin-left:auto;">📅 Dzisiaj</button>
+        </div>
+        <div id="weekGrid" style="overflow-x:auto;"></div>
+      </div>
+
+      <!-- PENDING -->
+      <div id="sec-pending" class="section">
+        <div class="blist" id="blistPend"></div>
+      </div>
+      <!-- CONFIRMED -->
+      <div id="sec-confirmed" class="section">
+        <div class="blist" id="blistConf"></div>
+      </div>
+      <!-- ALL -->
+      <div id="sec-all" class="section">
+        <div class="blist" id="blistAll"></div>
+      </div>
+
+      <!-- FINANCIAL -->
+      <div id="sec-financial" class="section">
+        <div class="fin-header">
+          <div class="per-btns" id="perBtns">
+            <button class="per-btn act" onclick="setFinPeriod('day',this)">Dzisiaj</button>
+            <button class="per-btn" onclick="setFinPeriod('week',this)">Tydzień</button>
+            <button class="per-btn" onclick="setFinPeriod('month',this)">Miesiąc</button>
+            <button class="per-btn" onclick="setFinPeriod('quarter',this)">Kwartał</button>
+            <button class="per-btn" onclick="setFinPeriod('year',this)">Rok</button>
+          </div>
+        </div>
+        <div id="finContent"></div>
+      </div>
+
+      <!-- AVAILABILITY -->
+      <div id="sec-availability" class="section">
+        <div class="av-wrap">
+          <div>
+            <div class="av-card">
+              <h3>📅 Moja Dostępność</h3>
+              <div class="sub">Wybierz dzień z kalendarza, a następnie zaznacz dostępne godziny. Możesz zaznaczać wiele slotów naraz.</div>
+              <div class="cal-header">
+                <button class="cal-nav" onclick="avCalChM(-1)">‹</button>
+                <div class="cal-month" id="avCalTitle"></div>
+                <button class="cal-nav" onclick="avCalChM(1)">›</button>
+              </div>
+              <div class="cal-grid" id="avCalGrid"></div>
+            </div>
+          </div>
+          <div>
+            <div class="av-card">
+              <div class="slot-panel" id="avSlotPanel">
+                <div class="empty"><div class="ei">👆</div><p>Wybierz dzień z kalendarza</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Bulk weekly template -->
+        <div class="bulk-card">
+          <h3>📋 Szablon Tygodniowy</h3>
+          <div class="sub">Ustaw standardowe godziny dla każdego dnia tygodnia, a następnie zastosuj do wybranego zakresu dat.</div>
+          <div class="bulk-days" id="bulkDaysGrid"></div>
+          <div class="bulk-range">
+            <label>Od:</label>
+            <input type="date" id="bulkFrom"/>
+            <label>Do:</label>
+            <input type="date" id="bulkTo"/>
+            <button class="btn-apply-bulk" onclick="applyBulkTemplate()">▶ Zastosuj do zakresu</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLIENT BOOKING -->
+      <div id="sec-client-booking" class="section">
+        <div class="cb-wrap">
+          <div>
+            <div class="cb-card">
+              <h3>👤 Zarezerwuj dla Klienta</h3>
+              <div class="sub">Wprowadź dane klienta i wybierz godziny treningu. Możesz zaznaczyć wiele slotów na raz.</div>
+              <div class="fg"><label>Imię *</label><input type="text" id="cb-name" placeholder="np. Anna"/></div>
+              <div class="fg"><label>Nazwisko *</label><input type="text" id="cb-surname" placeholder="np. Kowalska"/></div>
+              <div class="fg"><label>Telefon *</label><input type="tel" id="cb-phone" placeholder="+48 000 000 000"/></div>
+              <div class="fg"><label>E-mail (zaproszenie Google Meet)</label><input type="email" id="cb-email" placeholder="klient@email.com"/></div>
+              <div class="fg"><label>Wiadomość od klienta</label><input type="text" id="cb-msg" placeholder="Cel treningowy, przeciwwskazania..."/></div>
+              <label style="font-size:.83rem;font-weight:700;display:block;margin-bottom:7px;">Typ treningu</label>
+              <div class="tt-toggle">
+                <button class="tt-btn act" id="cb-tt-inperson" onclick="cbSetType('inperson')">🏋️ Stacjonarny</button>
+                <button class="tt-btn" id="cb-tt-online" onclick="cbSetType('online')">🎥 Online</button>
+              </div>
+              <div class="fg">
+                <label>Płatność</label>
+                <select id="cb-pay" style="width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-size:.93rem;outline:none;font-family:inherit;">
+                  <option value="onsite">Na miejscu (gotówka/karta/BLIK)</option>
+                  <option value="prepaid">Przedpłata (przelew/BLIK)</option>
+                  <option value="card">💳 Karta (Stripe – wkrótce)</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label>Język klienta</label>
+                <select id="cb-lang" style="width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-size:.93rem;outline:none;font-family:inherit;">
+                  <option value="pl">🇵🇱 Polski</option>
+                  <option value="en">🇬🇧 English</option>
+                </select>
+              </div>
+              <div class="selected-slots" id="cbSelectedWrap" style="display:none;">
+                <h4>Wybrane sloty (<span id="cbSelCount">0</span>)</h4>
+                <div class="ss-list" id="cbSelList"></div>
+              </div>
+              <button class="btn-submit-cb" id="btnSubmitCB" onclick="submitClientBooking()" disabled>✅ Zarezerwuj (<span id="cbSelCountBtn">0</span> szt.)</button>
+              <div id="cb-err" style="color:#e53e3e;font-size:.82rem;margin-top:8px;display:none;"></div>
+            </div>
+          </div>
+          <div>
+            <div class="cb-card">
+              <h3>🗓️ Wybierz Godziny</h3>
+              <div class="sub">Kliknij dzień, potem godziny. Możesz zaznaczyć wiele godzin i wielu dni.</div>
+              <div class="cal-header">
+                <button class="cal-nav" onclick="cbCalChM(-1)">‹</button>
+                <div class="cal-month" id="cbCalTitle"></div>
+                <button class="cal-nav" onclick="cbCalChM(1)">›</button>
+              </div>
+              <div class="cal-grid" id="cbCalGrid" style="margin-bottom:14px;"></div>
+              <div id="cbSlotsWrap" style="display:none;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+                  <strong id="cbSlotsDayTitle" style="font-size:.87rem;"></strong>
+                  <div style="display:flex;gap:6px;">
+                    <button class="sa-btn" onclick="cbSelectAllDay()">✅ Wszystkie wolne</button>
+                    <button class="sa-btn" onclick="cbClearDay()">✖ Wyczyść dzień</button>
+                  </div>
+                </div>
+                <div class="cb-slots-grid" id="cbSlotsGrid"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLIENTS -->
+      <div id="sec-clients" class="section">
+        <div style="display:flex;gap:8px;margin-bottom:16px;" id="clientTabsBtns">
+          <button class="per-btn act" id="ctab-booking" onclick="setClientTab('booking',this)">📋 Klienci rezerwacji</button>
+          <button class="per-btn" id="ctab-system" onclick="setClientTab('system',this)">👤 Klienci systemowi</button>
+        </div>
+        <div id="clientTabBooking">
+          <div class="cl-search">
+            <input type="text" id="clSearch" placeholder="🔍 Szukaj klienta (imię, nazwisko, telefon)..." oninput="renderClients()"/>
+          </div>
+          <div class="cl-grid" id="clGrid"></div>
+        </div>
+        <div id="clientTabSystem" style="display:none;"></div>
+        <!-- BULK MESSAGING -->
+        <div class="bulk-wrap-tr">
+          <h3>📣 Wysyłka Zbiorcza do Klientów</h3>
+          <div style="font-size:.82rem;color:var(--gray);margin-bottom:4px;">Wyślij wiadomość do wybranych klientów jednym kliknięciem.</div>
+          <div class="bmode-btns">
+            <button class="bmode-btn act" id="trBulkSMSBtn" onclick="setTrBulkMode('sms',this)">📱 SMS</button>
+            <button class="bmode-btn" id="trBulkEmailBtn" onclick="setTrBulkMode('email',this)">✉️ Email</button>
+          </div>
+          <div style="margin-bottom:10px;">
+            <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Odbiorcy:</div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;" id="trBulkTgtBtns">
+              <button class="btgt-btn act" onclick="setTrBulkTgt('all',this)">Wszyscy klienci</button>
+              <button class="btgt-btn" onclick="setTrBulkTgt('confirmed',this)">Tylko potwierdzeni</button>
+            </div>
+          </div>
+          <div style="margin-bottom:10px;">
+            <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Szablony:</div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;" id="trBulkTplBtns"></div>
+          </div>
+          <div id="trBulkSMSWrap">
+            <textarea id="trBulkSMSTxt" placeholder="Treść SMS (maks. 160 znaków)..." rows="3" style="width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:.9rem;outline:none;resize:vertical;" oninput="updBulkTrCh()"></textarea>
+            <div id="trBulkChs" style="font-size:.76rem;color:var(--gray);text-align:right;margin-top:3px;margin-bottom:8px;">0 / 160</div>
+          </div>
+          <div id="trBulkEmailWrap" style="display:none;">
+            <input type="text" id="trBulkEmailSubject" placeholder="Temat emaila..." style="width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:.9rem;outline:none;margin-bottom:8px;"/>
+            <textarea id="trBulkEmailTxt" placeholder="Treść emaila..." rows="5" style="width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:.9rem;outline:none;resize:vertical;margin-bottom:8px;"></textarea>
+          </div>
+          <div style="background:var(--light);border-radius:8px;padding:10px 14px;font-size:.82rem;margin-bottom:12px;">
+            Odbiorców: <span class="bprev-count" id="trBulkCnt">0</span>
+          </div>
+          <button class="btn-sv" id="trBulkBtn" onclick="sendTrBulk()">📣 Wyślij do wszystkich</button>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div id="sec-profile" class="section">
+        <div class="profile-card">
+          <h2>⚙️ Mój Profil – Dane Płatności</h2>
+          <div class="sub">Uzupełnij dane do płatności, aby klienci mogli dokonać przedpłaty. Dane te są widoczne dla klientów w panelu rezerwacji.</div>
+          <div class="fg">
+            <label>Numer konta bankowego</label>
+            <input type="text" id="pf-bank" placeholder="PL00 0000 0000 0000 0000 0000 0000"/>
+            <div class="hint">Podaj pełny numer IBAN (z prefiksem PL). Klienci będą przelewać 200 PLN na to konto jako przedpłatę.</div>
+          </div>
+          <div class="fg">
+            <label>Numer BLIK (telefon)</label>
+            <input type="tel" id="pf-blik" placeholder="+48 000 000 000"/>
+            <div class="hint">Numer telefonu do płatności BLIK. Klienci mogą wysłać 200 PLN BLIKiem na ten numer.</div>
+          </div>
+          <div class="fg">
+            <label>Numer kontaktowy SMS</label>
+            <input type="tel" id="pf-phone" placeholder="+48 000 000 000"/>
+            <div class="hint">Na ten numer będą wysyłane powiadomienia SMS o nowych rezerwacjach.</div>
+          </div>
+          <div class="fg">
+            <label>Twój adres e-mail (do powiadomień)</label>
+            <input type="email" id="pf-email" placeholder="trener@email.com"/>
+            <div class="hint">Na ten adres będziesz otrzymywać powiadomienia o nowych wiadomościach od klientów.</div>
+          </div>
+          <button class="btn-sv" onclick="saveProfile()">💾 Zapisz zmiany</button>
+          <div class="suc-msg" id="pf-suc">✅ Profil zapisany pomyślnie!</div>
+          <div id="pf-err" style="color:#e53e3e;font-size:.84rem;margin-top:10px;display:none;"></div>
+        </div>
+      </div>
+
+      <!-- PŁATNOŚCI KLIENTÓW -->
+      <div id="sec-client-payments" class="section">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
+          <div style="font-size:.82rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;">Filtruj:</div>
+          <button class="per-btn act" id="cpf-all" onclick="setCpFilter('all',this)">Wszystkie</button>
+          <button class="per-btn" id="cpf-pending" onclick="setCpFilter('pending',this)">⏳ Oczekujące</button>
+          <button class="per-btn" id="cpf-paid" onclick="setCpFilter('paid',this)">✅ Potwierdzone</button>
+          <button class="per-btn" id="cpf-rejected" onclick="setCpFilter('rejected',this)">❌ Odrzucone</button>
+          <button class="rb" style="margin-left:auto;" onclick="renderClientPayments()">↻ Odśwież</button>
+        </div>
+        <div id="cpList" style="display:flex;flex-direction:column;gap:10px;"></div>
+      </div>
+
+      <!-- CHAT Z KLIENTAMI -->
+      <div id="sec-chat" class="section">
+        <div class="chat-layout">
+          <!-- LISTA KLIENTÓW -->
+          <div class="chat-clients">
+            <div class="chat-clients-hdr">💬 Konwersacje</div>
+            <div id="chatClientList">
+              <div class="chat-no-clients">Brak klientów z przypisanym trenerem w systemie.</div>
+            </div>
+          </div>
+          <!-- OKNO CHATU -->
+          <div class="chat-main" id="chatMain">
+            <div class="chat-main-hdr" id="chatMainHdr">
+              <span style="color:#bbb;">Wybierz klienta, aby rozpocząć rozmowę</span>
+            </div>
+            <div class="chat-msgs" id="chatMsgs">
+              <div class="chat-empty">👈 Wybierz klienta z listy</div>
+            </div>
+            <div class="chat-input-row" id="chatInputRow" style="display:none;">
+              <input type="text" id="chatInput" placeholder="Napisz wiadomość..." onkeydown="if(event.key==='Enter')sendTrainerMessage()"/>
+              <button onclick="sendTrainerMessage()">Wyślij ➤</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- SMS MODAL -->
+<div class="ov" id="smsModal">
+  <div class="modal">
+    <h3>📱 Wyślij SMS do Klienta</h3>
+    <div class="msb" id="mSub"></div>
+    <div style="margin-bottom:12px;"><label>Numer telefonu</label><input type="tel" id="mPhone" readonly style="background:#f8f8f8;"/></div>
+    <label>Język szablonów</label>
+    <div class="tpls-tabs">
+      <button class="tpltab act" id="tpl-pl" onclick="setTplLang('pl',this)">🇵🇱 Polski</button>
+      <button class="tpltab" id="tpl-en" onclick="setTplLang('en',this)">🇬🇧 English</button>
+    </div>
+    <label>Szybkie szablony</label>
+    <div class="tpls" id="tplBtns"></div>
+    <label>Treść SMS</label>
+    <textarea id="mTxt" placeholder="Wpisz treść wiadomości..." oninput="updCh()"></textarea>
+    <div class="chs" id="mChs">0 / 160</div>
+    <div class="mft">
+      <button class="btn-mc" onclick="closeModal()">Anuluj</button>
+      <button class="btn-ms" onclick="sendSMSReal()" id="btnSend">Wyślij SMS →</button>
+    </div>
+  </div>
+</div>
+<!-- EMAIL MODAL -->
+<div class="ov" id="emailModal">
+  <div class="modal">
+    <h3>✉️ Wyślij Email do Klienta</h3>
+    <div class="msb" id="eSub"></div>
+    <div style="margin-bottom:12px;"><label>Adres e-mail</label><input type="email" id="eAddr" readonly style="background:#f8f8f8;"/></div>
+    <label>Język szablonów</label>
+    <div class="tpls-tabs">
+      <button class="tpltab act" id="etpl-pl" onclick="setEmailTplLang('pl',this)">🇵🇱 Polski</button>
+      <button class="tpltab" id="etpl-en" onclick="setEmailTplLang('en',this)">🇬🇧 English</button>
+    </div>
+    <label>Szybkie szablony</label>
+    <div class="tpls" id="eTplBtns"></div>
+    <label>Temat</label>
+    <input type="text" id="eSubject" placeholder="Temat wiadomości..." style="margin-bottom:8px;"/>
+    <label>Treść</label>
+    <textarea id="eTxt" placeholder="Wpisz treść wiadomości..." rows="5"></textarea>
+    <div class="mft">
+      <button class="btn-mc" onclick="closeEmailModal()">Anuluj</button>
+      <button class="btn-ms" onclick="sendEmailReal()" id="btnSendEmail" style="background:#EA4335;">Wyślij Email →</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM SEND MODAL -->
+<div class="ov" id="confirmSendModal">
+  <div class="modal" style="max-width:420px;">
+    <h3>✅ Rezerwacja potwierdzona!</h3>
+    <div class="msb" id="csmInfo" style="margin-bottom:16px;"></div>
+    <p style="font-size:.87rem;margin-bottom:16px;">Wysłać potwierdzenie do klienta?</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="bsm bsms" style="flex:1;padding:11px;" onclick="csmSendSMS()">📱 Wyślij SMS</button>
+      <button class="bsm bemail" id="csmEmailBtn" style="flex:1;padding:11px;" onclick="csmSendEmail()">✉️ Wyślij Email</button>
+      <button class="btn-mc" style="flex:1;padding:11px;" onclick="closeCSM()">Pomiń →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Date helpers (timezone-safe) ───────────────────────────────────────────────
+function toLocalDate(d) {
+  // Returns YYYY-MM-DD in LOCAL timezone (not UTC) — avoids off-by-one in UTC+X zones
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function todayLocalStr() { return toLocalDate(new Date()); }
+
+// ── State ──────────────────────────────────────────────────────────────────────
+let TOKEN = sessionStorage.getItem('trainer_token')||'';
+let TRAINER = JSON.parse(sessionStorage.getItem('trainer_data')||'null');
+let myTrainerId = null;
+let selTrainerId = null;
+let allBookings = [];
+let curSmsB = null;
+let curEmailB = null;
+let emailTplLang = 'pl';
+let tplLang = 'pl';
+let finPeriod = 'day';
+let curSec = 'dashboard';
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function hdr(){ return {'Content-Type':'application/json','x-trainer-token':TOKEN}; }
+
+// ── LOGIN ─────────────────────────────────────────────────────────────────────
+function selectTrainer(id, name) {
+  selTrainerId = id;
+  document.querySelectorAll('.trainer-btn').forEach(b=>b.classList.remove('sel'));
+  document.querySelector(`.trainer-btn.${id}`).classList.add('sel');
+  document.getElementById('lbtn').disabled = false;
+  document.getElementById('lpi').focus();
+}
+
+// Fallback credentials (gdy serwer nie jest uruchomiony z nowym server.js)
+const FALLBACK_CREDS = { kasia: 'kasia2024', maciek: 'maciek2024' };
+const FALLBACK_TRAINERS = {
+  kasia:  { id:'kasia',  name:'Katarzyna Janecka', nameShort:'Kasia',  bankAccount:'', blikPhone:'', phone:'' },
+  maciek: { id:'maciek', name:'Maciej Samborski',  nameShort:'Maciek', bankAccount:'', blikPhone:'', phone:'' },
+};
+
+async function trainerLogin() {
+  if (!selTrainerId) return;
+  const pw  = document.getElementById('lpi').value.trim();
+  const btn = document.getElementById('lbtn');
+  btn.disabled=true; btn.textContent='Logowanie...';
+  try {
+    const res  = await fetch('/api/trainer/login',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({trainerId:selTrainerId,password:pw})});
+    const data = await res.json();
+    if (data.success) {
+      TOKEN = data.token; TRAINER = data.trainer; myTrainerId = TRAINER.id;
+      sessionStorage.setItem('trainer_token', TOKEN);
+      sessionStorage.setItem('trainer_data', JSON.stringify(TRAINER));
+      initApp();
+      // Pull server data into localStorage (async, UI already shown)
+      LocalApi._syncDown('trainer').then(() => refresh()).catch(() => {});
+    } else {
+      document.getElementById('le').style.display='block';
+    }
+  } catch(e) {
+    // Fallback: API niedostępne – sprawdź lokalne hasło
+    const localTrainer = LocalApi.verifyTrainer(selTrainerId, pw);
+    if (localTrainer) {
+      TOKEN   = `${selTrainerId}:${pw}`;
+      TRAINER = localTrainer;
+      myTrainerId = selTrainerId;
+      sessionStorage.setItem('trainer_token', TOKEN);
+      sessionStorage.setItem('trainer_data', JSON.stringify(TRAINER));
+      initApp();
+    } else {
+      document.getElementById('le').style.display='block';
+    }
+  }
+  btn.disabled=false; btn.textContent='Zaloguj się →';
+}
+
+function initApp() {
+  document.getElementById('loginWrap').style.display='none';
+  document.getElementById('app').classList.add('show');
+  document.getElementById('sbname').textContent = TRAINER.nameShort||TRAINER.name;
+  const sbav = document.getElementById('sbav');
+  sbav.textContent = (TRAINER.name||'T').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  sbav.className = 'sbav '+(TRAINER.id||'');
+  loadProfile();
+  refresh();
+}
+
+function logout() {
+  sessionStorage.removeItem('trainer_token');
+  sessionStorage.removeItem('trainer_data');
+  LocalApi._logoutServer && LocalApi._logoutServer().catch(()=>{});
+  // Redirect to unified login
+  window.location.href = window.location.protocol === 'file:' ? 'login.html' : '/login';
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (TOKEN && TRAINER) {
+    myTrainerId = TRAINER.id; selTrainerId = TRAINER.id;
+    document.getElementById('loginWrap').style.display = 'none';
+    initApp();
+    // Sync fresh data from server on every page load
+    LocalApi._syncDown('trainer').then(() => refresh()).catch(() => {});
+  } else {
+    // Not authenticated – redirect to unified login
+    const loginUrl = window.location.protocol === 'file:' ? 'login.html' : '/login';
+    window.location.href = loginUrl + '?role=trainer';
+  }
+});
+
+// ── REFRESH ───────────────────────────────────────────────────────────────────
+async function refresh() {
+  try {
+    const res = await fetch('/api/trainer/bookings',{headers:hdr()});
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    allBookings = await res.json();
+  } catch(e){
+    allBookings = LocalApi.getTrainerBookings(myTrainerId);
+  }
+  const tot  = allBookings.length;
+  const pend = allBookings.filter(b=>b.status==='pending').length;
+  const tod  = todayLocalStr();
+  const today= allBookings.filter(b=>b.date===tod&&b.status!=='cancelled').length;
+  document.getElementById('ds-total').textContent = tot;
+  document.getElementById('ds-pend').textContent  = pend;
+  document.getElementById('ds-today').textContent = today;
+  document.title = pend > 0 ? `(${pend}) SAMtrening – Panel Trenera` : 'SAMtrening – Panel Trenera';
+  const nbdg = document.getElementById('nbdg');
+  nbdg.textContent=pend; nbdg.classList.toggle('show',pend>0);
+  document.getElementById('notifBar').classList.toggle('show',pend>0);
+  renderAllLists();
+  if (curSec==='financial') renderFinancial();
+  if (typeof updateChatBadge === 'function') updateChatBadge();
+  if (typeof updatePayBadge === 'function') updatePayBadge();
+  if (typeof checkChatNotifications === 'function') checkChatNotifications();
+}
+
+// ── SECTION NAV ───────────────────────────────────────────────────────────────
+function showSec(sec, el) {
+  curSec = sec;
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('act'));
+  document.getElementById('sec-'+sec).classList.add('act');
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('act'));
+  if (el) el.classList.add('act');
+  const titles = {dashboard:'Dashboard',week:'Widok Tygodnia',pending:'Oczekujące Rezerwacje',confirmed:'Potwierdzone',all:'Wszystkie Rezerwacje',financial:'Moje Finanse',profile:'Mój Profil',availability:'Moja Dostępność','client-booking':'Rezerwuj dla Klienta',clients:'Lista Klientów',chat:'Chat z Klientami','client-payments':'Płatności Klientów'};
+  document.getElementById('pageTitle').textContent = titles[sec]||sec;
+  if (sec==='financial') renderFinancial();
+  if (sec==='week') { renderWeekView(); }
+  if (sec==='availability') { avRenderCal(); avRenderBulkDays(); }
+  if (sec==='client-booking') { cbRenderCal(); }
+  if (sec==='clients') { renderClients(); renderTrBulkTpls(); renderTrBulkPreview(); }
+  if (sec==='chat') { initChat(); }
+  if (sec==='client-payments') { renderClientPayments(); }
+}
+
+// ── BOOKING CARD ──────────────────────────────────────────────────────────────
+function bookingCard(b, compact) {
+  const dp = new Date(b.date).toLocaleDateString('pl-PL',{weekday:compact?'short':'long',day:'numeric',month:'short',year:compact?undefined:'numeric'});
+  const cp = new Date(b.createdAt).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+  const statusLbl = {pending:'Oczekuje',confirmed:'Potwierdzone',cancelled:'Anulowane',completed:'Zrealizowany'};
+  const statusCls = {pending:'dp',confirmed:'dc',cancelled:'dn',completed:'dc'};
+  const langBdg   = b.language==='en'?'<span class="bdg dl">🇬🇧 EN</span>':'<span class="bdg dl">🇵🇱 PL</span>';
+  const typeBdg   = b.trainingType==='online'?'<span class="bdg dm">🎥 Online</span>':'<span class="bdg do">🏋️ Stacj.</span>';
+  const payBdg    = b.paymentChoice==='prepaid'?'<span class="bdg dc">✅ Przedpłata</span>':'';
+  const meetBdg   = b.meetLink?`<span class="mi">🔗 <a href="${b.meetLink}" target="_blank" style="color:#4285F4;">Meet</a></span>`:'';
+  const msgBlock  = b.clientMessage?`<div class="bcmsg">💬 ${esc(b.clientMessage)}</div>`:'';
+  const bPrice = LocalApi.getBookingPrice(b);
+  const sh = (b.smsHistory||[]).length ? `<div class="smshistwrap"><div class="smshtit">Historia SMS (${b.smsHistory.length})</div>${b.smsHistory.slice(-2).map(s=>`<div class="smshi">${esc(s.message)}<div class="smshit">${new Date(s.sentAt).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})} ${s.sentBy?'• '+s.sentBy:''}</div></div>`).join('')}</div>` : '';
+  return `<div class="bcard s-${b.status}">
+    <div class="bhead">
+      <div style="flex:1;">
+        <div class="bname">${esc(b.name)} ${esc(b.surname)}</div>
+        <div class="bmeta">
+          <span class="mi">📱 <a href="tel:${b.phone}">${b.phone}</a></span>
+          ${b.email?`<span class="mi">✉️ ${esc(b.email)}</span>`:''}
+          <span class="mi">📅 ${dp}</span><span class="mi">🕐 ${b.time}</span>${meetBdg}
+          <span class="mi">💰 ${bPrice} PLN</span>
+        </div>
+        <div class="btags">
+          <span class="bdg ${statusCls[b.status]||'dp'}">${statusLbl[b.status]||b.status}</span>
+          ${langBdg}${typeBdg}${payBdg}
+          ${b.recurring?`<span class="bdg dl">🔁 ×${b.recurringWeeks}</span>`:''}
+          ${b.bookedBy==='admin'?'<span class="bdg dm">Admin</span>':''}
+        </div>
+        ${msgBlock}
+        <div class="bdt">Zgłoszono: ${cp}</div>
+        ${sh}
+      </div>
+      <div class="bactions">
+        ${b.status==='pending'?`<button class="bsm bok" onclick="chSt('${b.id}','confirmed')">✅ Potwierdź</button>`:''}
+        ${b.status!=='cancelled'?`<button class="bsm bno" onclick="chSt('${b.id}','cancelled')">❌ Anuluj</button>`:''}
+        <button class="bsm bsms" onclick="openSMS('${b.id}')" ${b.status==='cancelled'?'disabled':''}>📱 SMS</button>
+        ${b.email?`<button class="bsm bemail" onclick="openEmail('${b.id}')" ${b.status==='cancelled'?'disabled':''}>✉️ Email</button>`:''}
+        ${b.status==='confirmed'?`<button class="bsm bgcal" onclick="addToGoogleCal('${b.id}')">📅 Kalendarz</button>`:''}
+        ${b.status==='confirmed'&&b.date<=todayLocalStr()?`<button class="bsm" style="background:linear-gradient(135deg,#6CC04A,#38a169);color:#fff;font-weight:700;" onclick="markDone('${b.id}')">🏁 Zrealizowany</button>`:''}
+        ${b.status==='completed'?`<span class="bdg" style="background:#f0fff4;color:#276749;border:1px solid #9ae6b4;font-size:.72rem;">🏁 Zrealizowany</span>`:''}
+        ${b.status==='confirmed'&&b.paymentChoice==='cash'&&b.paymentStatus!=='paid'?`<button class="bsm" style="background:#f0fff4;color:#276749;border:1px solid #9ae6b4;" onclick="recordCashPay('${b.id}','${b.phone||''}','${b.clientId||''}')">💵 Gotówka</button>`:''}
+        ${b.trainingType==='online'&&b.status==='confirmed'&&!b.meetLink?`<button class="bsm" style="background:var(--light);color:var(--dark);border:1.5px solid var(--border);" onclick="genMeetLink('${b.id}')">🎥 Wygeneruj Meet</button>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderAllLists() {
+  renderTodayView();
+  const sets = [
+    {id:'dashList',   filter:b=>b.status==='pending', limit:5},
+    {id:'blistPend',  filter:b=>b.status==='pending'},
+    {id:'blistConf',  filter:b=>b.status==='confirmed'||b.status==='completed',
+                      sort:(a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||'')},
+    {id:'blistAll',   filter:_=>true},
+  ];
+  sets.forEach(({id,filter,limit,sort})=>{
+    const cont=document.getElementById(id); if(!cont)return;
+    let list=allBookings.filter(filter);
+    if(sort) list=list.sort(sort);
+    if(limit) list=list.slice(0,limit);
+    if(!list.length){cont.innerHTML='<div class="empty"><div class="ei">📭</div><p>Brak rezerwacji</p></div>';return;}
+    cont.innerHTML=list.map(b=>bookingCard(b)).join('');
+  });
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────────────────
+async function chSt(id, status) {
+  try {
+    const res = await fetch(`/api/trainer/booking/${id}`,{method:'PATCH',headers:hdr(),body:JSON.stringify({status})});
+    if (!res.ok) throw new Error('HTTP '+res.status);
+  } catch(e){
+    LocalApi.patchBooking(id, myTrainerId, {status});
+  }
+  // Auto-use package session when confirming a booking
+  if (status === 'confirmed') {
+    const usedPkg = LocalApi.autoUsePackageForBooking ? LocalApi.autoUsePackageForBooking(id) : null;
+    if (usedPkg) {
+      const rem = usedPkg.totalSessions - usedPkg.usedSessions;
+      toast(`✅ Potwierdzone! Odjęto 1 sesję z pakietu (pozostało: ${rem})`, false, true);
+    } else {
+      toast('✅ Potwierdzone!', false, true);
+    }
+  } else {
+    toast('❌ Anulowane', true, false);
+  }
+  refresh();
+  if (status === 'confirmed') {
+    const b = allBookings.find(x=>x.id===id) || LocalApi.getTrainerBookings(myTrainerId).find(x=>x.id===id);
+    if (b) setTimeout(()=>showConfirmSendModal(b), 300);
+  }
+}
+
+async function markDone(bookingId) {
+  if (!confirm('Oznaczyć trening jako zrealizowany?')) return;
+  try {
+    const res = await fetch(`/api/trainer/booking/${bookingId}`, {method:'PATCH', headers:hdr(), body:JSON.stringify({status:'completed'})});
+    if (!res.ok) throw new Error('HTTP '+res.status);
+  } catch(e) {
+    LocalApi.markTrainingCompleted(bookingId, myTrainerId);
+  }
+  // Auto-use package session if not already used
+  const usedPkg = LocalApi.autoUsePackageForBooking ? LocalApi.autoUsePackageForBooking(bookingId) : null;
+  if (usedPkg) {
+    const rem = usedPkg.totalSessions - usedPkg.usedSessions;
+    toast(`🏁 Trening zrealizowany! Sesja odjęta z pakietu (pozostało: ${rem})`, false, true);
+  } else {
+    toast('🏁 Trening oznaczony jako zrealizowany!', false, true);
+  }
+  refresh();
+}
+
+function recordCashPay(bookingId, phone, clientId) {
+  // Find client id if not known
+  let cid = clientId;
+  if (!cid && phone) {
+    const clients = LocalApi.getClients ? LocalApi.getClients() : [];
+    const cl = clients.find(c => c.phone === phone);
+    if (cl) cid = cl.id;
+  }
+  const b = allBookings.find(x=>x.id===bookingId);
+  const price = b ? LocalApi.getBookingPrice(b) : 200;
+  if (!confirm(`Potwierdzić odbiór gotówki ${price} PLN od klienta?`)) return;
+  LocalApi.recordCashPayment(bookingId, myTrainerId, cid, price);
+  toast('💵 Gotówka odnotowana!', false, true);
+  refresh();
+}
+
+async function genMeetLink(id) {
+  try {
+    // Generate a meet link for the booking
+    const res = await fetch(`/api/trainer/booking/${id}`,{method:'PATCH',headers:hdr(),body:JSON.stringify({meetLink:'GENERATE'})});
+    if (!res.ok) throw new Error('Błąd generowania linku');
+    toast('🎥 Link Meet wygenerowany!',false,true);
+    refresh();
+  } catch(e){ toast('Błąd: '+e.message,true); }
+}
+
+// ── PROFILE ───────────────────────────────────────────────────────────────────
+async function loadProfile() {
+  try {
+    const res  = await fetch('/api/trainer/profile',{headers:hdr()});
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    document.getElementById('pf-bank').value  = data.bankAccount||'';
+    document.getElementById('pf-blik').value  = data.blikPhone||'';
+    document.getElementById('pf-phone').value = data.phone||'';
+    document.getElementById('pf-email').value = data.email||'';
+  } catch(e){
+    // Fallback: LocalApi
+    const t = LocalApi.getTrainerById(myTrainerId);
+    if (t) {
+      document.getElementById('pf-bank').value  = t.bankAccount||'';
+      document.getElementById('pf-blik').value  = t.blikPhone||'';
+      document.getElementById('pf-phone').value = t.phone||'';
+      document.getElementById('pf-email').value = t.email||'';
+    }
+  }
+}
+
+async function saveProfile() {
+  const bankAccount = document.getElementById('pf-bank').value.trim();
+  const blikPhone   = document.getElementById('pf-blik').value.trim();
+  const phone       = document.getElementById('pf-phone').value.trim();
+  const email       = document.getElementById('pf-email').value.trim();
+  const errEl = document.getElementById('pf-err');
+  errEl.style.display='none';
+  try {
+    const res = await fetch('/api/trainer/profile',{method:'PATCH',headers:hdr(),body:JSON.stringify({bankAccount,blikPhone,phone,email})});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error||'Błąd');
+    document.getElementById('pf-suc').style.display='block';
+    setTimeout(()=>document.getElementById('pf-suc').style.display='none',3500);
+    toast('✅ Profil zapisany!',false,true);
+    if (TRAINER) { TRAINER.bankAccount=bankAccount; TRAINER.blikPhone=blikPhone; TRAINER.phone=phone; TRAINER.email=email; sessionStorage.setItem('trainer_data',JSON.stringify(TRAINER)); }
+  } catch(e){
+    // Fallback: LocalApi
+    LocalApi.updateTrainer(myTrainerId, {bankAccount, blikPhone, phone, email});
+    if (TRAINER) { TRAINER.bankAccount=bankAccount; TRAINER.blikPhone=blikPhone; TRAINER.phone=phone; TRAINER.email=email; sessionStorage.setItem('trainer_data',JSON.stringify(TRAINER)); }
+    document.getElementById('pf-suc').style.display='block';
+    setTimeout(()=>document.getElementById('pf-suc').style.display='none',3500);
+    toast('✅ Profil zapisany!',false,true);
+  }
+}
+
+// ── FINANCIAL ─────────────────────────────────────────────────────────────────
+function setFinPeriod(p, el) {
+  finPeriod = p;
+  document.querySelectorAll('.per-btn').forEach(b=>b.classList.remove('act'));
+  el.classList.add('act');
+  renderFinancial();
+}
+
+async function renderFinancial() {
+  const cont = document.getElementById('finContent');
+  if (!cont) return;
+  cont.innerHTML='<div style="padding:40px;text-align:center;color:#aaa;">⏳ Ładowanie...</div>';
+  let data;
+  try {
+    const res = await fetch('/api/trainer/financial',{headers:hdr()});
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    data = await res.json();
+  } catch(e) {
+    data = LocalApi.getFinancial(myTrainerId);
+  }
+  const periodLabels = {day:'Dzisiaj',week:'Ten Tydzień',month:'Ten Miesiąc',quarter:'Ten Kwartał',year:'Ten Rok'};
+  const s = data[finPeriod]||{count:0,revenue:0,prepaidCount:0,prepaidRevenue:0,onsiteCount:0,onsiteRevenue:0,online:0,inperson:0};
+  cont.innerHTML = `
+  <h3 style="font-size:1rem;font-weight:800;margin-bottom:16px;">💰 ${TRAINER?.nameShort||'Trener'} – ${periodLabels[finPeriod]}</h3>
+  <div class="fin-grid">
+    <div class="finc"><div class="finc-icon">📅</div><div class="finc-val">${s.count}</div><div class="finc-lbl">Treningów</div></div>
+    <div class="finc"><div class="finc-icon">💵</div><div class="finc-val">${s.revenue.toLocaleString('pl-PL')} PLN</div><div class="finc-lbl">Łączny przychód</div></div>
+    <div class="finc"><div class="finc-icon">✅</div><div class="finc-val">${s.prepaidCount}</div><div class="finc-lbl">Przedpłaty</div><div class="finc-sub">${(s.prepaidRevenue||0).toLocaleString('pl-PL')} PLN</div></div>
+    <div class="finc"><div class="finc-icon">💰</div><div class="finc-val">${s.onsiteCount}</div><div class="finc-lbl">Na miejscu</div><div class="finc-sub">${(s.onsiteRevenue||0).toLocaleString('pl-PL')} PLN</div></div>
+    <div class="finc"><div class="finc-icon">🎥</div><div class="finc-val">${s.online}</div><div class="finc-lbl">Online</div></div>
+    <div class="finc"><div class="finc-icon">🏋️</div><div class="finc-val">${s.inperson}</div><div class="finc-lbl">Stacjonarnych</div></div>
+  </div>
+  <div style="background:#fff;border-radius:var(--r);padding:18px;box-shadow:var(--shadow);">
+    <div style="font-size:.82rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;">Porównanie z innymi okresami</div>
+    <table style="width:100%;border-collapse:collapse;">
+      <thead><tr>${['Dzisiaj','Tydzień','Miesiąc','Kwartał','Rok'].map(l=>`<th style="padding:8px 12px;text-align:left;font-size:.76rem;color:var(--gray);font-weight:700;border-bottom:1.5px solid var(--border);">${l}</th>`).join('')}</tr></thead>
+      <tbody><tr>${['day','week','month','quarter','year'].map(p=>{const x=data[p]||{count:0,revenue:0};return`<td style="padding:8px 12px;font-size:.88rem;border-bottom:1px solid var(--border);"><strong>${x.count}</strong><div style="font-size:.75rem;color:var(--green);">${x.revenue.toLocaleString('pl-PL')} PLN</div></td>`;}).join('')}</tr></tbody>
+    </table>
+  </div>`;
+
+  // Payment method breakdown
+  let methodHtml = '';
+  try {
+    const mb = LocalApi.getMethodBreakdown ? LocalApi.getMethodBreakdown(myTrainerId) : null;
+    if (mb && mb.total > 0) {
+      const methods = [
+        {key:'cash',  lbl:'💵 Gotówka',  color:'#6CC04A'},
+        {key:'blik',  lbl:'📱 BLIK',     color:'#0066FF'},
+        {key:'bank',  lbl:'🏦 Przelew',  color:'#9333ea'},
+        {key:'card',  lbl:'💳 Karta',    color:'#f59e0b'},
+        {key:'package',lbl:'📦 Pakiet',  color:'#0ea5e9'},
+      ];
+      methodHtml = `
+      <div style="background:#fff;border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-top:16px;">
+        <div style="font-size:.82rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;">💳 Podział płatności wg metody</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;">
+          ${methods.filter(m=>mb[m.key]>0).map(m=>`
+            <div style="background:#f8f9fa;border-radius:10px;padding:12px 14px;border-left:4px solid ${m.color};">
+              <div style="font-size:.8rem;font-weight:700;color:#555;margin-bottom:4px;">${m.lbl}</div>
+              <div style="font-size:1.2rem;font-weight:900;color:${m.color};">${mb[m.key].toLocaleString('pl-PL')} PLN</div>
+              <div style="font-size:.68rem;color:#aaa;">${mb.total>0?Math.round(mb[m.key]/mb.total*100):0}% całości</div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+    }
+  } catch(e) {}
+  cont.innerHTML += methodHtml;
+  cont.innerHTML += `
+  <div style="background:#fff;border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-top:16px;">
+    <div style="font-size:.82rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;">📈 Trend tygodniowy (ostatnie 8 tygodni)</div>
+    <div style="position:relative;height:220px;"><canvas id="finChartCanvas"></canvas></div>
+  </div>`;
+  // Draw chart
+  setTimeout(()=>renderFinChart(data), 50);
+}
+
+// ── SMS MODAL ─────────────────────────────────────────────────────────────────
+function openSMS(id) {
+  const b = allBookings.find(x=>x.id===id); if(!b) return;
+  curSmsB = b;
+  // Auto-select template language based on booking language
+  tplLang = b.language||'pl';
+  document.getElementById('tpl-pl').classList.toggle('act',tplLang==='pl');
+  document.getElementById('tpl-en').classList.toggle('act',tplLang==='en');
+  const dp = new Date(b.date).toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('mSub').innerHTML = `<strong>${b.name} ${b.surname}</strong> | 📅 ${dp} ${b.time}<br>${b.trainingType==='online'?'🎥 Online (Google Meet)':'🏋️ Stacjonarny'} | ${b.language==='en'?'🇬🇧 Klient anglojęzyczny':'🇵🇱 Klient polskojęzyczny'}`;
+  document.getElementById('mPhone').value = b.phone;
+  document.getElementById('mTxt').value = '';
+  renderTplBtns();
+  updCh();
+  document.getElementById('smsModal').classList.add('show');
+}
+
+function setTplLang(lang, el) {
+  tplLang = lang;
+  document.querySelectorAll('.tpltab').forEach(b=>b.classList.remove('act'));
+  el.classList.add('act');
+  renderTplBtns();
+}
+
+function renderTplBtns() {
+  const container = document.getElementById('tplBtns');
+  const isPL = tplLang==='pl';
+  const tpls = isPL ? [
+    {key:'confirm',lbl:'✅ Potwierdzenie'},
+    {key:'meet',  lbl:'🎥 Link Meet'},
+    {key:'reminder',lbl:'🔔 Przypomnienie'},
+    {key:'reschedule',lbl:'📅 Zmiana terminu'},
+    {key:'cancel',lbl:'❌ Odwołanie'},
+    {key:'payment',lbl:'💳 Płatność'},
+  ] : [
+    {key:'confirm_en',lbl:'✅ Confirmation'},
+    {key:'meet_en',  lbl:'🎥 Meet link'},
+    {key:'reminder_en',lbl:'🔔 Reminder'},
+    {key:'reschedule_en',lbl:'📅 Reschedule'},
+    {key:'cancel_en',lbl:'❌ Cancellation'},
+    {key:'payment_en',lbl:'💳 Payment'},
+  ];
+  container.innerHTML = tpls.map(t=>`<button class="tpl" onclick="setTpl('${t.key}')">${t.lbl}</button>`).join('');
+}
+
+function getTrainerPaymentData() {
+  // Zawsze pobiera świeże dane z LocalApi żeby mieć aktualne konto i BLIK
+  const fresh = LocalApi.getTrainerById(myTrainerId);
+  return {
+    bank: (fresh?.bankAccount) || (TRAINER?.bankAccount) || '[numer konta]',
+    blik: (fresh?.blikPhone)   || (TRAINER?.blikPhone)   || '[numer BLIK]',
+    name: TRAINER?.nameShort || TRAINER?.name || 'Trener',
+  };
+}
+
+function setTpl(key) {
+  if (!curSmsB || !TRAINER) return;
+  const b = curSmsB;
+  // Use local noon to avoid timezone date shift
+  const dp   = new Date(b.date+'T12:00:00').toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'});
+  const de   = new Date(b.date+'T12:00:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  const fn   = b.name;
+  const meet = b.meetLink||'[link zostanie wysłany]';
+  const { bank, blik, name: tn } = getTrainerPaymentData();
+
+  // Calculate actual day relative to today for reminder text
+  const todayMidnight = new Date(); todayMidnight.setHours(0,0,0,0);
+  const trainingMidnight = new Date(b.date+'T00:00:00');
+  const diffDays = Math.round((trainingMidnight - todayMidnight) / 86400000);
+  const whenPL = diffDays === 0 ? 'dzisiaj' : diffDays === 1 ? 'jutro' : `${dp}`;
+  const whenEN = diffDays === 0 ? 'today' : diffDays === 1 ? 'tomorrow' : `on ${de}`;
+
+  const msgs = {
+    confirm:     `Cześć ${fn}! Potwierdzam Twój trening – ${dp} o ${b.time}. ${b.trainingType==='online'?'Do zobaczenia online!':'Do zobaczenia w studio!'} ${tn} – SAMtrening`,
+    meet:        `Cześć ${fn}! Link do Twojego treningu online (${b.time}): ${meet} SAMtrening`,
+    reminder:    `Cześć ${fn}! Przypominam o treningu ${whenPL} (${dp}) o ${b.time}. ${b.trainingType==='online'?'Link: '+meet:''} ${tn} – SAMtrening`,
+    reschedule:  `Cześć ${fn}! Proszę o kontakt w sprawie zmiany terminu (${dp} ${b.time}). ${tn} – SAMtrening`,
+    cancel:      `Cześć ${fn}! Niestety odwołuję trening dnia ${dp} o ${b.time}. Przepraszam! Zapraszam do ponownej rezerwacji. ${tn}`,
+    payment:     `Cześć ${fn}! Prosimy o przedpłatę 200 PLN przed treningiem. Konto: ${bank} lub BLIK: ${blik}. Tytuł: Twoje imię i nazwisko. ${tn}`,
+    confirm_en:  `Hi ${fn}! I confirm your training – ${de} at ${b.time}. ${b.trainingType==='online'?'See you online!':'See you at the studio!'} ${tn} – SAMtrening`,
+    meet_en:     `Hi ${fn}! Your online training link (${b.time}): ${meet} SAMtrening`,
+    reminder_en: `Hi ${fn}! Reminder: your training ${whenEN} (${de}) at ${b.time}. ${b.trainingType==='online'?'Link: '+meet:''} ${tn} – SAMtrening`,
+    reschedule_en:`Hi ${fn}! Please contact me to reschedule (${de} ${b.time}). ${tn} – SAMtrening`,
+    cancel_en:   `Hi ${fn}! Unfortunately I need to cancel your session on ${de} at ${b.time}. I apologise! Please rebook. ${tn}`,
+    payment_en:  `Hi ${fn}! Please prepay 200 PLN before your session. Account: ${bank} or BLIK: ${blik}. Reference: your full name. ${tn}`,
+  };
+  document.getElementById('mTxt').value = msgs[key]||''; updCh();
+}
+
+function updCh(){ const l=document.getElementById('mTxt').value.length; document.getElementById('mChs').textContent=`${l} / 160`; }
+function closeModal(){ document.getElementById('smsModal').classList.remove('show'); curSmsB=null; }
+document.getElementById('smsModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+
+async function sendSMSReal() {
+  const msg  = document.getElementById('mTxt').value.trim();
+  if (!msg){ toast('Wpisz treść SMS-a',true); return; }
+  if (!curSmsB) return;
+  const btn = document.getElementById('btnSend');
+  btn.disabled=true; btn.textContent='Wysyłanie...';
+  try {
+    const res = await fetch('/api/trainer/sms',{method:'POST',headers:hdr(),body:JSON.stringify({bookingId:curSmsB.id,phone:curSmsB.phone,message:msg})});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error||'Błąd');
+    closeModal(); refresh(); toast('✅ SMS wysłany!',false,true);
+  } catch(e) {
+    // Fallback lokalny — serwer offline: zapisz SMS do historii w localStorage
+    LocalApi.saveSmsHistory(curSmsB.id,{message:msg,sentBy:TRAINER?.nameShort||'Trener'});
+    closeModal(); refresh(); toast('✅ SMS zapisany lokalnie (brak serwera)',false,true);
+  }
+  btn.disabled=false; btn.textContent='Wyślij SMS →';
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function toast(m,e=false,o=false){ const t=document.getElementById('toast'); t.textContent=m; t.className='toast show'+(e?' err':'')+(o?' ok':''); setTimeout(()=>t.className='toast',4500); }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── AVAILABILITY ──────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+let avYear = new Date().getFullYear();
+let avMonth = new Date().getMonth(); // 0-based
+let avSelDay = null;   // 'YYYY-MM-DD'
+let avData = {};       // { 'YYYY-MM-DD': ['HH:MM', ...] } – trener's own availability
+let avBookedMap = {};  // { 'YYYY-MM-DD': ['HH:MM', ...] } – already booked slots
+
+const ALL_SLOTS = [
+  '06:00','06:15','06:30','06:45',
+  '07:00','07:15','07:30','07:45',
+  '08:00','08:15','08:30','08:45',
+  '09:00','09:15','09:30','09:45',
+  '10:00','10:15','10:30','10:45',
+  '11:00','11:15','11:30','11:45',
+  '12:00','12:15','12:30','12:45',
+  '13:00','13:15','13:30','13:45',
+  '14:00','14:15','14:30','14:45',
+  '15:00','15:15','15:30','15:45',
+  '16:00','16:15','16:30','16:45',
+  '17:00','17:15','17:30','17:45',
+  '18:00','18:15','18:30','18:45',
+  '19:00','19:15','19:30','19:45',
+  '20:00','20:15','20:30','20:45',
+  '21:00',
+];
+
+function avCalChM(d) {
+  avMonth += d;
+  if (avMonth < 0){ avMonth=11; avYear--; }
+  if (avMonth > 11){ avMonth=0; avYear++; }
+  avSelDay = null;
+  avRenderCal();
+}
+
+async function avRenderCal() {
+  // Load availability – server lub LocalApi fallback
+  try {
+    const res = await fetch('/api/trainer/availability',{headers:hdr()});
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    avData = (data && typeof data==='object' && !Array.isArray(data)) ? data : {};
+  } catch(e) {
+    avData = LocalApi.getTrainerAvail(myTrainerId);
+  }
+  // Build booked map from allBookings
+  avBookedMap = {};
+  allBookings.filter(b=>b.status!=='cancelled').forEach(b=>{
+    if (!avBookedMap[b.date]) avBookedMap[b.date]=[];
+    avBookedMap[b.date].push(b.time);
+  });
+  const mNames = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
+  document.getElementById('avCalTitle').textContent = `${mNames[avMonth]} ${avYear}`;
+  const firstDay = new Date(avYear, avMonth, 1).getDay(); // 0=Sun
+  const startOffset = (firstDay===0)?6:firstDay-1; // Mon=0
+  const daysInMonth = new Date(avYear, avMonth+1, 0).getDate();
+  const today = todayLocalStr();
+  const dow = ['Pn','Wt','Śr','Cz','Pt','Sb','Nd'];
+  let html = dow.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  for(let i=0;i<startOffset;i++) html+=`<div class="cal-day empty"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr=`${avYear}-${String(avMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const hasAv = avData[dateStr]&&avData[dateStr].length>0;
+    const isSel = avSelDay===dateStr;
+    const isToday = dateStr===today;
+    const isPast = dateStr<today;
+    let cls='cal-day';
+    if(isPast) cls+=' past';
+    if(isToday) cls+=' today';
+    if(isSel) cls+=' sel';
+    if(hasAv) cls+=' has-av';
+    const click = isPast?'':`onclick="avSelectDay('${dateStr}')"`;
+    html+=`<div class="${cls}" ${click}>${d}</div>`;
+  }
+  document.getElementById('avCalGrid').innerHTML=html;
+  if(avSelDay) avRenderSlots(avSelDay);
+}
+
+function avSelectDay(dateStr) {
+  avSelDay = dateStr;
+  avRenderCal();
+}
+
+function avRenderSlots(dateStr) {
+  const slots = avData[dateStr]||[];
+  const booked = avBookedMap[dateStr]||[];
+  const dp = new Date(dateStr+'T12:00:00').toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'});
+  let html=`<div class="slot-panel-top">
+    <h4>📅 ${dp}</h4>
+    <div class="slot-actions">
+      <button class="sa-btn" onclick="avToggleAll('${dateStr}')">✅ Zaznacz wszystkie</button>
+      <button class="sa-btn" onclick="avClearDay('${dateStr}')">✖ Wyczyść</button>
+    </div>
+  </div>
+  <div class="slots-grid">`;
+  ALL_SLOTS.forEach(t=>{
+    const isOn=slots.includes(t);
+    const isBk=booked.includes(t);
+    let cls='slot-btn';
+    if(isBk) cls+=' booked';
+    else if(isOn) cls+=' on';
+    const dis=isBk?'disabled':'';
+    const click=isBk?'':`onclick="avToggleSlot('${dateStr}','${t}')"`;
+    html+=`<button class="${cls}" ${dis} ${click}>${t}${isBk?'<br><small>zajęte</small>':''}</button>`;
+  });
+  html+=`</div><button class="btn-save-av" onclick="avSaveDay('${dateStr}')">💾 Zapisz dostępność</button>`;
+  document.getElementById('avSlotPanel').innerHTML=html;
+}
+
+function avToggleSlot(dateStr, time) {
+  if(!avData[dateStr]) avData[dateStr]=[];
+  const idx=avData[dateStr].indexOf(time);
+  if(idx===-1) avData[dateStr].push(time);
+  else avData[dateStr].splice(idx,1);
+  avData[dateStr].sort();
+  avRenderSlots(dateStr);
+}
+
+function avToggleAll(dateStr) {
+  const booked=avBookedMap[dateStr]||[];
+  const freeSlots=ALL_SLOTS.filter(t=>!booked.includes(t));
+  avData[dateStr]=freeSlots.slice();
+  avRenderSlots(dateStr);
+}
+
+function avClearDay(dateStr) {
+  avData[dateStr]=[];
+  avRenderSlots(dateStr);
+}
+
+async function avSaveDay(dateStr) {
+  const slots=avData[dateStr]||[];
+  avData[dateStr] = slots;
+  // Zawsze zapisz w LocalApi (localStorage — trwałe)
+  LocalApi.saveAvailDay(myTrainerId, dateStr, slots);
+  try {
+    const res=await fetch('/api/trainer/availability',{method:'POST',headers:hdr(),body:JSON.stringify({date:dateStr,slots})});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    toast('✅ Dostępność zapisana!',false,true);
+  } catch(e){
+    toast('✅ Dostępność zapisana lokalnie!',false,true);
+  }
+  avRenderCal();
+}
+
+// ── BULK TEMPLATE ─────────────────────────────────────────────────────────────
+let bulkTemplate = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}; // 0=Mon..6=Sun
+const DAY_NAMES_PL = ['Pn','Wt','Śr','Cz','Pt','Sb','Nd'];
+
+function avRenderBulkDays() {
+  const grid = document.getElementById('bulkDaysGrid');
+  if(!grid) return;
+  // Set default dates
+  const today=new Date();
+  const nextMon=new Date(today); nextMon.setDate(today.getDate()+(1+(7-today.getDay()))%7||7);
+  const nextSun=new Date(nextMon); nextSun.setDate(nextMon.getDate()+6);
+  document.getElementById('bulkFrom').value=nextMon.toISOString().split('T')[0];
+  document.getElementById('bulkTo').value=nextSun.toISOString().split('T')[0];
+  let html='';
+  for(let day=0;day<7;day++){
+    html+=`<div class="bulk-day-col"><div class="bulk-day-name">${DAY_NAMES_PL[day]}</div><div class="bulk-day-slots" id="bdc-${day}">`;
+    ALL_SLOTS.forEach(t=>{
+      const on=bulkTemplate[day].includes(t);
+      html+=`<button class="bds${on?' on':''}" style="font-size:.62rem;padding:2px 4px;min-width:38px;" onclick="bulkToggle(${day},'${t}')">${t}</button>`;
+    });
+    html+=`</div></div>`;
+  }
+  grid.innerHTML=html;
+}
+
+function bulkToggle(day,time) {
+  const idx=bulkTemplate[day].indexOf(time);
+  if(idx===-1) bulkTemplate[day].push(time);
+  else bulkTemplate[day].splice(idx,1);
+  bulkTemplate[day].sort();
+  // Re-render just that column
+  const col=document.getElementById(`bdc-${day}`);
+  if(!col) return;
+  col.querySelectorAll('.bds').forEach(btn=>{
+    const t=btn.textContent.trim();
+    btn.classList.toggle('on',bulkTemplate[day].includes(t));
+  });
+}
+
+async function applyBulkTemplate() {
+  const from=document.getElementById('bulkFrom').value;
+  const to=document.getElementById('bulkTo').value;
+  if(!from||!to||from>to){ toast('Ustaw prawidłowy zakres dat',true); return; }
+  // Build date→slots map
+  const map={};
+  const cur=new Date(from+'T12:00:00');
+  const end=new Date(to+'T12:00:00');
+  while(cur<=end){
+    const dow=(cur.getDay()+6)%7; // Mon=0
+    const dateStr=cur.toISOString().split('T')[0];
+    if(bulkTemplate[dow].length) map[dateStr]=bulkTemplate[dow].slice();
+    cur.setDate(cur.getDate()+1);
+  }
+  if(!Object.keys(map).length){ toast('Brak zaznaczonych godzin w szablonie',true); return; }
+  Object.assign(avData, map);
+  // Zawsze zapisz w LocalApi (localStorage — trwałe)
+  LocalApi.saveAvailBulk(myTrainerId, map);
+  try {
+    const res=await fetch('/api/trainer/availability/bulk',{method:'POST',headers:hdr(),body:JSON.stringify({dates:map})});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    toast(`✅ Zastosowano dla ${Object.keys(map).length} dni!`,false,true);
+  } catch(e){
+    toast(`✅ Zapisano lokalnie dla ${Object.keys(map).length} dni!`,false,true);
+  }
+  avRenderCal();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── CLIENT BOOKING ────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+let cbYear = new Date().getFullYear();
+let cbMonth = new Date().getMonth();
+let cbSelDay = null;
+let cbSelSlots = []; // [{date,time}, ...]
+let cbTrainingType = 'inperson';
+let cbAvailData = {}; // available slots per date
+
+function cbCalChM(d) {
+  cbMonth += d;
+  if(cbMonth<0){cbMonth=11;cbYear--;}
+  if(cbMonth>11){cbMonth=0;cbYear++;}
+  cbSelDay=null;
+  document.getElementById('cbSlotsWrap').style.display='none';
+  cbRenderCal();
+}
+
+async function cbRenderCal() {
+  // Load availability – użyj avData jeśli już załadowane, inaczej pobierz lub fallback
+  if(Object.keys(avData).length>0){
+    cbAvailData=avData;
+  } else {
+    try {
+      const res=await fetch('/api/trainer/availability',{headers:hdr()});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data=await res.json();
+      cbAvailData=(data&&typeof data==='object'&&!Array.isArray(data))?data:{};
+    } catch(e){
+      const cached=sessionStorage.getItem('avData_'+(myTrainerId||''));
+      cbAvailData=cached?JSON.parse(cached):{};
+    }
+  }
+  const mNames=['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
+  document.getElementById('cbCalTitle').textContent=`${mNames[cbMonth]} ${cbYear}`;
+  const firstDay=new Date(cbYear,cbMonth,1).getDay();
+  const startOffset=(firstDay===0)?6:firstDay-1;
+  const daysInMonth=new Date(cbYear,cbMonth+1,0).getDate();
+  const today=todayLocalStr();
+  const dow=['Pn','Wt','Śr','Cz','Pt','Sb','Nd'];
+  let html=dow.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  for(let i=0;i<startOffset;i++) html+=`<div class="cal-day empty"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr=`${cbYear}-${String(cbMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const hasAv=cbAvailData[dateStr]&&cbAvailData[dateStr].length>0;
+    const isSel=cbSelDay===dateStr;
+    const isToday=dateStr===today;
+    const isPast=dateStr<today;
+    const hasChosen=cbSelSlots.some(s=>s.date===dateStr);
+    let cls='cal-day';
+    if(isPast) cls+=' past';
+    if(isToday) cls+=' today';
+    if(isSel) cls+=' sel';
+    if(hasAv||hasChosen) cls+=' has-av';
+    const click=isPast?'':`onclick="cbSelectDay('${dateStr}')"`;
+    html+=`<div class="${cls}" ${click}>${d}</div>`;
+  }
+  document.getElementById('cbCalGrid').innerHTML=html;
+  if(cbSelDay) cbRenderDaySlots(cbSelDay);
+}
+
+function cbSelectDay(dateStr) {
+  cbSelDay=dateStr;
+  cbRenderCal();
+}
+
+function cbRenderDaySlots(dateStr) {
+  const avSlots=cbAvailData[dateStr]||[];
+  const bookedSlots=allBookings.filter(b=>b.date===dateStr&&b.status!=='cancelled').map(b=>b.time);
+  const dp=new Date(dateStr+'T12:00:00').toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('cbSlotsDayTitle').textContent=dp;
+  let html='';
+  // Show all day's available slots, or ALL_SLOTS if none set
+  const show=(avSlots.length>0)?avSlots:ALL_SLOTS;
+  show.forEach(t=>{
+    const isBusy=bookedSlots.includes(t);
+    const isSel=cbSelSlots.some(s=>s.date===dateStr&&s.time===t);
+    let cls='cb-slot';
+    if(isBusy) cls+=' busy';
+    else if(isSel) cls+=' sel';
+    else if(avSlots.length>0&&!avSlots.includes(t)) cls+=' unavail';
+    const click=isBusy?'':`onclick="cbToggleSlot('${dateStr}','${t}')"`;
+    const dis=isBusy?'disabled':'';
+    html+=`<button class="${cls}" ${dis} ${click}>${t}</button>`;
+  });
+  document.getElementById('cbSlotsGrid').innerHTML=html;
+  document.getElementById('cbSlotsWrap').style.display='block';
+}
+
+function cbToggleSlot(dateStr,time) {
+  const idx=cbSelSlots.findIndex(s=>s.date===dateStr&&s.time===time);
+  if(idx===-1) cbSelSlots.push({date:dateStr,time});
+  else cbSelSlots.splice(idx,1);
+  cbUpdateSelDisplay();
+  cbRenderDaySlots(dateStr);
+  cbRenderCal();
+}
+
+function cbSelectAllDay() {
+  if(!cbSelDay) return;
+  const avSlots=cbAvailData[cbSelDay]||ALL_SLOTS;
+  const bookedSlots=allBookings.filter(b=>b.date===cbSelDay&&b.status!=='cancelled').map(b=>b.time);
+  const freeSlots=avSlots.filter(t=>!bookedSlots.includes(t));
+  // Remove existing for this day, add all free
+  cbSelSlots=cbSelSlots.filter(s=>s.date!==cbSelDay);
+  freeSlots.forEach(t=>cbSelSlots.push({date:cbSelDay,time:t}));
+  cbUpdateSelDisplay();
+  cbRenderDaySlots(cbSelDay);
+  cbRenderCal();
+}
+
+function cbClearDay() {
+  if(!cbSelDay) return;
+  cbSelSlots=cbSelSlots.filter(s=>s.date!==cbSelDay);
+  cbUpdateSelDisplay();
+  cbRenderDaySlots(cbSelDay);
+  cbRenderCal();
+}
+
+function cbUpdateSelDisplay() {
+  const wrap=document.getElementById('cbSelectedWrap');
+  const list=document.getElementById('cbSelList');
+  const count=cbSelSlots.length;
+  document.getElementById('cbSelCount').textContent=count;
+  document.getElementById('cbSelCountBtn').textContent=count;
+  document.getElementById('btnSubmitCB').disabled=count===0;
+  if(count===0){ wrap.style.display='none'; list.innerHTML=''; return; }
+  wrap.style.display='block';
+  // Sort by date+time
+  const sorted=[...cbSelSlots].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+  list.innerHTML=sorted.map(s=>{
+    const dp=new Date(s.date+'T12:00:00').toLocaleDateString('pl-PL',{day:'numeric',month:'short'});
+    return `<span class="ss-chip">${dp} ${s.time}<button onclick="cbToggleSlot('${s.date}','${s.time}')">×</button></span>`;
+  }).join('');
+}
+
+function cbSetType(type) {
+  cbTrainingType=type;
+  document.getElementById('cb-tt-inperson').classList.toggle('act',type==='inperson');
+  document.getElementById('cb-tt-online').classList.toggle('act',type==='online');
+}
+
+async function submitClientBooking() {
+  const name=document.getElementById('cb-name').value.trim();
+  const surname=document.getElementById('cb-surname').value.trim();
+  const phone=document.getElementById('cb-phone').value.trim();
+  const email=document.getElementById('cb-email').value.trim();
+  const msg=document.getElementById('cb-msg').value.trim();
+  const pay=document.getElementById('cb-pay').value;
+  const lang=document.getElementById('cb-lang').value;
+  const errEl=document.getElementById('cb-err');
+  errEl.style.display='none';
+  if(!name||!surname||!phone){ errEl.textContent='Imię, nazwisko i telefon są wymagane.'; errEl.style.display='block'; return; }
+  if(!cbSelSlots.length){ errEl.textContent='Wybierz co najmniej jeden slot.'; errEl.style.display='block'; return; }
+  const btn=document.getElementById('btnSubmitCB');
+  btn.disabled=true; btn.innerHTML='⏳ Rezerwuję...';
+  let data;
+  try {
+    const res=await fetch('/api/trainer/client-booking',{method:'POST',headers:hdr(),body:JSON.stringify({
+      name,surname,phone,email,clientMessage:msg,
+      trainingType:cbTrainingType,paymentChoice:pay,language:lang,
+      slots:cbSelSlots,
+    })});
+    data=await res.json();
+    if(!res.ok) throw new Error(data.error||'Błąd');
+  } catch(fetchErr) {
+    data = LocalApi.createTrainerBooking(myTrainerId, TRAINER?.name||'Trener', {
+      name,surname,phone,email,clientMessage:msg,
+      trainingType:cbTrainingType,paymentChoice:pay,language:lang,
+      slots:cbSelSlots,
+    });
+    if(data.error){ errEl.textContent='Błąd: '+data.error; errEl.style.display='block'; btn.disabled=false; btn.innerHTML=`✅ Zarezerwuj (<span id="cbSelCountBtn">${cbSelSlots.length}</span> szt.)`; return; }
+  }
+  let msg2=`✅ Zarezerwowano ${data.created} sesji!`;
+  if(data.conflicts>0) msg2+=` (${data.conflicts} konflikty pominięte)`;
+  toast(msg2,false,true);
+  // Reset form
+  cbSelSlots=[];
+  cbUpdateSelDisplay();
+  document.getElementById('cb-name').value='';
+  document.getElementById('cb-surname').value='';
+  document.getElementById('cb-phone').value='';
+  document.getElementById('cb-email').value='';
+  document.getElementById('cb-msg').value='';
+  document.getElementById('cbSlotsWrap').style.display='none';
+  cbSelDay=null;
+  cbRenderCal();
+  refresh();
+  btn.disabled=false; btn.innerHTML=`✅ Zarezerwuj (<span id="cbSelCountBtn">${cbSelSlots.length}</span> szt.)`;
+}
+
+// ── GOOGLE CALENDAR ────────────────────────────────────────────────────────────
+function addToGoogleCal(id) {
+  const b = allBookings.find(x=>x.id===id);
+  if (!b) return;
+  const [y,mo,d] = b.date.split('-');
+  const [h,mi]   = b.time.split(':');
+  const startDt  = `${y}${mo}${d}T${h}${mi}00`;
+  // Czas zakończenia: +60 minut
+  const endDate  = new Date(`${b.date}T${b.time}:00`);
+  endDate.setMinutes(endDate.getMinutes()+60);
+  const ey=endDate.getFullYear(), em=String(endDate.getMonth()+1).padStart(2,'0');
+  const ed=String(endDate.getDate()).padStart(2,'0');
+  const eh=String(endDate.getHours()).padStart(2,'0'), emi=String(endDate.getMinutes()).padStart(2,'0');
+  const endDt = `${ey}${em}${ed}T${eh}${emi}00`;
+  const type  = b.trainingType==='online'?'Online (Google Meet)':'Stacjonarny';
+  const loc   = b.trainingType==='online'?(b.meetLink||'Google Meet'):'SAMtrening Studio, Kraków';
+  const det   = `Klient: ${b.name} ${b.surname}\nTel: ${b.phone}${b.email?'\nEmail: '+b.email:''}\nTyp: ${type}${b.meetLink?'\nMeet: '+b.meetLink:''}`;
+  const title = encodeURIComponent(`SAMtrening – ${b.name} ${b.surname}`);
+  const url   = `https://calendar.google.com/calendar/render?action=TEMPLATE`
+    +`&text=${title}`+`&dates=${startDt}/${endDt}`
+    +`&details=${encodeURIComponent(det)}`+`&location=${encodeURIComponent(loc)}`;
+  window.open(url,'_blank');
+}
+
+// ── EMAIL MODAL ────────────────────────────────────────────────────────────────
+const EMAIL_TPLS = {
+  pl: [
+    {label:'Potwierdzenie',  subject:'SAMtrening – Potwierdzenie treningu',
+     body: (b,d,t) => `Cześć ${b.name},\n\nPotwierdzam Twój trening:\n📅 ${d} o ${t}\n🏋️ ${b.trainingType==='online'?'Online (Google Meet)':'Stacjonarny, studio SAMtrening'}\n${b.meetLink?'🔗 Meet: '+b.meetLink+'\n':''}\nDo zobaczenia!\n${TRAINER?.nameShort||'Twój trener'}, SAMtrening`},
+    {label:'Przypomnienie',  subject:'SAMtrening – Przypomnienie o treningu',
+     body: (b,d,t) => `Cześć ${b.name},\n\nPrzypominam o jutrzejszym treningu:\n📅 ${d} o ${t}\n${b.trainingType==='online'?'🎥 Online – link: '+(b.meetLink||'zostanie przesłany'):'🏋️ Zapraszam do studia SAMtrening.'}\n\nDo zobaczenia!\n${TRAINER?.nameShort||'Twój trener'}`},
+    {label:'Anulowanie',    subject:'SAMtrening – Anulowanie treningu',
+     body: (b,d,t) => `Cześć ${b.name},\n\nNiestety muszę odwołać trening zaplanowany na ${d} o ${t}.\nSkontaktuję się wkrótce, aby umówić nowy termin.\n\nPrzepraszam za niedogodności.\n${TRAINER?.nameShort||'Twój trener'}`},
+    {label:'Link Meet',     subject:'SAMtrening – Link do Google Meet',
+     body: (b,d,t) => `Cześć ${b.name},\n\nLink do Twojego treningu online:\n📅 ${d} o ${t}\n🔗 ${b.meetLink||'(brak linku)'}\n\nDo zobaczenia!\n${TRAINER?.nameShort||'Twój trener'}`},
+  ],
+  en: [
+    {label:'Confirmation',  subject:'SAMtrening – Training Confirmation',
+     body: (b,d,t) => `Hi ${b.name},\n\nYour session is confirmed:\n📅 ${d} at ${t}\n🏋️ ${b.trainingType==='online'?'Online (Google Meet)':'In-person, SAMtrening studio'}\n${b.meetLink?'🔗 Meet: '+b.meetLink+'\n':''}\nSee you soon!\n${TRAINER?.nameShort||'Your trainer'}, SAMtrening`},
+    {label:'Reminder',      subject:'SAMtrening – Training Reminder',
+     body: (b,d,t) => `Hi ${b.name},\n\nReminder for tomorrow's session:\n📅 ${d} at ${t}\n${b.trainingType==='online'?'🎥 Online – link: '+(b.meetLink||'to be sent'):'🏋️ See you at SAMtrening studio.'}\n\nSee you!\n${TRAINER?.nameShort||'Your trainer'}`},
+    {label:'Cancellation',  subject:'SAMtrening – Session Cancelled',
+     body: (b,d,t) => `Hi ${b.name},\n\nI'm sorry to cancel our session on ${d} at ${t}.\nI'll be in touch shortly to reschedule.\n\nApologies for the inconvenience.\n${TRAINER?.nameShort||'Your trainer'}`},
+    {label:'Meet link',     subject:'SAMtrening – Your Google Meet Link',
+     body: (b,d,t) => `Hi ${b.name},\n\nHere is your online training link:\n📅 ${d} at ${t}\n🔗 ${b.meetLink||'(link missing)'}\n\nSee you!\n${TRAINER?.nameShort||'Your trainer'}`},
+  ],
+};
+
+function setEmailTplLang(lang, el) {
+  emailTplLang = lang;
+  document.querySelectorAll('#emailModal .tpltab').forEach(b=>b.classList.remove('act'));
+  el.classList.add('act');
+  renderEmailTpls();
+}
+
+function renderEmailTpls() {
+  if (!curEmailB) return;
+  const b = curEmailB;
+  const dp = new Date(b.date).toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const tpls = EMAIL_TPLS[emailTplLang]||EMAIL_TPLS.pl;
+  document.getElementById('eTplBtns').innerHTML = tpls.map((tpl,i)=>
+    `<button class="tplbtn" onclick="applyEmailTpl(${i})">${tpl.label}</button>`).join('');
+}
+
+function applyEmailTpl(idx) {
+  if (!curEmailB) return;
+  const b   = curEmailB;
+  const dp  = new Date(b.date).toLocaleDateString(emailTplLang==='en'?'en-GB':'pl-PL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const { bank, blik, name: tn } = getTrainerPaymentData();
+  const tpl = (EMAIL_TPLS[emailTplLang]||EMAIL_TPLS.pl)[idx];
+  if (!tpl) return;
+  document.getElementById('eSubject').value = tpl.subject;
+  document.getElementById('eTxt').value = tpl.body(b, dp, b.time);
+}
+
+function openEmail(id) {
+  const b = allBookings.find(x=>x.id===id);
+  if (!b) return;
+  if (!b.email) { toast('Brak adresu email klienta',true); return; }
+  curEmailB = b;
+  const dp = new Date(b.date).toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'short',year:'numeric'});
+  document.getElementById('eSub').innerHTML = `<strong>${b.name} ${b.surname}</strong> | 📅 ${dp} ${b.time}`;
+  document.getElementById('eAddr').value = b.email;
+  document.getElementById('eSubject').value = '';
+  document.getElementById('eTxt').value = '';
+  emailTplLang = b.language==='en'?'en':'pl';
+  document.getElementById('etpl-pl').classList.toggle('act', emailTplLang==='pl');
+  document.getElementById('etpl-en').classList.toggle('act', emailTplLang==='en');
+  renderEmailTpls();
+  applyEmailTpl(0);
+  document.getElementById('emailModal').classList.add('show');
+}
+
+function closeEmailModal() {
+  document.getElementById('emailModal').classList.remove('show');
+  curEmailB = null;
+}
+document.getElementById('emailModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeEmailModal();});
+
+async function sendEmailReal() {
+  const subject = document.getElementById('eSubject').value.trim();
+  const body    = document.getElementById('eTxt').value.trim();
+  if (!subject||!body){ toast('Uzupełnij temat i treść emaila',true); return; }
+  if (!curEmailB) return;
+  const btn = document.getElementById('btnSendEmail');
+  btn.disabled=true; btn.textContent='Wysyłanie...';
+  try {
+    const res = await fetch('/api/trainer/email',{method:'POST',headers:hdr(),body:JSON.stringify({
+      bookingId:curEmailB.id, to:curEmailB.email, subject, body})});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error||'Błąd');
+    LocalApi.saveEmailHistory(curEmailB.id,{subject,sentBy:TRAINER?.nameShort||'Trener'});
+    closeEmailModal(); refresh(); toast('✅ Email wysłany!',false,true);
+  } catch(e) {
+    // Fallback lokalny: otwórz klienta pocztowego przez mailto
+    const mailto = `mailto:${curEmailB.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailto,'_blank');
+    LocalApi.saveEmailHistory(curEmailB.id,{subject,sentBy:TRAINER?.nameShort||'Trener'});
+    closeEmailModal(); refresh(); toast('✅ Otwarto klienta email lokalnie',false,true);
+  }
+  btn.disabled=false; btn.textContent='Wyślij Email →';
+}
+
+// ── TODAY VIEW ─────────────────────────────────────────────────────────────────
+function renderTodayView() {
+  const today = todayLocalStr();
+  const pl = new Date().toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const todayEl = document.getElementById('todayDateStr');
+  if (todayEl) todayEl.textContent = pl.charAt(0).toUpperCase()+pl.slice(1);
+  const listEl = document.getElementById('todayList');
+  if (!listEl) return;
+  const todays = allBookings.filter(b=>b.date===today&&b.status!=='cancelled')
+    .sort((a,b)=>( a.time||'').localeCompare(b.time||''));
+  if (!todays.length) {
+    listEl.innerHTML = '<div class="today-empty">Brak spotkań na dziś 🎉</div>';
+    return;
+  }
+  listEl.innerHTML = todays.map(b=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;">
+      <div style="font-size:1.05rem;font-weight:900;min-width:52px;color:var(--green);">${b.time}</div>
+      <div style="flex:1;min-width:120px;">
+        <div style="font-weight:700;font-size:.9rem;">${esc(b.name)} ${esc(b.surname)}</div>
+        <div style="color:var(--gray);font-size:.77rem;">${b.trainingType==='online'?'🎥 Online':'🏋️ Stacj.'}${b.meetLink?` · <a href="${b.meetLink}" target="_blank" style="color:#4285F4;">Meet</a>`:''} · 📱 <a href="tel:${b.phone}">${b.phone}</a></div>
+      </div>
+      <span class="bdg ${b.status==='confirmed'?'dc':'dp'}" style="font-size:.72rem;">${b.status==='confirmed'?'✅ Potw.':'⏳ Oczekuje'}</span>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;">
+        ${b.status==='pending'?`<button class="bsm bok" style="font-size:.72rem;padding:4px 9px;" onclick="chSt('${b.id}','confirmed')">✅</button>`:''}
+        ${b.status==='confirmed'?`<button class="bsm" style="background:linear-gradient(135deg,#6CC04A,#38a169);color:#fff;font-weight:700;font-size:.72rem;padding:4px 9px;" onclick="markDone('${b.id}')">🏁</button>`:''}
+        <button class="bsm bno" style="font-size:.72rem;padding:4px 9px;" onclick="chSt('${b.id}','cancelled')">❌</button>
+        <button class="bsm bsms" style="font-size:.72rem;padding:4px 9px;" onclick="openSMS('${b.id}')">📱</button>
+      </div>
+    </div>`).join('');
+}
+
+// ── CLIENT LIST ────────────────────────────────────────────────────────────────
+let trBulkMode = 'sms';
+let trBulkTgt  = 'all';
+let clientTab = 'booking';
+
+function setClientTab(tab, el) {
+  clientTab = tab;
+  document.querySelectorAll('[id^="ctab-"]').forEach(b=>b.classList.remove('act'));
+  if(el) el.classList.add('act');
+  document.getElementById('clientTabBooking').style.display = tab==='booking' ? 'block' : 'none';
+  document.getElementById('clientTabSystem').style.display = tab==='system' ? 'block' : 'none';
+  if(tab==='system') renderSystemClients();
+}
+
+function renderSystemClients() {
+  const cont = document.getElementById('clientTabSystem');
+  if(!cont) return;
+  let clients = [];
+  try { clients = LocalApi.getClientsByTrainer ? LocalApi.getClientsByTrainer(myTrainerId) : []; } catch(e) {}
+  if(!clients.length) {
+    cont.innerHTML = '<div class="empty"><div class="ei">👤</div><p>Brak klientów systemowych przypisanych do Ciebie</p></div>';
+    return;
+  }
+  cont.innerHTML = clients.map(c => {
+    const bkgs = allBookings.filter(b=>b.phone===c.phone||b.clientId===c.id);
+    const todayL = todayLocalStr(); // FIXED: local date
+    const done = bkgs.filter(b=>(b.status==='completed')||(b.status==='confirmed'&&b.date<todayL)).length;
+    const upcoming = bkgs.filter(b=>(b.status==='confirmed'||b.status==='pending')&&b.date>=todayL).length;
+    // Saldo = suma wpłat - koszt zrealizowanych sesji
+    const bal = LocalApi.getClientBalance ? LocalApi.getClientBalance(c.id) : null;
+    const balColor = bal && bal.balance >= 0 ? '#276749' : '#c53030';
+    const balTxt   = bal ? (bal.balance>=0?'+':'')+bal.balance.toLocaleString('pl-PL')+' PLN' : '—';
+    const balSub   = bal ? `<div style="font-size:.65rem;color:#aaa;margin-top:1px;">${bal.paid.toLocaleString('pl-PL')} wpł. − ${bal.owed.toLocaleString('pl-PL')} wykor.</div>` : '';
+    const safePhone = (c.phone||'').replace(/[^0-9+]/g,'');
+    const curPrice = LocalApi.getClientPrice ? LocalApi.getClientPrice(myTrainerId, c.phone||'') : 200;
+    return `<div class="cc">
+      <div class="cc-head">
+        <div class="cc-av">${esc(((c.name||'?')[0]+(c.surname||'?')[0]).toUpperCase())}</div>
+        <div><div class="cc-name">${esc(c.name)} ${esc(c.surname)}</div><div class="cc-sub">✉️ ${esc(c.email||'')}${c.phone?' · 📱 '+c.phone:''}</div></div>
+      </div>
+      <div class="cc-stats">
+        <div class="cc-stat"><div class="cc-stat-n">${done}</div><div class="cc-stat-l">Zrealizowane</div></div>
+        <div class="cc-stat"><div class="cc-stat-n">${upcoming}</div><div class="cc-stat-l">Nadchodzące</div></div>
+        <div class="cc-stat"><div class="cc-stat-n" style="color:${balColor};font-size:.95rem;">${balTxt}</div><div class="cc-stat-l">Saldo</div>${balSub}</div>
+      </div>
+      ${c.goal?`<div style="font-size:.78rem;color:var(--gray);margin-bottom:8px;">🎯 ${esc(c.goal)}</div>`:''}
+      <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:8px;">
+        <span style="font-size:.78rem;font-weight:700;color:var(--gray);">Stawka:</span>
+        <input type="number" id="cprice-sys-${c.id}" value="${curPrice}" min="50" step="50"
+          style="width:80px;padding:5px 8px;border:1.5px solid var(--border);border-radius:7px;font-size:.84rem;font-family:inherit;outline:none;"/>
+        <span style="font-size:.75rem;color:var(--gray);">PLN</span>
+        <button class="bsm bok" style="padding:5px 10px;font-size:.75rem;" onclick="saveSysClientPrice('${c.id}','${c.phone||''}')">💾</button>
+      </div>
+      <div class="cc-act">
+        <button class="bsm bsms" onclick="openChatWith('${c.id}')">💬 Chat</button>
+        ${c.phone?`<button class="bsm" style="background:#e8f0fe;color:#1a3c8f;" onclick="openSMSByPhone('${c.phone}')">📱 SMS</button>`:''}
+        <button class="bsm" style="background:#f0fff4;color:#276749;" onclick="openTrainingPlanModal('${c.id}')">📋 Plan treningowy</button>
+        <button class="bsm" style="background:#ebf4ff;color:#2b6cb0;border:1px solid #bee3f8;" onclick="openMeasurementModal('${c.id}')">📊 Pomiar Tanita</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function saveSysClientPrice(clientId, phone) {
+  const el = document.getElementById('cprice-sys-'+clientId);
+  const price = parseInt(el?.value)||0;
+  if(price>0) { LocalApi.saveClientPrice(myTrainerId, phone, price); toast('✅ Stawka zapisana: '+price+' PLN',false,true); }
+}
+
+function openChatWith(clientId) {
+  activeChatClientId = clientId;
+  showSec('chat', document.querySelector('.ni'));
+  // find the correct nav item
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('act'));
+  const chatNi = Array.from(document.querySelectorAll('.ni')).find(n=>n.onclick&&n.onclick.toString().includes("'chat'"));
+  if(chatNi) chatNi.classList.add('act');
+}
+
+function openSMSByPhone(phone) {
+  const b = allBookings.find(x=>x.phone===phone);
+  if(b) openSMS(b.id); else toast('Brak rezerwacji dla: '+phone,false,true);
+}
+
+function renderClients() {
+  const q = (document.getElementById('clSearch')?.value||'').toLowerCase();
+  const map = {};
+  allBookings.forEach(b=>{
+    if (!b.phone) return;
+    if (!map[b.phone]) {
+      map[b.phone] = {name:b.name, surname:b.surname, phone:b.phone, email:b.email||'',
+        count:0, confirmed:0, cancelled:0, lastDate:'', trainerId:b.trainerId};
+    }
+    map[b.phone].count++;
+    if (b.status==='confirmed') map[b.phone].confirmed++;
+    if (b.status==='cancelled') map[b.phone].cancelled++;
+    if (b.date>map[b.phone].lastDate) map[b.phone].lastDate=b.date;
+    if (b.email && !map[b.phone].email) map[b.phone].email=b.email;
+  });
+  const notes = LocalApi.getClientNotes(myTrainerId)||{};
+  let clients = Object.values(map);
+  if (q) clients=clients.filter(c=>`${c.name} ${c.surname} ${c.phone}`.toLowerCase().includes(q));
+  clients.sort((a,b)=>b.lastDate.localeCompare(a.lastDate));
+  const grid = document.getElementById('clGrid'); if (!grid) return;
+  if (!clients.length) { grid.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="ei">👥</div><p>Brak klientów</p></div>'; return; }
+  grid.innerHTML = clients.map(c=>{
+    const ld = c.lastDate ? new Date(c.lastDate).toLocaleDateString('pl-PL',{day:'numeric',month:'short',year:'numeric'}) : '—';
+    const note = notes[c.phone]||'';
+    const safePhone = c.phone.replace(/\W/g,'');
+    const defaultPrice = LocalApi.getSettings().sessionPrice || 200;
+    const clientPrice = LocalApi.getClientPrice(myTrainerId, c.phone) || '';
+    const hist = allBookings.filter(b=>b.phone===c.phone).sort((a,b2)=>b2.date.localeCompare(a.date)).slice(0,5);
+    const histHtml = hist.length ? `
+      <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px;">
+        <div style="font-size:.75rem;font-weight:700;color:var(--gray);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px;">Ostatnie sesje</div>
+        ${hist.map(b=>`<div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:.79rem;border-bottom:1px solid #f5f5f5;">
+          <span style="min-width:76px;color:var(--green);font-weight:700;">${b.date}</span>
+          <span style="min-width:44px;">${b.time}</span>
+          <span class="bdg ${b.status==='confirmed'?'dc':b.status==='pending'?'dp':'dn'}" style="font-size:.67rem;">${b.status==='confirmed'?'✅':b.status==='pending'?'⏳':'❌'}</span>
+          <span style="color:var(--gray);font-size:.75rem;">${b.paymentChoice==='prepaid'?'💳 Przedpłata':'💰 Gotówka'}</span>
+        </div>`).join('')}
+      </div>` : '';
+    return `<div class="cc">
+      <div class="ccn">${esc(c.name)} ${esc(c.surname)}</div>
+      <div class="ccp">📱 <a href="tel:${c.phone}">${c.phone}</a>${c.email?` | ✉️ ${esc(c.email)}`:''}</div>
+      <div class="cc-stats">
+        <span class="cc-stat">📅 ${c.count} treningów</span>
+        <span class="cc-stat">✅ ${c.confirmed} potw.</span>
+        <span class="cc-stat">Ostatni: ${ld}</span>
+      </div>
+      <div class="cc-actions">
+        <button class="bsm bsms" onclick="openSMSForClient('${c.phone}')">📱 SMS</button>
+        ${c.email?`<button class="bsm bemail" onclick="openEmailForClient('${c.phone}')">✉️ Email</button>`:''}
+      </div>
+      <div class="cc-price" style="margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <label style="font-size:.78rem;font-weight:700;color:var(--gray);white-space:nowrap;">💰 Cena sesji:</label>
+        <input type="number" id="cprice-${safePhone}" min="50" max="9999" step="10"
+          value="${clientPrice}" placeholder="${defaultPrice}"
+          style="width:90px;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;font-family:inherit;outline:none;"/>
+        <span style="font-size:.8rem;color:var(--gray);">PLN</span>
+        <button class="bsm" style="background:var(--green);color:#fff;" onclick="saveClientPriceLocal('${c.phone}')">💾</button>
+      </div>
+      <div class="cc-note">
+        <label>📝 Notatka o kliencie</label>
+        <textarea id="cnote-${safePhone}" placeholder="Uwagi, cele, postępy, kontuzje...">${esc(note)}</textarea>
+        <button class="bsm" style="background:var(--green);color:#fff;margin-top:6px;" onclick="saveClientNoteLocal('${c.phone}')">💾 Zapisz notatkę</button>
+      </div>
+      ${histHtml}
+    </div>`;
+  }).join('');
+  renderTrBulkPreview();
+}
+
+function saveClientNoteLocal(phone) {
+  const safePhone = phone.replace(/\W/g,'');
+  const ta = document.getElementById('cnote-'+safePhone);
+  if (!ta) return;
+  LocalApi.saveClientNote(myTrainerId, phone, ta.value.trim());
+  toast('✅ Notatka zapisana',false,true);
+}
+
+function saveClientPriceLocal(phone) {
+  const safePhone = phone.replace(/\W/g,'');
+  const inp = document.getElementById('cprice-'+safePhone);
+  if (!inp) return;
+  const price = parseInt(inp.value) || 0;
+  LocalApi.saveClientPrice(myTrainerId, phone, price);
+  toast(`✅ Cena ${price > 0 ? price + ' PLN' : 'domyślna'} zapisana dla klienta`, false, true);
+}
+
+function openSMSForClient(phone) {
+  const b = allBookings.filter(x=>x.phone===phone&&x.status!=='cancelled').sort((a,b2)=>b2.date.localeCompare(a.date))[0]
+         || allBookings.find(x=>x.phone===phone);
+  if (!b) { toast('Brak rezerwacji dla tego klienta',true); return; }
+  openSMS(b.id);
+}
+
+function openEmailForClient(phone) {
+  const b = allBookings.filter(x=>x.phone===phone&&x.email&&x.status!=='cancelled').sort((a,b2)=>b2.date.localeCompare(a.date))[0]
+         || allBookings.find(x=>x.phone===phone&&x.email);
+  if (!b) { toast('Brak adresu email dla tego klienta',true); return; }
+  openEmail(b.id);
+}
+
+// ── BULK MESSAGING (TRAINER) ──────────────────────────────────────────────────
+const TR_BULK_TPLS = {
+  sms: [
+    {lbl:'🎉 Życzenia',      txt:'Cześć! Z okazji świąt życzę Ci zdrowia, energii i wytrwałości w treningach! 💪 {TN} – SAMtrening'},
+    {lbl:'💳 Płatność',      txt:'Cześć! Przypominam o opłacie za ostatni trening (200 PLN). Konto: {BANK} lub BLIK: {BLIK}. Dziękuję! {TN}'},
+    {lbl:'📰 Newsletter',    txt:'Cześć! Nowe terminy treningów dostępne na samtrening.com! Zarezerwuj swój slot 🏋️ {TN} – SAMtrening'},
+    {lbl:'🎁 Promocja',      txt:'Cześć! Oferta specjalna: pakiet 4 treningów w cenie 3! Tylko do końca miesiąca. Napisz do mnie! {TN}'},
+    {lbl:'✍️ Własna treść',  txt:''},
+  ],
+  email: {
+    subjects: ['Życzenia od trenera','Przypomnienie o płatności','Aktualności SAMtrening','Oferta specjalna – SAMtrening'],
+    bodies: [
+      'Cześć!\n\nZ okazji zbliżających się świąt życzę Ci zdrowia, energii i wytrwałości w dążeniu do Twoich celów!\n\nDo zobaczenia na treningu,\n{TN} – SAMtrening',
+      'Cześć!\n\nPrzypominam o opłacie za ostatni trening (200 PLN).\n\nProszę o przelew na konto:\n{BANK}\n\nlub BLIK: {BLIK}\n\nDziękuję za współpracę,\n{TN}',
+      'Cześć!\n\nNowe terminy treningów są już dostępne!\nZarezerwuj swój slot na samtrening.com\n\nDo zobaczenia,\n{TN} – SAMtrening',
+      'Cześć!\n\nMam dla Ciebie wyjątkową ofertę – pakiet 4 treningów w cenie 3!\nOferta ważna do końca miesiąca.\n\nOdpisz na tego emaila lub napisz SMS – chętnie umówię termin.\n\nPozdrawiam,\n{TN} – SAMtrening',
+    ],
+  },
+};
+
+function setTrBulkMode(mode, el) {
+  trBulkMode = mode;
+  document.querySelectorAll('.bmode-btn').forEach(b=>b.classList.remove('act'));
+  el.classList.add('act');
+  document.getElementById('trBulkSMSWrap').style.display  = mode==='sms'  ?'block':'none';
+  document.getElementById('trBulkEmailWrap').style.display = mode==='email'?'block':'none';
+  renderTrBulkTpls();
+}
+
+function setTrBulkTgt(tgt, el) {
+  trBulkTgt = tgt;
+  document.querySelectorAll('#trBulkTgtBtns .btgt-btn').forEach(b=>b.classList.remove('act'));
+  el.classList.add('act');
+  renderTrBulkPreview();
+}
+
+function getTrBulkTargets() {
+  const seen = new Set(); const result = [];
+  allBookings.filter(b=>{
+    if (b.status==='cancelled') return false;
+    if (trBulkTgt==='confirmed' && b.status!=='confirmed') return false;
+    return true;
+  }).forEach(b=>{
+    if (!seen.has(b.phone)) { seen.add(b.phone); result.push({name:b.name,surname:b.surname,phone:b.phone,email:b.email||''}); }
+  });
+  return result;
+}
+
+function renderTrBulkPreview() {
+  const el = document.getElementById('trBulkCnt'); if (el) el.textContent = getTrBulkTargets().length;
+}
+
+function renderTrBulkTpls() {
+  const c = document.getElementById('trBulkTplBtns'); if (!c) return;
+  if (trBulkMode==='sms') {
+    c.innerHTML = TR_BULK_TPLS.sms.map((t,i)=>`<button class="btpl" onclick="setTrBulkSmsTpl(${i})">${t.lbl}</button>`).join('');
+  } else {
+    c.innerHTML = ['🎉 Życzenia','💳 Płatność','📰 Newsletter','🎁 Promocja'].map((lbl,i)=>`<button class="btpl" onclick="setTrBulkEmailTpl(${i})">${lbl}</button>`).join('');
+  }
+}
+
+function fillTrBulkVars(t) {
+  const { bank, blik, name } = getTrainerPaymentData();
+  return t.replace(/{TN}/g, name)
+           .replace(/{BANK}/g, bank)
+           .replace(/{BLIK}/g, blik);
+}
+
+function setTrBulkSmsTpl(i) {
+  const ta = document.getElementById('trBulkSMSTxt'); if (!ta) return;
+  ta.value = fillTrBulkVars(TR_BULK_TPLS.sms[i].txt);
+  updBulkTrCh();
+}
+
+function setTrBulkEmailTpl(i) {
+  const s = document.getElementById('trBulkEmailSubject');
+  const b = document.getElementById('trBulkEmailTxt');
+  if (!s||!b) return;
+  s.value = TR_BULK_TPLS.email.subjects[i]||'';
+  b.value = fillTrBulkVars(TR_BULK_TPLS.email.bodies[i]||'');
+}
+
+function updBulkTrCh() {
+  const ta = document.getElementById('trBulkSMSTxt');
+  const el = document.getElementById('trBulkChs');
+  if (ta&&el) el.textContent = `${ta.value.length} / 160`;
+}
+
+async function sendTrBulk() {
+  const tgts = getTrBulkTargets();
+  if (!tgts.length) { toast('Brak odbiorców',true); return; }
+  const btn = document.getElementById('trBulkBtn');
+  btn.disabled=true; btn.textContent='Wysyłanie...';
+  if (trBulkMode==='sms') {
+    const msg = document.getElementById('trBulkSMSTxt').value.trim();
+    if (!msg){ toast('Wpisz treść SMS',true); btn.disabled=false; btn.textContent='📣 Wyślij do wszystkich'; return; }
+    let ok=0;
+    for (const t of tgts) {
+      try {
+        const r = await fetch('/api/trainer/sms',{method:'POST',headers:hdr(),body:JSON.stringify({phone:t.phone,message:msg})});
+        if (!r.ok) throw new Error();
+      } catch {/* offline */}
+      const latestB = allBookings.filter(x=>x.phone===t.phone).sort((a,b)=>b.date.localeCompare(a.date))[0];
+      if (latestB) LocalApi.saveSmsHistory(latestB.id,{message:msg,sentBy:TRAINER?.nameShort||'Trener'});
+      ok++;
+    }
+    toast(`✅ SMS wysłany do ${ok} klientów`,false,true);
+  } else {
+    const subj = document.getElementById('trBulkEmailSubject').value.trim();
+    const body = document.getElementById('trBulkEmailTxt').value.trim();
+    if (!subj||!body){ toast('Uzupełnij temat i treść',true); btn.disabled=false; btn.textContent='📣 Wyślij do wszystkich'; return; }
+    let ok=0, noEmail=0;
+    for (const t of tgts) {
+      if (!t.email) { noEmail++; continue; }
+      try {
+        const r = await fetch('/api/trainer/email',{method:'POST',headers:hdr(),body:JSON.stringify({to:t.email,subject:subj,body})});
+        if (!r.ok) throw new Error();
+      } catch {/* offline */}
+      const latestB = allBookings.filter(x=>x.phone===t.phone&&x.email).sort((a,b)=>b.date.localeCompare(a.date))[0];
+      if (latestB) LocalApi.saveEmailHistory(latestB.id,{subject:subj,sentBy:TRAINER?.nameShort||'Trener'});
+      ok++;
+    }
+    const msg = noEmail>0 ? `✅ Email wysłany do ${ok} klientów (${noEmail} bez emaila)` : `✅ Email wysłany do ${ok} klientów`;
+    toast(msg,false,true);
+  }
+  btn.disabled=false; btn.textContent='📣 Wyślij do wszystkich';
+  refresh();
+}
+
+// ── CONFIRM SEND MODAL ────────────────────────────────────────────────────────
+let csmBooking = null;
+function showConfirmSendModal(b) {
+  csmBooking = b;
+  const dp = new Date(b.date).toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('csmInfo').innerHTML = `<strong>${esc(b.name)} ${esc(b.surname)}</strong><br>📅 ${dp} ${b.time} · ${b.trainingType==='online'?'🎥 Online':'🏋️ Stacjonarny'}<br>📱 ${b.phone}${b.email?` · ✉️ ${esc(b.email)}`:''}`;
+  const emailBtn = document.getElementById('csmEmailBtn');
+  if (emailBtn) emailBtn.style.display = b.email ? 'flex' : 'none';
+  document.getElementById('confirmSendModal').classList.add('show');
+}
+function closeCSM() { document.getElementById('confirmSendModal').classList.remove('show'); csmBooking=null; }
+document.getElementById('confirmSendModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeCSM();});
+function csmSendSMS() {
+  if (!csmBooking) return;
+  closeCSM();
+  openSMS(csmBooking.id);
+  // Pre-select confirmation template
+  setTimeout(()=>setTpl('confirm'),100);
+}
+function csmSendEmail() {
+  if (!csmBooking) return;
+  closeCSM();
+  openEmail(csmBooking.id);
+}
+
+// ── FINANCIAL CHART ───────────────────────────────────────────────────────────
+let finChartInst = null;
+function renderFinChart(data) {
+  const canvas = document.getElementById('finChartCanvas');
+  if (!canvas) return;
+  // Destroy existing chart on this canvas (survive DOM recreation)
+  if (typeof Chart !== 'undefined') {
+    const existing = Chart.getChart ? Chart.getChart(canvas) : null;
+    if (existing) existing.destroy();
+    if (finChartInst) { try { finChartInst.destroy(); } catch(e){} finChartInst = null; }
+  }
+  const trend = LocalApi.getWeeklyTrend(myTrainerId, 8);
+  const labels = trend.map(w=>w.label);
+  const counts = trend.map(w=>w.count);
+  const revenues = trend.map(w=>w.revenue);
+  if (typeof Chart === 'undefined') {
+    // Fallback: simple HTML bar chart
+    const maxRev = Math.max(...revenues, 1);
+    canvas.style.display = 'none';
+    const fallbackId = 'finChartFallback';
+    const existing2 = document.getElementById(fallbackId);
+    if (existing2) existing2.remove();
+    const fb = document.createElement('div');
+    fb.id = fallbackId;
+    fb.style.cssText = 'display:flex;align-items:flex-end;gap:4px;height:180px;padding:10px 0;overflow-x:auto;';
+    fb.innerHTML = labels.map((lbl,i)=>{
+      const h = Math.round((revenues[i]/maxRev)*160);
+      return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;min-width:40px;">
+        <div style="font-size:.65rem;color:#0066FF;font-weight:700;">${revenues[i]} PLN</div>
+        <div style="width:100%;height:${h}px;background:linear-gradient(180deg,#3b82f6,#1d4ed8);border-radius:4px 4px 0 0;" title="${counts[i]} treningów"></div>
+        <div style="font-size:.6rem;color:#666;white-space:nowrap;">${lbl}</div>
+      </div>`;
+    }).join('');
+    canvas.parentNode.appendChild(fb);
+    return;
+  }
+  finChartInst = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label:'Treningi', data:counts, backgroundColor:'rgba(108,192,74,.7)', borderColor:'#6CC04A', borderWidth:1.5, yAxisID:'y' },
+        { label:'Przychód (PLN)', data:revenues, type:'line', borderColor:'#0066FF', backgroundColor:'rgba(0,102,255,.1)', borderWidth:2, pointRadius:4, tension:.4, fill:true, yAxisID:'y2' },
+      ],
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{ legend:{ position:'top', labels:{font:{size:11},padding:12} } },
+      scales:{
+        y:{ position:'left', beginAtZero:true, ticks:{stepSize:1,font:{size:11}}, title:{display:true,text:'Treningi',font:{size:10}} },
+        y2:{ position:'right', beginAtZero:true, grid:{drawOnChartArea:false}, ticks:{callback:v=>v+' PLN',font:{size:11}}, title:{display:true,text:'Przychód',font:{size:10}} },
+      },
+    },
+  });
+}
+
+// ── WEEK VIEW ─────────────────────────────────────────────────────────────────
+let weekOffset = 0; // 0 = bieżący tydzień
+
+function weekNav(d) { weekOffset += d; renderWeekView(); }
+function weekToday() { weekOffset = 0; renderWeekView(); }
+
+function renderWeekView() {
+  const today = new Date();
+  const todayStr = todayLocalStr();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - ((today.getDay()+6)%7) + weekOffset*7);
+  monday.setHours(12,0,0,0);
+
+  const days = [];
+  for (let i=0; i<7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate()+i);
+    days.push(d);
+  }
+  const mondayFmt = monday.toLocaleDateString('pl-PL',{day:'numeric',month:'long'});
+  const sundayFmt = new Date(monday.getTime()+6*86400000).toLocaleDateString('pl-PL',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('weekTitle').textContent = `${mondayFmt} – ${sundayFmt}`;
+
+  // Get availability and blocked data
+  const availData = LocalApi.getTrainerAvail ? LocalApi.getTrainerAvail(myTrainerId) : {};
+
+  const DOW = ['Pn','Wt','Śr','Cz','Pt','Sb','Nd'];
+  const cols = `56px repeat(7,1fr)`;
+
+  let html = `<div class="wv-wrap">`;
+  // Header
+  html += `<div class="wv-header" style="grid-template-columns:${cols};">`;
+  html += `<div class="wv-header-cell" style="background:#2a2a2a;font-size:.65rem;">Godzina</div>`;
+  days.forEach((d,i)=>{
+    const ds = toLocalDate(d);
+    const isToday = ds===todayStr;
+    html += `<div class="wv-header-cell${isToday?' today-col':''}">${DOW[i]}<br><span style="font-size:.9rem;font-weight:900;">${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}</span></div>`;
+  });
+  html += `</div>`;
+
+  // Legend
+  html += `<div style="display:flex;gap:10px;flex-wrap:wrap;padding:8px 0 6px;font-size:.72rem;align-items:center;">
+    <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:14px;height:14px;background:#f0fff4;border:1px solid #9ae6b4;border-radius:3px;"></span>Dostępny</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:14px;height:14px;background:#fff5f5;border:1px solid #fc8181;border-radius:3px;"></span>Niedostępny</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:14px;height:14px;background:#dbeafe;border-left:3px solid #3b82f6;border-radius:3px;"></span>Potwierdzony</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:14px;height:14px;background:#fef9c3;border-left:3px solid #eab308;border-radius:3px;"></span>Oczekujący</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:14px;height:14px;background:#fee2e2;border-left:3px solid #ef4444;border-radius:3px;"></span>Odwołany</span>
+    <span style="margin-left:auto;font-size:.7rem;color:var(--gray);">Kliknij wolny slot → włącz/wyłącz dostępność</span>
+  </div>`;
+
+  // Body
+  html += `<div class="wv-body" style="grid-template-columns:${cols};">`;
+  ALL_SLOTS.forEach(slot=>{
+    html += `<div class="wv-time">${slot}</div>`;
+    days.forEach(d=>{
+      const ds = toLocalDate(d);
+      const isToday = ds===todayStr;
+      const dayAvail = (availData[ds]||[]);
+      const isAvail = dayAvail.includes(slot);
+      const dayBookings = allBookings.filter(b=>b.date===ds&&b.time===slot);
+      const hasBooking = dayBookings.length > 0;
+      const cellCls = `wv-cell${isToday?' today-col':''} ${isAvail?'avail':'unavail'}`;
+      let cellContent = '';
+      dayBookings.forEach(b=>{
+        const tileCls = b.status==='confirmed'?'t-confirmed':b.status==='pending'?'t-pending':'t-cancelled';
+        cellContent += `<div class="wv-tile ${tileCls}" onclick="event.stopPropagation();openSMS('${b.id}')" title="${esc(b.name)} ${esc(b.surname)} – ${b.status}">${esc(b.name)}</div>`;
+      });
+      // Show availability indicator dot if available and no booking
+      if (isAvail && !hasBooking) cellContent += `<span class="wv-avail-dot"></span>`;
+      html += `<div class="${cellCls}" onclick="wvCellClick('${ds}','${slot}')">${cellContent}</div>`;
+    });
+  });
+  html += `</div></div>`;
+  document.getElementById('weekGrid').innerHTML = html;
+}
+
+function wvCellClick(date, time) {
+  // If there's a booking, open its SMS modal
+  const b = allBookings.find(x=>x.date===date&&x.time===time&&x.status!=='cancelled');
+  if (b) { openSMS(b.id); return; }
+  // Otherwise toggle availability for this slot
+  const availData = LocalApi.getTrainerAvail ? LocalApi.getTrainerAvail(myTrainerId) : {};
+  const daySlots = [...(availData[date]||[])];
+  const idx = daySlots.indexOf(time);
+  if (idx !== -1) {
+    daySlots.splice(idx, 1);
+    LocalApi.saveAvailDay(myTrainerId, date, daySlots);
+    toast('🔴 Slot niedostępny', false, true);
+  } else {
+    daySlots.push(time);
+    LocalApi.saveAvailDay(myTrainerId, date, daySlots.sort());
+    toast('🟢 Slot dostępny', false, true);
+  }
+  renderWeekView();
+}
+
+setInterval(refresh,20000);
+
+// ── Daily date reset: if page is left open overnight, refresh on new day ──────
+let _lastKnownDate = todayLocalStr();
+setInterval(function() {
+  const nowDate = todayLocalStr();
+  if (nowDate !== _lastKnownDate) {
+    _lastKnownDate = nowDate;
+    refresh(); // re-render all date-dependent views
+  }
+}, 60000); // check every minute
+
+// ── Chat notification polling (faster than full refresh) ──────────────────────
+setInterval(function() {
+  if (myTrainerId && typeof checkChatNotifications === 'function') {
+    checkChatNotifications();
+  }
+}, 8000); // check every 8 seconds
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PŁATNOŚCI KLIENTÓW
+// ══════════════════════════════════════════════════════════════════════════════
+let cpFilter = 'all';
+
+function setCpFilter(f, el) {
+  cpFilter = f;
+  document.querySelectorAll('[id^="cpf-"]').forEach(b=>b.classList.remove('act'));
+  if (el) el.classList.add('act');
+  renderClientPayments();
+}
+
+function updatePayBadge() {
+  if (!myTrainerId) return;
+  const payments = LocalApi.getPaymentsForTrainer ? LocalApi.getPaymentsForTrainer(myTrainerId) : [];
+  const pending = payments.filter(p=>p.status==='pending').length;
+  const bdg = document.getElementById('payBadge');
+  if (bdg) { bdg.textContent=pending; bdg.style.display=pending>0?'inline-block':'none'; }
+}
+
+function renderClientPayments() {
+  if (!myTrainerId) return;
+  const cont = document.getElementById('cpList');
+  if (!cont) return;
+
+  let payments = LocalApi.getPaymentsForTrainer ? LocalApi.getPaymentsForTrainer(myTrainerId) : [];
+  if (cpFilter !== 'all') payments = payments.filter(p=>p.status===cpFilter);
+
+  if (!payments.length) {
+    cont.innerHTML = '<div class="empty"><div class="ei">💳</div><p>Brak płatności do wyświetlenia</p></div>';
+    return;
+  }
+
+  // Get client info map
+  const clients = {};
+  try { LocalApi.getClientsByTrainer(myTrainerId).forEach(c=>{ clients[c.id]=c; }); } catch(e) {}
+
+  const methodMap = {blik:'📱 BLIK',bank:'🏦 Przelew',cash:'💵 Gotówka',package:'📦 Pakiet',card:'💳 Karta'};
+  const statusMap = {pending:'⏳ Oczekuje',paid:'✅ Opłacone',confirmed:'✅ Opłacone',rejected:'❌ Odrzucona'};
+  const statusCls = {pending:'dp',paid:'dc',confirmed:'dc',rejected:'dn'};
+
+  // Group by client
+  const byClient = {};
+  payments.forEach(p => {
+    const key = p.clientId || 'unknown';
+    if (!byClient[key]) byClient[key] = [];
+    byClient[key].push(p);
+  });
+
+  cont.innerHTML = Object.entries(byClient).map(([cid, cpays])=>{
+    const c = clients[cid];
+    const cName = c ? `${esc(c.name)} ${esc(c.surname)}` : `Klient #${cid.slice(-4)}`;
+    const cInitials = c ? `${(c.name||'?')[0]}${(c.surname||'?')[0]}`.toUpperCase() : '??';
+    const totalPaid = cpays.filter(p=>p.status==='paid'||p.status==='confirmed').reduce((s,p)=>s+(p.amount||0),0);
+    const pendingCount = cpays.filter(p=>p.status==='pending').length;
+    const uid = `cp-${cid.replace(/[^a-z0-9]/gi,'_')}`;
+    const rows = cpays.map(p=>{
+      const dateStr = p.date ? new Date(p.date).toLocaleDateString('pl-PL',{day:'numeric',month:'short',year:'numeric'}) : '—';
+      const isPending = p.status==='pending';
+      return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f0f0f0;flex-wrap:wrap;">
+        <div style="flex:1;min-width:120px;">
+          <div style="font-size:.82rem;font-weight:700;">${methodMap[p.method]||p.method} · <strong>${p.amount||0} PLN</strong></div>
+          <div style="font-size:.73rem;color:var(--gray);">${dateStr}${p.description?` · ${esc(p.description)}`:''}</div>
+        </div>
+        <span class="bdg ${statusCls[p.status]||'dp'}" style="font-size:.68rem;">${statusMap[p.status]||p.status}</span>
+        ${isPending ? `<button class="bsm bok" style="font-size:.7rem;padding:3px 8px;" onclick="confirmClientPayment('${p.id}')">✅</button>
+          <button class="bsm bno" style="font-size:.7rem;padding:3px 8px;" onclick="rejectClientPayment('${p.id}')">❌</button>` : ''}
+      </div>`;
+    }).join('');
+    return `<div style="background:#fff;border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:10px;overflow:hidden;">
+      <div onclick="document.getElementById('${uid}').classList.toggle('show')" style="display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;">
+        <div style="width:38px;height:38px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.88rem;flex-shrink:0;">${cInitials}</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:.92rem;">${cName}</div>
+          <div style="font-size:.75rem;color:var(--gray);">${cpays.length} płatności · ${totalPaid.toLocaleString('pl-PL')} PLN wpłacono</div>
+        </div>
+        ${pendingCount>0?`<span class="bdg dp" style="font-size:.7rem;">${pendingCount} oczekuje</span>`:''}
+        <span style="color:var(--gray);font-size:.8rem;">▼</span>
+      </div>
+      <div id="${uid}" style="display:none;padding:0 18px 14px;">
+        ${rows}
+      </div>
+    </div>`;
+  }).join('');
+  // Add toggle CSS if not already added
+  const styleId = 'cp-toggle-style';
+  if (!document.getElementById(styleId)) {
+    const s = document.createElement('style');
+    s.id = styleId;
+    s.textContent = `#cpList [id^="cp-"].show { display: block !important; }`;
+    document.head.appendChild(s);
+  }
+}
+
+function confirmClientPayment(paymentId) {
+  if (!confirm('Potwierdzić płatność?')) return;
+  const result = LocalApi.confirmPayment ? LocalApi.confirmPayment(paymentId) : null;
+  if (result) { toast('✅ Płatność potwierdzona', false, true); renderClientPayments(); updatePayBadge(); }
+  else toast('Błąd: nie znaleziono płatności', true);
+}
+
+function rejectClientPayment(paymentId) {
+  if (!confirm('Odrzucić płatność?')) return;
+  const result = LocalApi.rejectPayment ? LocalApi.rejectPayment(paymentId) : null;
+  if (result) { toast('❌ Płatność odrzucona', false, true); renderClientPayments(); updatePayBadge(); }
+  else toast('Błąd: nie znaleziono płatności', true);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// CHAT Z KLIENTAMI
+// ══════════════════════════════════════════════════════════════════════════════
+let activeChatClientId = null;
+let chatPollInterval = null;
+
+function initChat() {
+  renderChatClientList();
+  updateChatBadge();
+}
+
+function updateChatBadge() {
+  if (!myTrainerId) return;
+  const unread = LocalApi.getUnreadCount ? LocalApi.getUnreadCount(myTrainerId) : 0;
+  const bdg = document.getElementById('chatBadge');
+  if (bdg) { bdg.textContent = unread; bdg.style.display = unread > 0 ? 'inline-block' : 'none'; }
+  const lamp = document.getElementById('chatLamp');
+  if (lamp) lamp.style.display = unread > 0 ? 'inline-block' : 'none';
+}
+
+function renderChatClientList() {
+  if (!myTrainerId) return;
+  const cont = document.getElementById('chatClientList');
+  if (!cont) return;
+
+  // Get clients assigned to this trainer
+  let clients = [];
+  try { clients = LocalApi.getClientsByTrainer ? LocalApi.getClientsByTrainer(myTrainerId) : []; } catch(e) {}
+
+  // getAllMessagesForTrainer returns { clientId: lastMessage } object
+  let lastMsgByClient = {};
+  try { lastMsgByClient = LocalApi.getAllMessagesForTrainer ? LocalApi.getAllMessagesForTrainer(myTrainerId) : {}; } catch(e) {}
+
+  if (!clients.length) {
+    cont.innerHTML = '<div class="chat-no-clients">Brak klientów przypisanych do Ciebie.<br><br>Administrator musi zarejestrować klientów i przypisać ich Tobie.</div>';
+    return;
+  }
+
+  // Build unread counts per client using getMessages
+  const unreadMap = {};
+  clients.forEach(c=>{
+    try {
+      const msgs = LocalApi.getMessages ? LocalApi.getMessages(myTrainerId, c.id) : [];
+      unreadMap[c.id] = msgs.filter(m=>m.from==='client'&&!m.read).length;
+    } catch(e) { unreadMap[c.id] = 0; }
+  });
+
+  clients.sort((a,b)=>{
+    const ua = unreadMap[a.id]||0, ub = unreadMap[b.id]||0;
+    if (ua !== ub) return ub - ua;
+    const la = lastMsgByClient[a.id]?.sentAt||'';
+    const lb = lastMsgByClient[b.id]?.sentAt||'';
+    if (la||lb) return lb.localeCompare(la);
+    return `${a.name} ${a.surname}`.localeCompare(`${b.name} ${b.surname}`);
+  });
+
+  cont.innerHTML = clients.map(c=>{
+    const initials = ((c.name||'?')[0] + (c.surname||'?')[0]).toUpperCase();
+    const unread = unreadMap[c.id]||0;
+    const lastMsg = lastMsgByClient[c.id];
+    const preview = lastMsg ? (lastMsg.text||'').substring(0,36)+(lastMsg.text&&lastMsg.text.length>36?'…':'') : 'Brak wiadomości';
+    const isActive = activeChatClientId === c.id;
+    return `<div class="chat-client-item${isActive?' active':''}" onclick="selectChatClient('${c.id}')">
+      <div class="chat-client-av">${esc(initials)}</div>
+      <div class="chat-client-info">
+        <div class="chat-client-name">${esc(c.name)} ${esc(c.surname)}</div>
+        <div class="chat-client-last">${esc(preview)}</div>
+      </div>
+      ${unread ? `<div class="chat-unread-dot">${unread}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function selectChatClient(clientId) {
+  activeChatClientId = clientId;
+  renderChatClientList(); // re-render to update active state
+
+  // Find client info
+  let clients = [];
+  try { clients = LocalApi.getClientsByTrainer ? LocalApi.getClientsByTrainer(myTrainerId) : []; } catch(e) {}
+  const client = clients.find(c=>c.id===clientId);
+
+  // Update header
+  const hdr = document.getElementById('chatMainHdr');
+  if (hdr && client) {
+    hdr.innerHTML = `<div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6CC04A,#00f2fe);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.78rem;">${esc(((client.name||'?')[0]+(client.surname||'?')[0]).toUpperCase())}</div><div><div style="font-weight:800;">${esc(client.name)} ${esc(client.surname)}</div><div style="font-size:.74rem;color:var(--gray);">${esc(client.email||'')}${client.phone?' · '+client.phone:''}</div></div>`;
+  }
+
+  // Show input
+  const inp = document.getElementById('chatInputRow');
+  if (inp) inp.style.display = 'flex';
+
+  // Load messages
+  refreshTrainerChat();
+
+  // Mark as read
+  try { LocalApi.markMessagesRead && LocalApi.markMessagesRead(myTrainerId, clientId); } catch(e) {}
+  updateChatBadge();
+}
+
+function refreshTrainerChat() {
+  if (!activeChatClientId || !myTrainerId) return;
+  let msgs = [];
+  try { msgs = LocalApi.getMessages ? LocalApi.getMessages(myTrainerId, activeChatClientId) : []; } catch(e) {}
+
+  const cont = document.getElementById('chatMsgs');
+  if (!cont) return;
+
+  if (!msgs.length) {
+    cont.innerHTML = '<div class="chat-empty">Brak wiadomości. Napisz pierwszą!</div>';
+    return;
+  }
+
+  cont.innerHTML = msgs.map(m=>{
+    const isTrainer = m.from === 'trainer';
+    const timeStr = m.sentAt ? new Date(m.sentAt).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+    return `<div class="chat-bubble ${isTrainer?'trainer':'client'}">
+      <div>
+        <div class="chat-btext">${esc(m.text||'')}</div>
+        <div class="chat-btime">${timeStr}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Auto-scroll to bottom
+  cont.scrollTop = cont.scrollHeight;
+
+  // Mark as read
+  try { LocalApi.markMessagesRead && LocalApi.markMessagesRead(myTrainerId, activeChatClientId); } catch(e) {}
+  updateChatBadge();
+}
+
+function sendTrainerMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input ? input.value.trim() : '';
+  if (!text || !activeChatClientId || !myTrainerId) return;
+
+  try {
+    LocalApi.sendMessage(myTrainerId, activeChatClientId, text, 'trainer');
+    input.value = '';
+    refreshTrainerChat();
+    renderChatClientList();
+  } catch(e) {
+    toast('Błąd: ' + e.message, true);
+  }
+}
+
+// Poll chat when section is active
+setInterval(function() {
+  if (typeof curSec !== 'undefined' && curSec === 'chat') {
+    refreshTrainerChat();
+    renderChatClientList();
+  }
+  updateChatBadge();
+}, 3000);
+
+setInterval(refresh,20000);
+
+// ── CHAT NOTIFICATIONS ────────────────────────────────────────────────────────
+let _lastChatNotifToastTime = 0;
+function checkChatNotifications() {
+  if (!myTrainerId) return;
+  const notifs = LocalApi.getChatNotifications ? LocalApi.getChatNotifications(myTrainerId) : [];
+  if (!notifs.length) return;
+  // Don't re-show if banner already visible
+  if (document.getElementById('chatNotifBanner')) return;
+  // Throttle: max once every 8s to avoid spam during rapid polling
+  const now = Date.now();
+  if (now - _lastChatNotifToastTime < 8000) return;
+  _lastChatNotifToastTime = now;
+
+  // Group by client name
+  const byClient = {};
+  notifs.forEach(n => { byClient[n.clientName] = (byClient[n.clientName] || 0) + 1; });
+  const names = Object.keys(byClient);
+  const totalCount = notifs.length;
+  const msg = names.length === 1
+    ? `Nowa wiadomość od ${names[0]}`
+    : `Nowe wiadomości od: ${names.slice(0,3).join(', ')}${names.length>3?'…':''}`;
+
+  // Show persistent banner
+  showChatNotifBanner(msg, totalCount, names);
+  LocalApi.markChatNotificationsShown(myTrainerId);
+}
+
+function showChatNotifBanner(msg, totalCount, names) {
+  // Remove existing banner if any
+  const old = document.getElementById('chatNotifBanner');
+  if (old) old.remove();
+
+  const trainer = LocalApi.getTrainerById ? LocalApi.getTrainerById(myTrainerId) : null;
+  const trainerEmail = trainer && trainer.email ? trainer.email : '';
+
+  const banner = document.createElement('div');
+  banner.id = 'chatNotifBanner';
+  banner.style.cssText = 'position:fixed;top:72px;right:20px;z-index:9999;background:#fff;border:2.5px solid var(--green);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.22);padding:16px 20px;max-width:360px;font-family:inherit;animation:slideIn .3s ease;';
+  banner.innerHTML = `
+    <div style="display:flex;gap:10px;align-items:flex-start;">
+      <div style="font-size:28px;line-height:1;flex-shrink:0;">💬</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:800;font-size:14px;margin-bottom:3px;color:#1a1a1a;">💬 ${esc(msg)}</div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:10px;">${totalCount} nowych wiadomości na czacie</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="(function(){var n=document.getElementById('chatNotifBanner');if(n)n.remove();var el=document.querySelector('.ni[onclick*=\\'chat\\']');showSec('chat',el);})()"
+            style="padding:6px 14px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">
+            📩 Otwórz chat
+          </button>
+          ${trainerEmail ? `<button onclick="openMailtoNotif('${esc(trainerEmail)}','${esc(msg)}')"
+            style="padding:6px 14px;background:#ebf4ff;color:#2b6cb0;border:1.5px solid #4299e1;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">
+            📧 Email
+          </button>` : ''}
+          <button onclick="document.getElementById('chatNotifBanner').remove();"
+            style="padding:6px 12px;background:#f7f7f7;color:#666;border:1.5px solid #ddd;border-radius:8px;font-size:12px;cursor:pointer;">
+            ✕ Zamknij
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(banner);
+  // NO auto-dismiss — requires user action to close
+}
+
+function openMailtoNotif(email, msg) {
+  const subject = encodeURIComponent('SAMtrening: Nowa wiadomość na czacie');
+  const body = encodeURIComponent(msg + '\n\nZaloguj się do panelu trenera: ' + window.location.href);
+  window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_blank');
+}
+
+// ── TRAINING PLAN MODAL ───────────────────────────────────────────────────────
+let tpmClientId = null;
+
+function openTrainingPlanModal(clientId) {
+  tpmClientId = clientId;
+  const clients = LocalApi.getClientsByTrainer ? LocalApi.getClientsByTrainer(myTrainerId) : [];
+  const c = clients.find(x=>x.id===clientId);
+  document.getElementById('tpmClientName').textContent = c ? `${c.name} ${c.surname}` : '';
+  document.getElementById('tpmTitle').value = '';
+  document.getElementById('tpmLink').value = '';
+  document.getElementById('tpmNotes').value = '';
+  tpmFileData = null;
+  const nameEl = document.getElementById('tpmFileName');
+  if (nameEl) nameEl.textContent = 'Brak pliku';
+  const clearBtn = document.getElementById('tpmFileClear');
+  if (clearBtn) clearBtn.style.display = 'none';
+  const inp = document.getElementById('tpmFileInput');
+  if (inp) inp.value = '';
+  renderTpmPlanList(clientId);
+  document.getElementById('trainPlanModal').classList.add('show');
+}
+
+function renderTpmPlanList(clientId) {
+  const plans = LocalApi.getTrainingPlan ? LocalApi.getTrainingPlan(clientId) : [];
+  const cont = document.getElementById('tpmPlanList');
+  if(!cont) return;
+  if(!plans.length) { cont.innerHTML = '<div style="font-size:.82rem;color:#bbb;text-align:center;padding:10px 0;">Brak planu treningowego</div>'; return; }
+  cont.innerHTML = `<div style="display:flex;flex-direction:column;gap:6px;">` + plans.slice().reverse().map(p=>`
+    <div style="background:#f8f8f8;border-radius:8px;padding:9px 12px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+      <div>
+        <div style="font-size:.86rem;font-weight:700;">${esc(p.name||p.title||'Plan')}</div>
+        ${p.data ? `<button onclick="downloadTrainerPlan('${p.id}')" style="font-size:.76rem;padding:3px 8px;background:var(--green);color:#fff;border:none;border-radius:5px;cursor:pointer;margin-top:3px;">⬇️ Pobierz plik</button>` : ''}
+        ${p.link?`<a href="${esc(p.link)}" target="_blank" style="font-size:.78rem;color:#4285F4;display:block;margin-top:3px;">🔗 ${esc(p.link.substring(0,50))}${p.link.length>50?'...':''}</a>`:''}
+        ${p.fileSize?`<div style="font-size:.7rem;color:#bbb;">${(p.fileSize/1024).toFixed(0)} KB · ${esc(p.fileType||'')}</div>`:''}
+        ${p.notes?`<div style="font-size:.76rem;color:var(--gray);margin-top:3px;">${esc(p.notes)}</div>`:''}
+        <div style="font-size:.7rem;color:#bbb;margin-top:2px;">${new Date(p.uploadedAt).toLocaleDateString('pl-PL',{day:'numeric',month:'short',year:'numeric'})}</div>
+      </div>
+      <button class="bsm bno" style="font-size:.72rem;padding:4px 8px;" onclick="deletePlan('${clientId}','${p.id}')">🗑</button>
+    </div>`).join('') + '</div>';
+}
+
+let tpmFileData = null; // stores base64 file data
+
+function handlePlanFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const MAX = 20 * 1024 * 1024; // 20MB
+  if (file.size > MAX) {
+    toast('Plik jest za duży! Maksymalny rozmiar to 20MB.', true);
+    input.value = '';
+    return;
+  }
+  const progressEl = document.getElementById('tpmFileProgress');
+  if (progressEl) { progressEl.style.display = 'block'; progressEl.textContent = '⏳ Wczytywanie pliku...'; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    tpmFileData = { data: e.target.result, fileType: file.type, fileSize: file.size, name: file.name };
+    // Auto-fill title if empty
+    const titleEl = document.getElementById('tpmTitle');
+    if (titleEl && !titleEl.value.trim()) titleEl.value = file.name.replace(/\.[^.]+$/, '');
+    const nameEl = document.getElementById('tpmFileName');
+    if (nameEl) nameEl.textContent = file.name + ' (' + (file.size/1024/1024).toFixed(1) + 'MB)';
+    const clearBtn = document.getElementById('tpmFileClear');
+    if (clearBtn) clearBtn.style.display = 'inline-block';
+    if (progressEl) { progressEl.style.display = 'none'; }
+    toast('✅ Plik wczytany: ' + file.name, false, true);
+  };
+  reader.onerror = function() {
+    toast('Błąd przy wczytywaniu pliku', true);
+    if (progressEl) progressEl.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearPlanFile() {
+  tpmFileData = null;
+  const inp = document.getElementById('tpmFileInput');
+  if (inp) inp.value = '';
+  const nameEl = document.getElementById('tpmFileName');
+  if (nameEl) nameEl.textContent = 'Brak pliku';
+  const clearBtn = document.getElementById('tpmFileClear');
+  if (clearBtn) clearBtn.style.display = 'none';
+}
+
+function saveTrainingPlan() {
+  if(!tpmClientId) return;
+  const title = document.getElementById('tpmTitle').value.trim();
+  const link = document.getElementById('tpmLink').value.trim();
+  if(!title && !tpmFileData && !link) { toast('Dodaj plik lub link i wpisz tytuł',true); return; }
+  const planData = {
+    name: title || (tpmFileData ? tpmFileData.name : 'Plan treningowy'),
+    link: link || null,
+    notes: document.getElementById('tpmNotes').value.trim(),
+    ...(tpmFileData || {})
+  };
+  const result = LocalApi.saveTrainingPlan(tpmClientId, myTrainerId, planData);
+  if (result && result.error) { toast('❌ ' + result.error, true); return; }
+  document.getElementById('tpmTitle').value='';
+  document.getElementById('tpmLink').value='';
+  document.getElementById('tpmNotes').value='';
+  clearPlanFile();
+  renderTpmPlanList(tpmClientId);
+  toast('✅ Plan zapisany',false,true);
+}
+
+function deletePlan(clientId, planId) {
+  if(!confirm('Usunąć ten plan?')) return;
+  LocalApi.deleteTrainingPlan(clientId, planId);
+  renderTpmPlanList(clientId);
+}
+
+function downloadTrainerPlan(planId) {
+  if(!tpmClientId) return;
+  const plans = LocalApi.getTrainingPlan ? LocalApi.getTrainingPlan(tpmClientId) : [];
+  const plan = plans.find(p=>p.id===planId);
+  if(!plan||!plan.data) { toast('Brak pliku',true); return; }
+  const a = document.createElement('a');
+  a.href = plan.data;
+  a.download = plan.name || 'plan';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// ── TANITA MEASUREMENTS ───────────────────────────────────────────────────────
+let tanitaClientId = null;
+let tanitaFileData = null;
+
+function openMeasurementModal(clientId) {
+  tanitaClientId = clientId;
+  tanitaFileData = null;
+  const clients = LocalApi.getClientsByTrainer ? LocalApi.getClientsByTrainer(myTrainerId) : [];
+  const c = clients.find(x=>x.id===clientId);
+  document.getElementById('tanitaClientName').textContent = c ? `${c.name} ${c.surname}` : '';
+  document.getElementById('tanitaTitle').value = '';
+  document.getElementById('tanitaDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('tanitaNotes').value = '';
+  document.getElementById('tanitaFileName').textContent = 'Brak pliku';
+  const clearBtn = document.getElementById('tanitaFileClear');
+  if (clearBtn) clearBtn.style.display = 'none';
+  const inp = document.getElementById('tanitaFileInput');
+  if (inp) inp.value = '';
+  renderTanitaList(clientId);
+  document.getElementById('tanitaModal').classList.add('show');
+}
+
+function handleTanitaFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 20 * 1024 * 1024) {
+    toast('Plik za duży! Max 20MB.', true);
+    input.value = '';
+    return;
+  }
+  const prog = document.getElementById('tanitaFileProgress');
+  if (prog) { prog.style.display = 'block'; prog.textContent = '⏳ Wczytywanie...'; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    tanitaFileData = { data: e.target.result, fileType: file.type, fileSize: file.size, fileName: file.name };
+    document.getElementById('tanitaFileName').textContent = file.name + ' (' + (file.size/1024).toFixed(0) + ' KB)';
+    const cb = document.getElementById('tanitaFileClear');
+    if (cb) cb.style.display = 'inline-block';
+    if (prog) prog.style.display = 'none';
+    // Auto-fill title
+    const titleEl = document.getElementById('tanitaTitle');
+    if (titleEl && !titleEl.value.trim()) {
+      const d = new Date(); titleEl.value = 'Tanita ' + d.toLocaleDateString('pl-PL', {month:'long',year:'numeric'});
+    }
+    toast('✅ PDF wczytany', false, true);
+  };
+  reader.onerror = () => { toast('Błąd pliku', true); if (prog) prog.style.display='none'; };
+  reader.readAsDataURL(file);
+}
+
+function clearTanitaFile() {
+  tanitaFileData = null;
+  const inp = document.getElementById('tanitaFileInput');
+  if (inp) inp.value = '';
+  document.getElementById('tanitaFileName').textContent = 'Brak pliku';
+  const cb = document.getElementById('tanitaFileClear');
+  if (cb) cb.style.display = 'none';
+}
+
+function saveTanitaMeasurement() {
+  if (!tanitaClientId) return;
+  if (!tanitaFileData) { toast('Wybierz plik PDF z pomiarem', true); return; }
+  const title = document.getElementById('tanitaTitle').value.trim() || 'Pomiar Tanita';
+  const dateVal = document.getElementById('tanitaDate').value || new Date().toISOString().split('T')[0];
+  const result = LocalApi.saveMeasurement(tanitaClientId, myTrainerId, {
+    title,
+    notes: document.getElementById('tanitaNotes').value.trim(),
+    takenAt: dateVal + 'T00:00:00.000Z',
+    ...tanitaFileData,
+  });
+  if (result && result.error) { toast('❌ ' + result.error, true); return; }
+  clearTanitaFile();
+  document.getElementById('tanitaTitle').value = '';
+  document.getElementById('tanitaNotes').value = '';
+  renderTanitaList(tanitaClientId);
+  toast('✅ Pomiar zapisany!', false, true);
+}
+
+function renderTanitaList(clientId) {
+  const cont = document.getElementById('tanitaMeasList');
+  if (!cont) return;
+  const ms = LocalApi.getMeasurements ? LocalApi.getMeasurements(clientId) : [];
+  if (!ms.length) { cont.innerHTML = '<div style="font-size:.82rem;color:#bbb;text-align:center;padding:10px;">Brak pomiarów</div>'; return; }
+  cont.innerHTML = ms.map(m => {
+    const d = m.takenAt ? new Date(m.takenAt).toLocaleDateString('pl-PL',{day:'numeric',month:'short',year:'numeric'}) : '';
+    const commentedAt = m.commentedAt ? new Date(m.commentedAt).toLocaleDateString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+    return `<div style="background:#f8f8f8;border-radius:8px;padding:9px 12px;margin-bottom:6px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:.86rem;font-weight:700;">📊 ${esc(m.title)}</div>
+          <div style="font-size:.74rem;color:#aaa;">${d}${m.fileSize?' · '+(m.fileSize/1024).toFixed(0)+' KB':''}</div>
+          ${m.notes?`<div style="font-size:.74rem;color:var(--gray);">${esc(m.notes)}</div>`:''}
+        </div>
+        <div style="display:flex;gap:4px;flex-shrink:0;">
+          ${m.data?`<button onclick="downloadMeasurement('${clientId}','${m.id}')" style="padding:4px 8px;background:var(--green);color:#fff;border:none;border-radius:5px;font-size:.72rem;cursor:pointer;">⬇️</button>`:''}
+          <button onclick="deleteMeasurement('${clientId}','${m.id}')" style="padding:4px 8px;background:#fff5f5;color:#e53e3e;border:1px solid #fc8181;border-radius:5px;font-size:.72rem;cursor:pointer;">🗑</button>
+        </div>
+      </div>
+      ${m.clientComment ? `<div style="margin-top:7px;padding:6px 9px;background:#f0fff4;border-left:3px solid var(--green);border-radius:5px;font-size:.74rem;"><span style="font-weight:700;color:var(--green);">💬 Komentarz klienta</span> <span style="color:#555;">(${commentedAt})</span><br>${esc(m.clientComment)}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function downloadMeasurement(clientId, measId) {
+  const ms = LocalApi.getMeasurements ? LocalApi.getMeasurements(clientId) : [];
+  const m = ms.find(x=>x.id===measId);
+  if (!m||!m.data) { toast('Brak pliku', true); return; }
+  const a = document.createElement('a');
+  a.href = m.data;
+  a.download = m.title ? m.title + '.pdf' : 'pomiar_tanita.pdf';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+function deleteMeasurement(clientId, measId) {
+  if (!confirm('Usunąć ten pomiar?')) return;
+  LocalApi.deleteMeasurement(clientId, measId);
+  renderTanitaList(clientId);
+}
+</script>
+<div class="ov" id="trainPlanModal">
+  <div class="modal" style="max-width:500px;">
+    <h3>📋 Plan treningowy klienta</h3>
+    <div class="msb" id="tpmClientName" style="margin-bottom:14px;"></div>
+    <div id="tpmPlanList" style="margin-bottom:16px;"></div>
+    <div style="background:var(--light);border-radius:10px;padding:14px;margin-bottom:14px;">
+      <label style="font-size:.82rem;font-weight:700;display:block;margin-bottom:8px;">📎 Dodaj plik / link</label>
+      <input type="text" id="tpmTitle" placeholder="Nazwa pliku / tytuł" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:8px;font-size:.88rem;font-family:inherit;outline:none;margin-bottom:7px;"/>
+      <!-- File upload section -->
+      <div style="margin-bottom:7px;">
+        <label style="font-size:.78rem;color:var(--gray);font-weight:600;display:block;margin-bottom:5px;">📁 Załącz plik z dysku (max 20MB):</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button type="button" onclick="document.getElementById('tpmFileInput').click()" style="padding:7px 14px;background:#fff;border:2px solid var(--border);border-radius:8px;font-size:.82rem;cursor:pointer;white-space:nowrap;">📂 Wybierz plik</button>
+          <div id="tpmFileName" style="font-size:.78rem;color:var(--gray);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Brak pliku</div>
+          <button type="button" id="tpmFileClear" onclick="clearPlanFile()" style="display:none;padding:4px 8px;background:#fff5f5;color:#e53e3e;border:1px solid #fc8181;border-radius:6px;font-size:.76rem;cursor:pointer;">✕</button>
+        </div>
+        <input type="file" id="tpmFileInput" style="display:none;" onchange="handlePlanFile(this)">
+        <div id="tpmFileProgress" style="display:none;margin-top:5px;font-size:.76rem;color:var(--green);">⏳ Wczytywanie pliku...</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px;">
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+        <div style="font-size:.72rem;color:#bbb;white-space:nowrap;">LUB podaj link</div>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+      <input type="text" id="tpmLink" placeholder="Link URL (Google Drive, Dropbox, itp.)" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:8px;font-size:.88rem;font-family:inherit;outline:none;margin-bottom:7px;"/>
+      <textarea id="tpmNotes" placeholder="Uwagi do planu..." rows="2" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:8px;font-size:.88rem;font-family:inherit;outline:none;resize:vertical;"></textarea>
+    </div>
+    <div class="mft">
+      <button class="btn-mc" onclick="document.getElementById('trainPlanModal').classList.remove('show')">Zamknij</button>
+      <button class="btn-ms" onclick="saveTrainingPlan()">💾 Zapisz plan</button>
+    </div>
+  </div>
+</div>
+
+<!-- TANITA MEASUREMENT MODAL -->
+<div class="ov" id="tanitaModal">
+  <div class="modal" style="max-width:520px;">
+    <h3>📊 Pomiary Tanita – <span id="tanitaClientName"></span></h3>
+    <div id="tanitaMeasList" style="margin-bottom:16px;max-height:240px;overflow-y:auto;"></div>
+    <div style="background:var(--light);border-radius:10px;padding:14px;margin-bottom:14px;">
+      <label style="font-size:.82rem;font-weight:700;display:block;margin-bottom:8px;">📎 Dodaj wynik pomiaru (PDF)</label>
+      <input type="text" id="tanitaTitle" placeholder="Tytuł pomiaru (np. Styczeń 2026)" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:8px;font-size:.88rem;font-family:inherit;outline:none;margin-bottom:7px;box-sizing:border-box;"/>
+      <input type="date" id="tanitaDate" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:8px;font-size:.88rem;font-family:inherit;outline:none;margin-bottom:7px;box-sizing:border-box;"/>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">
+        <button type="button" onclick="document.getElementById('tanitaFileInput').click()" style="padding:7px 14px;background:#fff;border:2px solid var(--border);border-radius:8px;font-size:.82rem;cursor:pointer;white-space:nowrap;">📂 Wybierz PDF</button>
+        <div id="tanitaFileName" style="font-size:.78rem;color:var(--gray);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Brak pliku</div>
+        <button type="button" id="tanitaFileClear" onclick="clearTanitaFile()" style="display:none;padding:4px 8px;background:#fff5f5;color:#e53e3e;border:1px solid #fc8181;border-radius:6px;font-size:.76rem;cursor:pointer;">✕</button>
+      </div>
+      <input type="file" id="tanitaFileInput" accept=".pdf,application/pdf" style="display:none;" onchange="handleTanitaFile(this)">
+      <div id="tanitaFileProgress" style="display:none;font-size:.76rem;color:var(--green);">⏳ Wczytywanie...</div>
+      <textarea id="tanitaNotes" placeholder="Uwagi do pomiaru..." rows="2" style="width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:8px;font-size:.88rem;font-family:inherit;outline:none;resize:vertical;box-sizing:border-box;"></textarea>
+    </div>
+    <div class="mft">
+      <button class="btn-mc" onclick="document.getElementById('tanitaModal').classList.remove('show')">Zamknij</button>
+      <button class="btn-ms" onclick="saveTanitaMeasurement()">💾 Zapisz pomiar</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

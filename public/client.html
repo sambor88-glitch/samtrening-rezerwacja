@@ -1,0 +1,2774 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#6CC04A">
+  <meta name="manifest" content="manifest.json">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%236CC04A' width='192' height='192'/><text x='96' y='110' font-size='80' fill='white' text-anchor='middle' font-weight='bold'>S</text></svg>">
+  <title>SAMtrening – Panel Klienta</title>
+  <script src="local-api.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --green: #6CC04A;
+      --dark: #1a1a1a;
+      --light: #f0f2f5;
+      --border: #e0e0e0;
+      --text: #333;
+      --text-light: #666;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--light);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* LOGIN SCREEN */
+    #loginWrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--green) 0%, #4a9d2f 100%);
+      padding: 20px;
+    }
+
+    .login-card {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    }
+
+    .login-card h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      color: var(--green);
+    }
+
+    .login-card p {
+      color: var(--text-light);
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(108, 192, 74, 0.1);
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      touch-action: manipulation;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--green) 0%, #4a9d2f 100%);
+      color: white;
+      width: 100%;
+      padding: 14px;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* APP LAYOUT */
+    .app {
+      display: flex;
+      min-height: 100vh;
+      background: var(--light);
+    }
+
+    .sb {
+      width: 260px;
+      background: white;
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      z-index: 100;
+    }
+
+    .main {
+      margin-left: 260px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sb-header {
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sb-logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 15px;
+    }
+
+    .sb-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--green);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      margin: 0 auto 10px;
+    }
+
+    .sb-name {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .sb-email {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    .sb-nav {
+      padding: 20px 0;
+    }
+
+    .nav-item {
+      padding: 12px 20px;
+      margin: 4px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-light);
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+    }
+
+    .nav-item:hover {
+      background: var(--light);
+      color: var(--green);
+    }
+
+    .nav-item.active {
+      background: rgba(108, 192, 74, 0.1);
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .nav-badge {
+      position: absolute;
+      right: 15px;
+      background: var(--danger);
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    /* TOPBAR */
+    .topbar {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .topbar-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    /* CONTENT AREA */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 30px;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    /* CARDS */
+    .bcard {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+    }
+
+    .bcard h2 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: var(--text);
+    }
+
+    .bcard h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    /* DASHBOARD */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* BOOKING */
+    .step-indicator {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      justify-content: center;
+    }
+
+    .step {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .step.active {
+      background: var(--green);
+      color: white;
+    }
+
+    .step.done {
+      background: var(--success);
+      color: white;
+    }
+
+    .trainer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .trainer-card {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .trainer-card:hover {
+      border-color: var(--green);
+      box-shadow: 0 4px 12px rgba(108, 192, 74, 0.2);
+    }
+
+    .trainer-card.selected {
+      border-color: var(--green);
+      background: rgba(108, 192, 74, 0.05);
+    }
+
+    .trainer-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--green);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+      margin: 0 auto 10px;
+    }
+
+    .trainer-name {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .trainer-role {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-bottom: 8px;
+    }
+
+    /* CALENDAR */
+    .calendar {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .cal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .cal-header button {
+      background: var(--green);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .cal-month {
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+
+    .cal-weekday {
+      text-align: center;
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--text-light);
+      padding: 8px 0;
+    }
+
+    .cal-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      background: var(--light);
+      color: var(--text-light);
+      transition: all 0.3s;
+    }
+
+    .cal-day.available {
+      cursor: pointer;
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .cal-day.available:hover {
+      border-color: var(--green);
+      background: rgba(108, 192, 74, 0.05);
+    }
+
+    .cal-day.selected {
+      background: var(--green);
+      color: white;
+      font-weight: 600;
+    }
+
+    .cal-day.disabled {
+      opacity: 0.4;
+    }
+
+    /* TIME SLOTS */
+    .time-slots {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .time-slot {
+      padding: 12px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      background: white;
+      transition: all 0.3s;
+      touch-action: manipulation;
+    }
+
+    .time-slot:hover {
+      border-color: var(--green);
+    }
+
+    .time-slot.selected {
+      background: var(--green);
+      border-color: var(--green);
+      color: white;
+    }
+
+    .time-slot.booked {
+      background: var(--border);
+      color: var(--text-light);
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    /* TABS */
+    .tabs {
+      display: flex;
+      gap: 10px;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: all 0.3s;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+    }
+
+    .tab-btn.active {
+      color: var(--green);
+      border-bottom-color: var(--green);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* TRAINING CARDS */
+    .training-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-left: 4px solid var(--green);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .training-info h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .training-detail {
+      font-size: 13px;
+      color: var(--text-light);
+      margin: 4px 0;
+    }
+
+    .training-status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+
+    .status-pending {
+      background: rgba(245, 158, 11, 0.2);
+      color: #d97706;
+    }
+
+    .status-confirmed {
+      background: rgba(16, 185, 129, 0.2);
+      color: #059669;
+    }
+
+    .status-cancelled {
+      background: rgba(239, 68, 68, 0.2);
+      color: #dc2626;
+    }
+
+    .training-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* CHAT */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 200px);
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .message {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .message.own {
+      justify-content: flex-end;
+    }
+
+    .message-bubble {
+      max-width: 70%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+
+    .message.other .message-bubble {
+      background: var(--light);
+      color: var(--text);
+    }
+
+    .message.own .message-bubble {
+      background: var(--green);
+      color: white;
+    }
+
+    .message-time {
+      font-size: 11px;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+
+    .chat-input-area {
+      padding: 15px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+    }
+
+    .chat-input-area input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .chat-input-area button {
+      padding: 10px 20px;
+      background: var(--green);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    /* PAYMENTS */
+    .payment-method {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 15px;
+    }
+
+    .payment-method:hover {
+      border-color: var(--green);
+      box-shadow: 0 4px 12px rgba(108, 192, 74, 0.15);
+    }
+
+    .payment-method.selected {
+      background: rgba(108, 192, 74, 0.05);
+      border-color: var(--green);
+    }
+
+    .payment-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .payment-name {
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    /* FORM ELEMENTS */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .form-row.full {
+      grid-template-columns: 1fr;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    /* BUTTONS */
+    .btn-sm {
+      padding: 8px 14px;
+      font-size: 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      touch-action: manipulation;
+      transition: all 0.3s;
+    }
+
+    .btn-sm.primary {
+      background: var(--green);
+      color: white;
+    }
+
+    .btn-sm.primary:active {
+      transform: scale(0.96);
+    }
+
+    .btn-sm.secondary {
+      background: var(--light);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-sm.danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-sm.secondary:active {
+      background: var(--border);
+    }
+
+    .btn-block {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      padding: 16px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: none;
+      z-index: 1000;
+      max-width: 300px;
+      font-size: 14px;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    .toast.success {
+      background: var(--success);
+      color: white;
+    }
+
+    .toast.error {
+      background: var(--danger);
+      color: white;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* TABLE */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    table th {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 2px solid var(--border);
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-light);
+    }
+
+    table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    /* PROFILE */
+    .profile-section {
+      margin-bottom: 30px;
+    }
+
+    .profile-section h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: var(--text);
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-light);
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .sb {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .main {
+        margin-left: 0;
+      }
+
+      .content {
+        padding: 15px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .trainer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .message-bubble {
+        max-width: 90%;
+      }
+
+      .topbar {
+        padding: 12px 15px;
+      }
+
+      .bcard {
+        padding: 15px;
+      }
+
+      .sb-nav {
+        display: flex;
+        gap: 5px;
+        overflow-x: auto;
+        padding: 0;
+      }
+
+      .nav-item {
+        flex: 0 0 auto;
+        margin: 0;
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+    }
+
+    .package-option {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 80px;
+    }
+    .package-option:hover, .package-option.selected {
+      border-color: var(--green);
+      background: rgba(108,192,74,0.07);
+    }
+    @keyframes lampPulse {
+      0%,100%{opacity:1;transform:scale(1);}
+      50%{opacity:.4;transform:scale(.8);}
+    }
+  </style>
+</head>
+<body>
+  <!-- LOGIN SCREEN -->
+  <div id="loginWrap">
+    <div class="login-card">
+      <h1>SAMtrening</h1>
+      <p>Zaloguj się do swojego konta</p>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">Email:</label>
+          <input type="email" id="loginEmail" placeholder="twój@email.pl" required>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Hasło:</label>
+          <input type="password" id="loginPassword" placeholder="Twoje hasło" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Zaloguj się</button>
+      </form>
+      <p style="text-align: center; margin-top: 20px; font-size: 12px; color: var(--text-light);">
+        Nie masz konta? Skontaktuj się z administracją
+      </p>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app" class="app" style="display: none;">
+    <!-- SIDEBAR -->
+    <aside class="sb">
+      <div class="sb-header">
+        <div class="sb-logo">SAMtrening</div>
+        <div class="sb-avatar" id="sbAvatar">S</div>
+        <div class="sb-name" id="sbName">Imię Nazwisko</div>
+        <div class="sb-email" id="sbEmail">email@example.com</div>
+      </div>
+      <nav class="sb-nav">
+        <div class="nav-item active" data-section="dashboard">
+          📊 Dashboard
+        </div>
+        <div class="nav-item" data-section="book">
+          📅 Zarezerwuj trening
+        </div>
+        <div class="nav-item" data-section="trainings">
+          🏋️ Moje treningi
+        </div>
+        <div class="nav-item" data-section="chat">
+          💬 Chat
+          <span class="nav-badge" id="chatBadge" style="display: none;">0</span><span id="clientChatLamp" style="display:none;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-left:6px;animation:lampPulse 1.2s ease-in-out infinite;vertical-align:middle;"></span>
+        </div>
+        <div class="nav-item" data-section="payments">
+          💳 Płatności
+        </div>
+        <div class="nav-item" data-section="plans">
+          📋 Plan treningowy
+        </div>
+        <div class="nav-item" data-section="measurements">
+          <span>📊</span>Wyniki pomiaru
+        </div>
+        <div class="nav-item" data-section="profile">
+          👤 Mój profil
+        </div>
+        <div class="nav-item" id="logoutBtn" style="margin-top: 20px; color: var(--danger);">
+          🚪 Wyloguj się
+        </div>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-title" id="topbarTitle">Dashboard</div>
+        <div class="topbar-actions">
+          <span id="userGreeting">Cześć!</span>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <!-- DASHBOARD -->
+        <div id="sec-dashboard" class="section active">
+          <div class="bcard">
+            <h2>📅 Najbliższy trening</h2>
+            <div id="nextTrainingInfo" style="padding: 15px 0;">
+              <p style="color: var(--text-light); text-align: center;">Brak zaplanowanych treningów</p>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" id="statAllSessions">0</div>
+              <div class="stat-label">Sesji razem</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statCompletedSessions">0</div>
+              <div class="stat-label">Zrealizowanych</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statUpcomingSessions">0</div>
+              <div class="stat-label">Zaplanowanych</div>
+            </div>
+          </div>
+
+          <div class="bcard">
+            <h2>🎯 Szybkie akcje</h2>
+            <button class="btn btn-primary btn-block" onclick="showSection('book')">
+              ➕ Zarezerwuj nowy trening
+            </button>
+          </div>
+
+          <div class="bcard" id="packageCard" style="display: none;">
+            <h2>📦 Twój pakiet</h2>
+            <div id="packageInfo"></div>
+          </div>
+        </div>
+
+        <!-- REZERWACJA TRENINGU -->
+        <div id="sec-book" class="section">
+          <div class="step-indicator">
+            <div class="step active" id="step1">1</div>
+            <div class="step" id="step2">2</div>
+            <div class="step" id="step3">3</div>
+            <div class="step" id="step4">4</div>
+          </div>
+
+          <!-- KROK 1: Wybór trenera -->
+          <div id="bookStep1" class="bcard">
+            <h2>Krok 1: Wybierz trenera</h2>
+            <div class="trainer-grid" id="trainerList"></div>
+          </div>
+
+          <!-- KROK 2: Kalendarz i godziny -->
+          <div id="bookStep2" class="bcard" style="display: none;">
+            <h2>Krok 2: Wybierz dzień i godzinę</h2>
+            <div class="calendar">
+              <div class="cal-header">
+                <button type="button" onclick="prevMonth()">← Poprzedni</button>
+                <div class="cal-month" id="calMonth">Styczeń 2024</div>
+                <button type="button" onclick="nextMonth()">Następny →</button>
+              </div>
+              <div class="cal-weekdays">
+                <div class="cal-weekday">Pn</div>
+                <div class="cal-weekday">Wt</div>
+                <div class="cal-weekday">Śr</div>
+                <div class="cal-weekday">Cz</div>
+                <div class="cal-weekday">Pt</div>
+                <div class="cal-weekday">Sb</div>
+                <div class="cal-weekday">Nd</div>
+              </div>
+              <div class="cal-days" id="calDays"></div>
+            </div>
+            <h3 style="margin-top: 30px;">Dostępne godziny:</h3>
+            <div class="time-slots" id="timeSlots"></div>
+          </div>
+
+          <!-- KROK 3: Typ i płatność -->
+          <div id="bookStep3" class="bcard" style="display: none;">
+            <h2>Krok 3: Typ treningu i płatność</h2>
+            <div class="form-group">
+              <label>Typ treningu:</label>
+              <select id="bookType">
+                <option value="">Wybierz typ...</option>
+                <option value="online">🖥️ Online</option>
+                <option value="stationary">🏢 Stacjonarnie</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Typ płatności:</label>
+              <select id="bookPayment">
+                <option value="">Wybierz metodę...</option>
+                <option value="blik">💳 BLIK</option>
+                <option value="bank">🏦 Przelew bankowy</option>
+                <option value="cash">💵 Gotówka</option>
+                <option value="card">💳 Karta (Stripe – wkrótce)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Wiadomość do trenera:</label>
+              <textarea id="bookMessage" placeholder="Napisz coś o sobie lub swoich oczekiwaniach (opcjonalnie)"></textarea>
+            </div>
+          </div>
+
+          <!-- KROK 4: Podsumowanie -->
+          <div id="bookStep4" class="bcard" style="display: none;">
+            <h2>Podsumowanie rezerwacji</h2>
+            <div id="bookSummary" style="padding: 20px 0; border-bottom: 1px solid var(--border); margin-bottom: 20px;">
+              <!-- treść wypełni się JS -->
+            </div>
+            <button class="btn btn-primary btn-block" id="bookConfirmBtn" onclick="confirmBooking()">
+              ✅ Potwierdź rezerwację
+            </button>
+            <button class="btn btn-secondary btn-block" onclick="goBackToStep(3)">
+              Cofnij
+            </button>
+          </div>
+
+          <!-- Nawigacja między krokami -->
+          <div style="margin-top: 30px; display: flex; gap: 10px; justify-content: center;">
+            <button class="btn btn-secondary" id="bookBackBtn" onclick="goBackBooking()" style="display: none;">
+              ← Wstecz
+            </button>
+            <button class="btn btn-primary" id="bookNextBtn" onclick="nextBookingStep()">
+              Dalej →
+            </button>
+          </div>
+        </div>
+
+        <!-- MOJE TRENINGI -->
+        <div id="sec-trainings" class="section">
+          <div id="trainings-pkg-banner" style="display:none;"></div>
+          <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(this, 'trainings-upcoming')">📅 Nadchodzące</button>
+            <button class="tab-btn" onclick="switchTab(this, 'trainings-pending')">⏳ Oczekujące</button>
+            <button class="tab-btn" onclick="switchTab(this, 'trainings-history')">📜 Historia</button>
+            <button class="tab-btn" onclick="switchTab(this, 'trainings-cancelled')">❌ Anulowane</button>
+          </div>
+
+          <div id="trainings-upcoming" class="tab-content active"></div>
+          <div id="trainings-pending" class="tab-content"></div>
+          <div id="trainings-history" class="tab-content"></div>
+          <div id="trainings-cancelled" class="tab-content"></div>
+        </div>
+
+        <!-- CHAT -->
+        <div id="sec-chat" class="section">
+          <div id="noChatTrainer" class="bcard" style="display: none;">
+            <p style="text-align: center; color: var(--text-light); padding: 30px 0;">
+              ⚠️ Nie masz przypisanego trenera. Skontaktuj się z administracją.
+            </p>
+          </div>
+          <div id="chatWrap" style="display: none;">
+            <div class="chat-container">
+              <div style="display:flex;justify-content:flex-end;padding:8px 15px 0;border-bottom:1px solid var(--border);">
+                <button onclick="clearAllChat()" style="font-size:.76rem;color:#e53e3e;background:none;border:none;cursor:pointer;padding:4px 8px;">🗑 Wyczyść chat</button>
+              </div>
+              <div class="chat-messages" id="chatMessages"></div>
+              <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Napisz wiadomość...">
+                <button onclick="sendChatMessage()">Wyślij</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PŁATNOŚCI -->
+        <div id="sec-payments" class="section">
+          <div class="bcard">
+            <h2>💰 Stan konta</h2>
+            <div id="paymentBalance"></div>
+          </div>
+
+          <div class="bcard">
+            <h2>➕ Dodaj płatność</h2>
+            <div class="form-group">
+              <label>Metoda płatności:</label>
+            </div>
+            <div id="paymentMethods"></div>
+            <div id="paymentMethodInfo"></div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Kwota (zł):</label>
+                <input type="number" id="paymentAmount" placeholder="50.00" min="1" step="0.01">
+              </div>
+              <div class="form-group">
+                <label>Opis:</label>
+                <input type="text" id="paymentDesc" placeholder="np. Wpłata za trening">
+              </div>
+            </div>
+            <button class="btn btn-primary btn-block" onclick="submitPayment()">
+              💳 Prześlij płatność
+            </button>
+          </div>
+
+          <div class="bcard">
+            <h2>📜 Historia płatności</h2>
+            <div id="paymentHistory"></div>
+          </div>
+
+          <div class="bcard">
+            <h2>📦 Kup pakiet sesji</h2>
+            <div id="packagesList"></div>
+            <div style="margin-top:16px;">
+              <label style="font-size:13px;font-weight:600;">Liczba sesji:</label>
+              <div style="display:flex;gap:10px;margin:8px 0 12px;flex-wrap:wrap;" id="packageOptions">
+                <div class="package-option" onclick="selectPackage(4)" data-sessions="4">
+                  <div style="font-size:22px;font-weight:700;">4</div>
+                  <div style="font-size:12px;">sesje</div>
+                </div>
+                <div class="package-option" onclick="selectPackage(8)" data-sessions="8">
+                  <div style="font-size:22px;font-weight:700;">8</div>
+                  <div style="font-size:12px;">sesji</div>
+                </div>
+                <div class="package-option" onclick="selectPackage(12)" data-sessions="12">
+                  <div style="font-size:22px;font-weight:700;">12</div>
+                  <div style="font-size:12px;">sesji</div>
+                </div>
+                <div class="package-option" onclick="selectPackage(16)" data-sessions="16">
+                  <div style="font-size:22px;font-weight:700;">16</div>
+                  <div style="font-size:12px;">sesji</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                <label style="font-size:13px;color:var(--text-light);white-space:nowrap;">Własna ilość:</label>
+                <input type="number" id="packageCustom" min="1" max="100" placeholder="np. 20"
+                  style="width:80px;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;"
+                  oninput="selectPackage(parseInt(this.value)||0)">
+              </div>
+              <div id="packagePrice" style="font-size:13px;color:var(--text-light);margin-bottom:12px;"></div>
+              <button class="btn btn-primary btn-block" onclick="buyPackage()">💳 Kup pakiet</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MÓJ PROFIL -->
+        <div id="sec-profile" class="section">
+          <div class="bcard">
+            <h3>Edycja danych</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Imię:</label>
+                <input type="text" id="profileName">
+              </div>
+              <div class="form-group">
+                <label>Nazwisko:</label>
+                <input type="text" id="profileSurname">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Telefon:</label>
+                <input type="tel" id="profilePhone">
+              </div>
+              <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="profileEmail" disabled>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Cel treningowy:</label>
+              <select id="profileGoal">
+                <option value="">-- Brak --</option>
+                <option value="weight_loss">Schudnąć</option>
+                <option value="muscle_gain">Przybrać mięśni</option>
+                <option value="fitness">Ogólna kondycja</option>
+                <option value="rehabilitation">Rehabilitacja</option>
+                <option value="sports">Przygotowanie sportowe</option>
+              </select>
+            </div>
+            <button class="btn btn-primary btn-block" onclick="saveProfileData()">
+              ✅ Zapisz zmiany
+            </button>
+          </div>
+
+          <div class="bcard">
+            <h3>Zmiana hasła</h3>
+            <div class="form-group">
+              <label>Obecne hasło:</label>
+              <input type="password" id="profileOldPw">
+            </div>
+            <div class="form-group">
+              <label>Nowe hasło:</label>
+              <input type="password" id="profileNewPw">
+            </div>
+            <div class="form-group">
+              <label>Potwierdź hasło:</label>
+              <input type="password" id="profileNewPw2">
+            </div>
+            <button class="btn btn-primary btn-block" onclick="changePassword()">
+              🔐 Zmień hasło
+            </button>
+          </div>
+
+          <div class="bcard">
+            <h3>Pomiary (Waga)</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Waga (kg):</label>
+                <input type="number" id="progressWeight" placeholder="75.5" step="0.1">
+              </div>
+              <div class="form-group">
+                <label>Data:</label>
+                <input type="date" id="progressDate">
+              </div>
+            </div>
+            <button class="btn btn-primary btn-block" onclick="addProgress()">
+              📊 Dodaj pomiar
+            </button>
+            <table style="margin-top: 20px;">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Waga (kg)</th>
+                </tr>
+              </thead>
+              <tbody id="progressTable"></tbody>
+            </table>
+          </div>
+
+          <div class="bcard" style="border: 2px solid var(--danger); background: rgba(239, 68, 68, 0.05);">
+            <button class="btn btn-danger btn-block" id="logoutBtnProfile">
+              🚪 Wyloguj się
+            </button>
+          </div>
+        </div>
+
+        <!-- PLAN TRENINGOWY -->
+        <div id="sec-plans" class="section">
+          <div class="bcard">
+            <h2>📋 Mój plan treningowy</h2>
+            <div id="plansList"></div>
+          </div>
+        </div>
+
+        <!-- WYNIKI POMIARU -->
+        <div id="sec-measurements" class="section">
+          <div class="bcard">
+            <h2>📊 Wyniki pomiarów ciała</h2>
+            <p style="font-size:13px;color:var(--text-light);margin-bottom:16px;">Wyniki analizy składu ciała z wagi Tanita dodane przez Twojego trenera.</p>
+            <div id="measurementsList"></div>
+          </div>
+          <!-- PDF Preview Modal -->
+          <div id="pdfPreviewModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:9999;flex-direction:column;align-items:center;justify-content:center;">
+            <div style="background:#fff;border-radius:14px;width:90%;max-width:800px;height:88vh;display:flex;flex-direction:column;overflow:hidden;">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #eee;">
+                <div id="pdfPreviewTitle" style="font-weight:700;font-size:15px;"></div>
+                <div style="display:flex;gap:8px;">
+                  <button id="pdfDownloadBtn" style="padding:7px 14px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:700;">⬇️ Pobierz</button>
+                  <button onclick="closePdfPreview()" style="padding:7px 14px;background:#f0f0f0;color:#333;border:none;border-radius:8px;font-size:13px;cursor:pointer;">✕ Zamknij</button>
+                </div>
+              </div>
+              <div style="flex:1;overflow:hidden;">
+                <iframe id="pdfPreviewFrame" style="width:100%;height:100%;border:none;" title="Podgląd PDF"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ── Date helpers (timezone-safe) ──────────────────────────────────────────
+    function toLocalDate(d) {
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    }
+    function todayLocalStr() { return toLocalDate(new Date()); }
+
+    // ===== GLOBAL STATE =====
+    let CLIENT = null;
+    let BOOKING = {
+      step: 1,
+      trainerId: null,
+      trainer: null,
+      date: null,
+      time: null,
+      type: null,
+      payment: null,
+      message: ''
+    };
+    let CURRENT_MONTH = new Date();
+    let AVAILABLE_SLOTS = {};
+    let SELECTED_PAYMENT_METHOD = null;
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', function() {
+      const token = sessionStorage.getItem('client_token');
+      const data = sessionStorage.getItem('client_data');
+      if (token && data) {
+        CLIENT = JSON.parse(data);
+        showApp();
+        initApp();
+        // Sync fresh data from server on every page load
+        LocalApi._syncDown('client').then(() => {
+          if (typeof loadDashboard === 'function') loadDashboard();
+        }).catch(() => {});
+      } else {
+        // Redirect to unified login
+        window.location.href = window.location.protocol === 'file:' ? 'login.html' : '/login?role=client';
+      }
+    });
+
+    function showLogin() {
+      document.getElementById('loginWrap').style.display = 'flex';
+      document.getElementById('app').style.display = 'none';
+      document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    }
+
+    function showApp() {
+      document.getElementById('loginWrap').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+
+      if (!email || !password) {
+        showToast('Wypełnij wszystkie pola', 'error');
+        return;
+      }
+
+      // Try server login first, fall back to localStorage
+      let client = null;
+      try {
+        const res = await fetch('/api/auth/client/login', {
+          method: 'POST', credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (data.success) client = data.client;
+      } catch(err) { /* server unreachable */ }
+
+      if (!client) {
+        // Fallback: localStorage
+        client = LocalApi.verifyClient(email, password);
+      }
+
+      if (!client) {
+        showToast('Nieprawidłowe dane logowania', 'error');
+        return;
+      }
+
+      CLIENT = client;
+      sessionStorage.setItem('client_token', `${client.id}:${email}`);
+      sessionStorage.setItem('client_data', JSON.stringify(client));
+
+      showApp();
+      initApp();
+      // Sync fresh data from server
+      LocalApi._syncDown('client').then(() => {
+        if (typeof loadDashboard === 'function') loadDashboard();
+      }).catch(() => {});
+    }
+
+    function initApp() {
+      // Sidebar
+      const initials = (CLIENT.name[0] || 'K') + (CLIENT.surname[0] || 'L');
+      document.getElementById('sbAvatar').textContent = initials.toUpperCase();
+      document.getElementById('sbName').textContent = `${CLIENT.name} ${CLIENT.surname}`;
+      document.getElementById('sbEmail').textContent = CLIENT.email;
+      document.getElementById('userGreeting').textContent = `Cześć, ${CLIENT.name}!`;
+
+      // Nav listeners
+      document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+        item.addEventListener('click', function() {
+          const section = this.dataset.section;
+          showSection(section);
+        });
+      });
+
+      // Logout
+      document.getElementById('logoutBtn').addEventListener('click', logout);
+      document.getElementById('logoutBtnProfile').addEventListener('click', logout);
+
+      // Load dashboard
+      loadDashboard();
+      loadPackageInfo();
+      loadTrainers();
+      loadMyTrainings();
+      loadChat();
+      loadPayments();
+      loadTrainingPlans();
+      loadProfile();
+
+      // Set today's date for progress
+      const today = todayLocalStr();
+      document.getElementById('progressDate').value = today;
+
+      // Request push notification permission
+      if('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+      // Check for upcoming trainings every 5 minutes
+      setInterval(checkUpcomingReminders, 300000);
+      checkUpcomingReminders();
+    }
+
+    // ===== DASHBOARD =====
+    function loadDashboard() {
+      const bookings = LocalApi.getAdminBookings() || [];
+      const myBookings = bookings.filter(b =>
+        (CLIENT.phone && b.phone === CLIENT.phone) ||
+        (CLIENT.id && b.clientId === CLIENT.id)
+      );
+
+      const todayDash = todayLocalStr();
+
+      // Nadchodzące: potwierdzone + oczekujące z przyszłości
+      const upcoming = myBookings
+        .filter(b => (b.status === 'confirmed' || b.status === 'pending') && b.date >= todayDash)
+        .sort((a, b) => a.date.localeCompare(b.date) || (a.time||'').localeCompare(b.time||''));
+
+      // Zrealizowane: status='completed' lub potwierdzone z przeszłości
+      const completedCount = myBookings.filter(b =>
+        b.status === 'completed' ||
+        (b.status === 'confirmed' && b.date < todayDash)
+      ).length;
+
+      // Statystyki
+      document.getElementById('statAllSessions').textContent = myBookings.filter(b => b.status !== 'cancelled').length;
+      document.getElementById('statCompletedSessions').textContent = completedCount;
+      document.getElementById('statUpcomingSessions').textContent = upcoming.length;
+
+      // Najbliższy trening
+      if (upcoming.length > 0) {
+        const next = upcoming[0];
+        const trainer = LocalApi.getTrainerById(next.trainerId);
+        document.getElementById('nextTrainingInfo').innerHTML = `
+          <div class="training-card" style="margin: 0; border-left: 4px solid var(--green); flex-direction: column;">
+            <div class="training-info">
+              <h3>${trainer ? trainer.name + ' ' + trainer.surname : 'Trener'}</h3>
+              <div class="training-detail">📅 ${formatDate(next.date)}</div>
+              <div class="training-detail">⏰ ${next.time}</div>
+              <div class="training-detail">📍 ${next.trainingType === 'online' ? '🖥️ Online' : '🏢 Stacjonarnie'}</div>
+              ${next.trainingType === 'online' && next.meetLink ? `<div class="training-detail">🔗 <a href="${next.meetLink}" target="_blank" style="color: var(--green); text-decoration: none;">Link do spotka nia</a></div>` : ''}
+              <div style="margin-top: 15px; display: flex; gap: 10px;">
+                <button class="btn btn-sm primary" onclick="showSection('chat')">💬 Wyślij wiadomość</button>
+                <button class="btn btn-sm danger" onclick="cancelTraining('${next.id}')">❌ Anuluj</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // ===== REZERWACJA TRENINGU =====
+    function loadTrainers() {
+      const trainers = LocalApi.getTrainersList ? LocalApi.getTrainersList() : [];
+      if(!trainers.length) {
+        document.getElementById('trainerList').innerHTML = '<p style="color:var(--text-light);text-align:center;padding:20px;">Brak dostępnych trenerów</p>';
+        return;
+      }
+      let html = '';
+      trainers.forEach(t => {
+        const fullName = t.name || '';
+        const parts = fullName.split(' ');
+        const firstName = parts[0] || 'T';
+        const lastName = parts.slice(1).join(' ') || '';
+        const initials = (firstName[0]||'T') + (lastName[0]||'T');
+        const specializations = (t.specializations || []).slice(0,3).join(', ') || (t.specialization || 'Trener personalny');
+        html += `
+          <div class="trainer-card ${CLIENT.trainerId === t.id ? 'selected' : ''}" data-trainer-id="${t.id}" onclick="selectTrainer('${t.id}', '${fullName.replace(/'/g,"\\'")}')">
+            <div class="trainer-avatar">${escapeHtml(initials.toUpperCase())}</div>
+            <div class="trainer-name">${escapeHtml(fullName)}</div>
+            <div class="trainer-role">${escapeHtml(t.role || 'Trener personalny')}</div>
+            <div style="font-size:11px;color:var(--text-light);margin-top:4px;">${escapeHtml(specializations.substring(0,60))}</div>
+          </div>
+        `;
+      });
+      document.getElementById('trainerList').innerHTML = html;
+
+      if (CLIENT.trainerId) {
+        BOOKING.trainerId = CLIENT.trainerId;
+        const trainer = trainers.find(t => t.id === CLIENT.trainerId);
+        if (trainer) BOOKING.trainer = trainer.name || '';
+      }
+    }
+
+    function selectTrainer(id, name) {
+      BOOKING.trainerId = id;
+      BOOKING.trainer = name;
+      document.querySelectorAll('.trainer-card').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('.trainer-card').forEach(c => {
+        if(c.dataset.trainerId === id) c.classList.add('selected');
+      });
+    }
+
+    function nextBookingStep() {
+      if (BOOKING.step === 1) {
+        if (!BOOKING.trainerId) {
+          showToast('Wybierz trenera', 'error');
+          return;
+        }
+        BOOKING.step = 2;
+        renderBookingUI();
+        renderCalendar();
+      } else if (BOOKING.step === 2) {
+        if (!BOOKING.date || !BOOKING.time) {
+          showToast('Wybierz dzień i godzinę', 'error');
+          return;
+        }
+        BOOKING.step = 3;
+        renderBookingUI();
+      } else if (BOOKING.step === 3) {
+        // Read values from DOM selects before validating
+        BOOKING.type = (document.getElementById('bookType') || {}).value || '';
+        BOOKING.payment = (document.getElementById('bookPayment') || {}).value || '';
+        BOOKING.message = (document.getElementById('bookMessage') || {}).value || '';
+        if (!BOOKING.type || !BOOKING.payment) {
+          showToast('Wybierz typ treningu i płatność', 'error');
+          return;
+        }
+        BOOKING.step = 4;
+        renderBookingUI();
+        renderBookingSummary();
+      }
+    }
+
+    function goBackBooking() {
+      if (BOOKING.step > 1) {
+        BOOKING.step--;
+        renderBookingUI();
+      }
+    }
+
+    function goBackToStep(s) {
+      BOOKING.step = s;
+      renderBookingUI();
+    }
+
+    function renderBookingUI() {
+      for (let i = 1; i <= 4; i++) {
+        const step = document.getElementById(`bookStep${i}`);
+        const stepBtn = document.getElementById(`step${i}`);
+        if (i < BOOKING.step) {
+          step.style.display = 'none';
+          stepBtn.classList.remove('active');
+          stepBtn.classList.add('done');
+        } else if (i === BOOKING.step) {
+          step.style.display = 'block';
+          stepBtn.classList.remove('done');
+          stepBtn.classList.add('active');
+        } else {
+          step.style.display = 'none';
+          stepBtn.classList.remove('active', 'done');
+        }
+      }
+      document.getElementById('bookBackBtn').style.display = BOOKING.step > 1 ? 'block' : 'none';
+      document.getElementById('bookNextBtn').style.display = BOOKING.step < 4 ? 'block' : 'none';
+    }
+
+    function renderCalendar() {
+      if (!BOOKING.trainerId) return;
+      const month = CURRENT_MONTH.getMonth();
+      const year = CURRENT_MONTH.getFullYear();
+      document.getElementById('calMonth').textContent = new Date(year, month).toLocaleDateString('pl-PL', { month: 'long', year: 'numeric' });
+
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const daysInMonth = lastDay.getDate();
+      const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+
+      // Get availability: { date: [slots] }
+      const trainerAvail = LocalApi.getTrainerAvail ? LocalApi.getTrainerAvail(BOOKING.trainerId) : {};
+      const todayStr = todayLocalStr();
+
+      let html = '';
+      for (let i = 0; i < startDay; i++) {
+        html += `<div class="cal-day disabled"></div>`;
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const d = new Date(year, month, day);
+        const dateStr = toLocalDate(d); // FIXED: use local date, not UTC
+        const isPast = dateStr < todayStr;
+        const selected = BOOKING.date === dateStr;
+        const hasSlots = (trainerAvail[dateStr]||[]).length > 0;
+
+        let cls = 'cal-day';
+        if (isPast) cls += ' disabled';
+        else if (hasSlots) cls += ' available';
+        else cls += ' disabled';
+        if (selected) cls += ' selected';
+
+        html += `<div class="${cls}" onclick="${!isPast && hasSlots ? `selectDate('${dateStr}')` : ''}">${day}</div>`;
+      }
+      document.getElementById('calDays').innerHTML = html;
+    }
+
+    function selectDate(dateStr) {
+      BOOKING.date = dateStr;
+      renderCalendar();
+      loadTimeSlots();
+    }
+
+    function loadTimeSlots() {
+      if (!BOOKING.date) {
+        document.getElementById('timeSlots').innerHTML = '<p style="color: var(--text-light); grid-column: 1/-1;">Wybierz dzień z kalendarza</p>';
+        return;
+      }
+      const avData = LocalApi.getAvailForDate ? LocalApi.getAvailForDate(BOOKING.trainerId, BOOKING.date) : { available:[], booked:[] };
+      const availTimes = avData.available || [];
+      const bookedTimes = avData.booked || [];
+
+      if (!availTimes.length) {
+        document.getElementById('timeSlots').innerHTML = '<p style="color: var(--text-light); grid-column: 1/-1;">Brak dostępnych godzin w tym dniu</p>';
+        return;
+      }
+
+      let html = '';
+      availTimes.forEach(time => {
+        const booked = bookedTimes.includes(time);
+        const selected = BOOKING.time === time;
+        html += `
+          <div class="time-slot ${booked ? 'booked' : ''} ${selected ? 'selected' : ''}"
+               onclick="${!booked ? `selectTime('${time}')` : ''}">
+            ${time}
+          </div>
+        `;
+      });
+      document.getElementById('timeSlots').innerHTML = html;
+    }
+
+    function selectTime(time) {
+      BOOKING.time = time;
+      loadTimeSlots();
+    }
+
+    function prevMonth() {
+      CURRENT_MONTH.setMonth(CURRENT_MONTH.getMonth() - 1);
+      renderCalendar();
+    }
+
+    function nextMonth() {
+      CURRENT_MONTH.setMonth(CURRENT_MONTH.getMonth() + 1);
+      renderCalendar();
+    }
+
+    function renderBookingSummary() {
+      const type = document.getElementById('bookType').value;
+      const payment = document.getElementById('bookPayment').value;
+      BOOKING.type = type;
+      BOOKING.payment = payment;
+      BOOKING.message = document.getElementById('bookMessage').value;
+
+      const typeText = type === 'online' ? '🖥️ Online' : '🏢 Stacjonarnie';
+      const paymentText = payment === 'blik' ? '💳 BLIK' : payment === 'bank' ? '🏦 Przelew' : '💵 Gotówka';
+
+      document.getElementById('bookSummary').innerHTML = `
+        <p><strong>Trener:</strong> ${BOOKING.trainer}</p>
+        <p><strong>Data:</strong> ${formatDate(BOOKING.date)}</p>
+        <p><strong>Godzina:</strong> ${BOOKING.time}</p>
+        <p><strong>Typ:</strong> ${typeText}</p>
+        <p><strong>Płatność:</strong> ${paymentText}</p>
+        ${BOOKING.message ? `<p><strong>Wiadomość:</strong> ${BOOKING.message}</p>` : ''}
+      `;
+    }
+
+    function confirmBooking() {
+      if (!BOOKING.trainerId || !BOOKING.date || !BOOKING.time || !BOOKING.type || !BOOKING.payment) {
+        showToast('Wypełnij wszystkie pola', 'error');
+        return;
+      }
+
+      const payload = {
+        trainerId: BOOKING.trainerId,
+        trainer: BOOKING.trainer,
+        date: BOOKING.date,
+        time: BOOKING.time,
+        name: CLIENT.name,
+        surname: CLIENT.surname,
+        phone: CLIENT.phone,
+        email: CLIENT.email,
+        trainingType: BOOKING.type,
+        language: 'pl',
+        paymentChoice: BOOKING.payment,
+        clientMessage: BOOKING.message
+      };
+
+      try {
+        const bookingResult = LocalApi.createClientBooking(payload);
+        if (bookingResult && bookingResult.error) {
+          showToast('❌ ' + bookingResult.error, 'error');
+          return;
+        }
+        showToast('✅ Rezerwacja złożona! Trener potwierdzi wkrótce.', 'success');
+        // Show payment instructions based on method
+        const tid = BOOKING.trainerId;
+        const trainerData = tid ? LocalApi.getTrainerById(tid) : null;
+        if (BOOKING.payment === 'blik' && trainerData && trainerData.blikPhone) {
+          const price = LocalApi.getClientPrice ? LocalApi.getClientPrice(tid, CLIENT.phone||'') : 200;
+          setTimeout(() => {
+            const msg = `💳 BLIK: Wyślij ${price} PLN na numer ${trainerData.blikPhone}.\nTytuł: ${CLIENT.name} ${CLIENT.surname||''} – trening ${BOOKING.date} ${BOOKING.time}`;
+            alert(msg);
+          }, 500);
+        } else if (BOOKING.payment === 'bank' && trainerData && trainerData.bankAccount) {
+          const price = LocalApi.getClientPrice ? LocalApi.getClientPrice(tid, CLIENT.phone||'') : 200;
+          setTimeout(() => {
+            const msg = `🏦 Przelew: Wyślij ${price} PLN na konto:\n${trainerData.bankAccount}\nTytuł: ${CLIENT.name} ${CLIENT.surname||''} – trening ${BOOKING.date} ${BOOKING.time}`;
+            alert(msg);
+          }, 500);
+        }
+        resetBooking();
+        setTimeout(() => {
+          showSection('trainings');
+          loadMyTrainings();
+        }, 1000);
+      } catch (e) {
+        showToast('Błąd przy tworzeniu rezerwacji: ' + e.message, 'error');
+      }
+    }
+
+    function resetBooking() {
+      BOOKING = { step: 1, trainerId: CLIENT.trainerId, trainer: null, date: null, time: null, type: null, payment: null, message: '' };
+      CURRENT_MONTH = new Date();
+      document.getElementById('bookType').value = '';
+      document.getElementById('bookPayment').value = '';
+      document.getElementById('bookMessage').value = '';
+      BOOKING.step = 1;
+      renderBookingUI();
+    }
+
+    // ===== MOJE TRENINGI =====
+    function loadMyTrainings() {
+      const bookings = LocalApi.getAdminBookings() || [];
+      const myBookings = bookings.filter(b =>
+        (CLIENT.phone && b.phone === CLIENT.phone) ||
+        (CLIENT.id && b.clientId === CLIENT.id)
+      );
+
+      const todayStr2 = todayLocalStr();
+
+      // Nadchodzące: ALL future trainings — zarówno potwierdzone jak i oczekujące
+      const upcoming = myBookings
+        .filter(b => (b.status === 'confirmed' || b.status === 'pending') && b.date >= todayStr2)
+        .sort((a, b) => a.date.localeCompare(b.date) || (a.time||'').localeCompare(b.time||''));
+
+      // Historia: potwierdzone + zrealizowane z przeszłości
+      const history = myBookings
+        .filter(b => (b.status === 'confirmed' || b.status === 'completed') && b.date < todayStr2)
+        .sort((a, b) => b.date.localeCompare(a.date));
+
+      // Anulowane: wszystkie anulowane
+      const cancelled = myBookings
+        .filter(b => b.status === 'cancelled')
+        .sort((a, b) => b.date.localeCompare(a.date));
+
+      // Osobna lista oczekujących (do badge'a w zakładce)
+      const pending = myBookings.filter(b => b.status === 'pending' && b.date >= todayStr2);
+
+      // Show package remaining banner at top of trainings section
+      const pkgs = LocalApi.getClientPackages ? LocalApi.getClientPackages(CLIENT.id) : [];
+      const activePkg = pkgs.find(p => p.status === 'active' && (p.usedSessions||0) < p.totalSessions);
+      const pkgBanner = document.getElementById('trainings-pkg-banner');
+      if (pkgBanner) {
+        if (activePkg) {
+          const rem = activePkg.totalSessions - (activePkg.usedSessions||0);
+          pkgBanner.innerHTML = `<div style="background:#f0fff4;border:1.5px solid var(--green);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;">
+            <div style="font-size:28px;font-weight:900;color:var(--green);">${rem}</div>
+            <div><div style="font-weight:700;font-size:14px;">Pozostałe sesje z pakietu</div><div style="font-size:12px;color:var(--text-light);">${activePkg.usedSessions||0}/${activePkg.totalSessions} sesji wykorzystanych</div></div>
+          </div>`;
+          pkgBanner.style.display = 'block';
+        } else {
+          pkgBanner.style.display = 'none';
+        }
+      }
+
+      // Aktualizuj badge na zakładce "Oczekujące"
+      const pendingTabBtn = document.querySelector('.tab-btn[onclick*="trainings-pending"]');
+      if (pendingTabBtn) {
+        const pendingCount = pending.length;
+        pendingTabBtn.innerHTML = pendingCount > 0
+          ? `⏳ Oczekujące <span style="background:#e53e3e;color:#fff;border-radius:9px;padding:1px 7px;font-size:11px;margin-left:4px;">${pendingCount}</span>`
+          : '⏳ Oczekujące';
+      }
+
+      document.getElementById('trainings-upcoming').innerHTML = renderTrainingList(upcoming);
+      document.getElementById('trainings-pending').innerHTML = renderTrainingList(pending);
+      document.getElementById('trainings-history').innerHTML = renderTrainingList(history, true);
+      document.getElementById('trainings-cancelled').innerHTML = renderTrainingList(cancelled);
+    }
+
+    // Status badge per booking (używa b.status bezpośrednio)
+    function statusBadge(b) {
+      if (b.status === 'confirmed') return '<span class="training-status status-confirmed">✅ Potwierdzona</span>';
+      if (b.status === 'pending')   return '<span class="training-status status-pending">⏳ Oczekuje na potwierdzenie</span>';
+      if (b.status === 'completed') return '<span class="training-status status-confirmed" style="background:#f0fff4;color:#276749;">🏁 Zrealizowana</span>';
+      if (b.status === 'cancelled') return '<span class="training-status status-cancelled">❌ Anulowana</span>';
+      return '';
+    }
+
+    function renderTrainingList(list, isHistory = false) {
+      if (list.length === 0) {
+        return `<div class="empty-state"><div class="empty-state-icon">📭</div><p>Brak treningów w tej kategorii</p></div>`;
+      }
+
+      let html = '';
+      list.forEach(b => {
+        const trainer = LocalApi.getTrainerById(b.trainerId);
+        const trainerName = trainer ? trainer.name : 'Trener';
+        const canCancel = !isHistory && (b.status === 'confirmed' || b.status === 'pending');
+        html += `
+          <div class="training-card">
+            <div class="training-info">
+              <h3>${escapeHtml(trainerName)}</h3>
+              <div class="training-detail">📅 ${formatDate(b.date)}</div>
+              <div class="training-detail">⏰ ${b.time||''}</div>
+              <div class="training-detail">📍 ${b.trainingType === 'online' ? '🖥️ Online' : '🏢 Stacjonarnie'}</div>
+              ${b.trainingType === 'online' && b.meetLink ? `<div class="training-detail">🔗 <a href="${b.meetLink}" target="_blank" style="color: var(--green); text-decoration: none;">Link do spotkania</a></div>` : ''}
+              ${statusBadge(b)}
+            </div>
+            <div class="training-actions">
+              ${canCancel ? `<button class="btn btn-sm danger" onclick="cancelTraining('${b.id}')">Anuluj</button>` : ''}
+            </div>
+          </div>
+        `;
+      });
+      return html;
+    }
+
+    function cancelTraining(id) {
+      if (confirm('Jesteś pewny że chcesz anulować trening?\n\nUwaga: anulowanie jest możliwe tylko do 24h przed treningiem.')) {
+        try {
+          const result = LocalApi.cancelClientBooking(id, CLIENT.id);
+          if (result && result.error) {
+            showToast('❌ ' + result.error, 'error');
+            return;
+          }
+          showToast('✅ Trening anulowany', 'success');
+          loadMyTrainings();
+          loadDashboard();
+        } catch (e) {
+          showToast('Błąd: ' + e.message, 'error');
+        }
+      }
+    }
+
+    // ===== CHAT =====
+    let CHAT_POLLING = false;
+
+    let CHAT_TRAINER_ID = null; // used when client picks trainer manually
+
+    function loadChat() {
+      // If no trainer assigned, show picker
+      if (!CLIENT.trainerId) {
+        const trainers = LocalApi.getTrainersList ? LocalApi.getTrainersList() : [];
+        const noChatEl = document.getElementById('noChatTrainer');
+        const chatWrapEl = document.getElementById('chatWrap');
+        if(noChatEl) {
+          noChatEl.style.display = 'block';
+          noChatEl.innerHTML = `
+            <p style="text-align:center;color:var(--text-light);padding:20px 0 10px;">Wybierz trenera, do którego chcesz napisać:</p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding-bottom:20px;">
+              ${trainers.map(t=>`<button onclick="chatWithTrainer('${t.id}')" style="padding:10px 18px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:.88rem;font-weight:700;cursor:pointer;">${escapeHtml(t.name||t.id)}</button>`).join('')}
+            </div>
+          `;
+        }
+        if(chatWrapEl) chatWrapEl.style.display = 'none';
+        return;
+      }
+      document.getElementById('noChatTrainer').style.display = 'none';
+      document.getElementById('chatWrap').style.display = 'block';
+      const lamp = document.getElementById('clientChatLamp');
+      if (lamp) lamp.style.display = 'none';
+      refreshChat();
+    }
+
+    function chatWithTrainer(trainerId) {
+      CHAT_TRAINER_ID = trainerId;
+      document.getElementById('noChatTrainer').style.display = 'none';
+      document.getElementById('chatWrap').style.display = 'block';
+      refreshChatWith(trainerId);
+    }
+
+    function refreshChat() {
+      const trainerId = CLIENT.trainerId || CHAT_TRAINER_ID;
+      refreshChatWith(trainerId);
+    }
+
+    function refreshChatWith(trainerId) {
+      if (!trainerId) return;
+
+      const messages = LocalApi.getMessages(trainerId, CLIENT.id) || [];
+      const unread = messages.filter(m => m.fromId !== CLIENT.id && !m.read).length;
+
+      const badgeEl = document.getElementById('chatBadge');
+      if (badgeEl) {
+        if (unread > 0) { badgeEl.textContent = unread; badgeEl.style.display = 'inline-block'; }
+        else { badgeEl.style.display = 'none'; }
+      }
+
+      const cont = document.getElementById('chatMessages');
+      if (!cont) return;
+      const wasAtBottom = cont.scrollHeight - cont.scrollTop - cont.clientHeight < 60;
+
+      let html = '';
+      if (!messages.length) {
+        html = '<div style="text-align:center;color:var(--text-light);padding:40px 20px;font-size:14px;">Brak wiadomości. Napisz pierwszą! 👋</div>';
+      } else {
+        messages.forEach(m => {
+          const isOwn = m.fromId === CLIENT.id;
+          const ts = m.sentAt || m.timestamp;
+          const time = ts ? new Date(ts).toLocaleString('pl-PL', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '';
+          html += `
+            <div class="message ${isOwn ? 'own' : 'other'}">
+              <div>
+                <div class="message-bubble">${escapeHtml(m.text||'')}</div>
+                <div class="message-time">${time} ${isOwn ? `<span onclick="deleteMsg('${m.id}')" style="cursor:pointer;color:#fc8181;margin-left:8px;font-size:10px;">✕ Usuń</span>` : ''}</div>
+              </div>
+            </div>
+          `;
+        });
+      }
+      cont.innerHTML = html;
+      if (wasAtBottom || !messages.length) cont.scrollTop = cont.scrollHeight;
+
+      LocalApi.markMessagesRead(trainerId, CLIENT.id);
+      if (badgeEl) badgeEl.style.display = 'none';
+    }
+
+    // Poll chat every 3s when section is active
+    let CURRENT_SECTION = 'dashboard';
+    setInterval(function() {
+      if (CURRENT_SECTION === 'chat') refreshChat();
+    }, 3000);
+
+    // Auto-refresh package & training data every 15s so client sees updates
+    // when trainer marks training as "Zrealizowany" (decrement happens in trainer panel)
+    setInterval(function() {
+      if (!CLIENT || !CLIENT.id) return;
+      // Always refresh package info (remaining sessions count)
+      if (typeof loadPackageInfo === 'function') loadPackageInfo();
+      // Refresh current active section data
+      if (CURRENT_SECTION === 'trainings' && typeof loadMyTrainings === 'function') {
+        loadMyTrainings();
+      } else if (CURRENT_SECTION === 'dashboard' && typeof loadDashboard === 'function') {
+        loadDashboard();
+      }
+      // Update chat lamp for client
+      if (CLIENT && CLIENT.id) {
+        const trainerId2 = CLIENT.trainerId;
+        if (trainerId2) {
+          const msgs = LocalApi.getMessages ? LocalApi.getMessages(trainerId2, CLIENT.id) : [];
+          const unreadFromTrainer = msgs.filter(m => m.fromId === trainerId2 && !m.read).length;
+          const lamp = document.getElementById('clientChatLamp');
+          if (lamp) lamp.style.display = unreadFromTrainer > 0 ? 'inline-block' : 'none';
+        }
+      }
+    }, 15000);
+
+    function sendChatMessage() {
+      const text = document.getElementById('chatInput').value.trim();
+      if (!text) return;
+
+      try {
+        const trainerId = CLIENT.trainerId || CHAT_TRAINER_ID;
+        if (!trainerId) { showToast('Wybierz trenera', 'error'); return; }
+        LocalApi.sendMessage(CLIENT.id, trainerId, text, 'client');
+        document.getElementById('chatInput').value = '';
+        refreshChat();
+      } catch (e) {
+        showToast('Błąd: ' + e.message, 'error');
+      }
+    }
+
+    function deleteMsg(msgId) {
+      if(!confirm('Usunąć wiadomość?')) return;
+      LocalApi.deleteMessage(msgId);
+      refreshChat();
+    }
+
+    function clearAllChat() {
+      if(!confirm('Usunąć całą historię rozmów?')) return;
+      const trainerId = CLIENT.trainerId || CHAT_TRAINER_ID;
+      if(!trainerId) return;
+      LocalApi.clearChat(trainerId, CLIENT.id);
+      refreshChat();
+    }
+
+    document.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && document.getElementById('chatInput') === document.activeElement) {
+        sendChatMessage();
+      }
+    });
+
+    // ===== PŁATNOŚCI =====
+    function loadPayments() {
+      const payments = LocalApi.getPayments(CLIENT.id) || [];
+
+      // Get balance from LocalApi (uses correct per-booking prices + past trainings only)
+      const bal = LocalApi.getClientBalance ? LocalApi.getClientBalance(CLIENT.id) : { paid:0, owed:0, balance:0, sessionCount:0 };
+
+      const balEl = document.getElementById('paymentBalance');
+      if (balEl) {
+        const isPos = bal.balance >= 0;
+        const balColor = isPos ? 'var(--green)' : 'var(--danger)';
+        const balBg    = isPos ? '#f0fff4' : '#fff5f5';
+        const balBorder= isPos ? '#9ae6b4' : '#fc8181';
+        balEl.innerHTML = `
+          <div style="background:${balBg};border:1.5px solid ${balBorder};border-radius:12px;padding:16px 20px;">
+            <div style="font-size:.72rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Bilans konta</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:.88rem;">
+              <div style="display:flex;justify-content:space-between;">
+                <span style="color:#555;">💳 Wpłacono łącznie</span>
+                <span style="font-weight:700;color:#276749;">+${bal.paid.toLocaleString('pl-PL')} PLN</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;">
+                <span style="color:#555;">🏋️ Koszt sesji (${bal.sessionCount} zrealizowanych)</span>
+                <span style="font-weight:700;color:#c53030;">−${bal.owed.toLocaleString('pl-PL')} PLN</span>
+              </div>
+              <div style="border-top:1.5px solid ${balBorder};margin-top:4px;padding-top:8px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-weight:800;font-size:.95rem;">Saldo</span>
+                <span style="font-size:1.6rem;font-weight:900;color:${balColor};">${isPos?'+':''}${bal.balance.toLocaleString('pl-PL')} PLN</span>
+              </div>
+              ${!isPos ? `<div style="font-size:.73rem;color:var(--danger);margin-top:2px;">⚠️ Ujemne saldo – brak pokrycia w płatnościach</div>` : ''}
+              ${isPos && bal.balance > 0 ? `<div style="font-size:.73rem;color:var(--green);margin-top:2px;">✅ Masz kredyt na przyszłe treningi</div>` : ''}
+            </div>
+          </div>`;
+      }
+
+      // Payment methods
+      let pmHtml = `
+        <div class="payment-method" onclick="selectPaymentMethod('blik',this)">
+          <div class="payment-icon">💳</div>
+          <div class="payment-name">BLIK</div>
+        </div>
+        <div class="payment-method" onclick="selectPaymentMethod('bank',this)">
+          <div class="payment-icon">🏦</div>
+          <div class="payment-name">Przelew bankowy</div>
+        </div>
+        <div class="payment-method" onclick="selectPaymentMethod('cash',this)">
+          <div class="payment-icon">💵</div>
+          <div class="payment-name">Gotówka</div>
+        </div>
+      `;
+      document.getElementById('paymentMethods').innerHTML = pmHtml;
+
+      // Payment history
+      let histHtml = '';
+      if (payments.length === 0) {
+        histHtml = '<p style="color: var(--text-light); text-align: center; padding: 20px 0;">Brak historii płatności</p>';
+      } else {
+        histHtml = '<table><thead><tr><th>Data</th><th>Kwota</th><th>Metoda</th><th>Opis</th><th>Status</th></tr></thead><tbody>';
+        payments.slice().reverse().forEach(p => {
+          const date = p.date ? new Date(p.date).toLocaleDateString('pl-PL') : 'Brak daty';
+          const methodText = p.method === 'blik' ? 'BLIK' : p.method === 'bank' ? 'Przelew' : 'Gotówka';
+          const statusText = (p.status === 'paid' || p.status === 'confirmed') ? '✅ Potwierdzona' : p.status === 'rejected' ? '❌ Odrzucona' : '⏳ Oczekuje';
+          histHtml += `<tr><td>${date}</td><td>${(p.amount||0).toFixed(2)} zł</td><td>${methodText}</td><td>${esc(p.description||'')}</td><td>${statusText}</td></tr>`;
+        });
+        histHtml += '</tbody></table>';
+      }
+      document.getElementById('paymentHistory').innerHTML = histHtml;
+    }
+
+    function selectPaymentMethod(method, el) {
+      SELECTED_PAYMENT_METHOD = method;
+      document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+      if (el) el.classList.add('selected');
+      // Show payment instructions based on method
+      const infoEl = document.getElementById('paymentMethodInfo');
+      if (!infoEl) return;
+      const trainerId = CLIENT.trainerId || '';
+      const trainer = trainerId ? (LocalApi.getTrainerById ? LocalApi.getTrainerById(trainerId) : null) : null;
+      if (method === 'blik') {
+        const blik = trainer && trainer.blikPhone ? trainer.blikPhone : 'Zapytaj trenera o numer BLIK';
+        infoEl.innerHTML = `<div style="background:#f0fff4;border:1.5px solid var(--green);border-radius:8px;padding:12px;font-size:13px;margin-top:10px;">
+          💳 <strong>BLIK:</strong> Wyślij na numer <strong>${escapeHtml(blik)}</strong>. W tytule wpisz swoje imię i nazwisko.
+        </div>`;
+      } else if (method === 'bank') {
+        const acc = trainer && trainer.bankAccount ? trainer.bankAccount : 'Zapytaj trenera o numer konta';
+        infoEl.innerHTML = `<div style="background:#ebf4ff;border:1.5px solid #4299e1;border-radius:8px;padding:12px;font-size:13px;margin-top:10px;">
+          🏦 <strong>Przelew:</strong> Konto: <strong>${escapeHtml(acc)}</strong>. Tytuł: imię, nazwisko, data treningu.
+        </div>`;
+      } else {
+        infoEl.innerHTML = `<div style="background:#fffbf0;border:1.5px solid #e6b800;border-radius:8px;padding:12px;font-size:13px;margin-top:10px;">
+          💵 <strong>Gotówka:</strong> Płatność bezpośrednio u trenera przed lub po treningu.
+        </div>`;
+      }
+    }
+
+    function submitPayment() {
+      const amount = parseFloat(document.getElementById('paymentAmount').value);
+      const desc = document.getElementById('paymentDesc').value.trim();
+
+      if (!SELECTED_PAYMENT_METHOD) {
+        showToast('Wybierz metodę płatności', 'error');
+        return;
+      }
+      if (!amount || amount <= 0) {
+        showToast('Podaj prawidłową kwotę', 'error');
+        return;
+      }
+
+      try {
+        LocalApi.addPayment({
+          clientId: CLIENT.id,
+          trainerId: CLIENT.trainerId,
+          amount: amount,
+          method: SELECTED_PAYMENT_METHOD,
+          description: desc || 'Wpłata do konta',
+          status: 'pending'
+        });
+        showToast('✅ Płatność wysłana do potwierdzenia przez trenera', 'success');
+        document.getElementById('paymentAmount').value = '';
+        document.getElementById('paymentDesc').value = '';
+        SELECTED_PAYMENT_METHOD = null;
+        document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+        const infoEl2 = document.getElementById('paymentMethodInfo');
+        if (infoEl2) infoEl2.innerHTML = '';
+        loadPayments();
+      } catch (e) {
+        showToast('Błąd: ' + e.message, 'error');
+      }
+    }
+
+    // ===== PROFIL =====
+    function loadProfile() {
+      document.getElementById('profileName').value = CLIENT.name || '';
+      document.getElementById('profileSurname').value = CLIENT.surname || '';
+      document.getElementById('profilePhone').value = CLIENT.phone || '';
+      document.getElementById('profileEmail').value = CLIENT.email || '';
+      document.getElementById('profileGoal').value = CLIENT.goal || '';
+
+      loadProgressTable();
+    }
+
+    function saveProfileData() {
+      const name = document.getElementById('profileName').value.trim();
+      const surname = document.getElementById('profileSurname').value.trim();
+      const phone = document.getElementById('profilePhone').value.trim();
+      const goal = document.getElementById('profileGoal').value.trim();
+
+      if (!name || !surname || !phone) {
+        showToast('Wypełnij wszystkie wymagane pola', 'error');
+        return;
+      }
+
+      try {
+        LocalApi.patchClient(CLIENT.id, { name, surname, phone, goal });
+        CLIENT.name = name;
+        CLIENT.surname = surname;
+        CLIENT.phone = phone;
+        CLIENT.goal = goal;
+        sessionStorage.setItem('client_data', JSON.stringify(CLIENT));
+        showToast('✅ Dane zaktualizowane', 'success');
+        document.getElementById('sbName').textContent = `${name} ${surname}`;
+      } catch (e) {
+        showToast('Błąd: ' + e.message, 'error');
+      }
+    }
+
+    function changePassword() {
+      const oldPw = document.getElementById('profileOldPw').value.trim();
+      const newPw = document.getElementById('profileNewPw').value.trim();
+      const newPw2 = document.getElementById('profileNewPw2').value.trim();
+
+      if (!oldPw || !newPw || !newPw2) {
+        showToast('Wypełnij wszystkie pola', 'error');
+        return;
+      }
+      if (newPw !== newPw2) {
+        showToast('Nowe hasła się nie zgadzają', 'error');
+        return;
+      }
+      if (newPw.length < 6) {
+        showToast('Hasło musi mieć co najmniej 6 znaków', 'error');
+        return;
+      }
+
+      const verified = LocalApi.verifyClient(CLIENT.email, oldPw);
+      if (!verified) {
+        showToast('Nieprawidłowe obecne hasło', 'error');
+        return;
+      }
+
+      try {
+        LocalApi.patchClient(CLIENT.id, { password: newPw });
+        showToast('✅ Hasło zmienione', 'success');
+        document.getElementById('profileOldPw').value = '';
+        document.getElementById('profileNewPw').value = '';
+        document.getElementById('profileNewPw2').value = '';
+      } catch (e) {
+        showToast('Błąd: ' + e.message, 'error');
+      }
+    }
+
+    function loadProgressTable() {
+      const progress = LocalApi.getProgress(CLIENT.id) || [];
+      let html = '';
+      if (progress.length === 0) {
+        html = '<tr><td colspan="2" style="text-align: center; color: var(--text-light);">Brak pomiarów</td></tr>';
+      } else {
+        progress.slice().reverse().forEach(p => {
+          const date = p.date ? new Date(p.date).toLocaleDateString('pl-PL') : 'Brak daty';
+          html += `<tr><td>${date}</td><td>${p.weight.toFixed(1)} kg</td></tr>`;
+        });
+      }
+      document.getElementById('progressTable').innerHTML = html;
+    }
+
+    function addProgress() {
+      const weight = parseFloat(document.getElementById('progressWeight').value);
+      const date = document.getElementById('progressDate').value;
+
+      if (!weight || weight <= 0 || !date) {
+        showToast('Podaj wagę i datę', 'error');
+        return;
+      }
+
+      try {
+        LocalApi.addProgress({ clientId: CLIENT.id, weight, date });
+        showToast('✅ Pomiar dodany', 'success');
+        document.getElementById('progressWeight').value = '';
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('progressDate').value = today;
+        loadProgressTable();
+      } catch (e) {
+        showToast('Błąd: ' + e.message, 'error');
+      }
+    }
+
+    // ===== UTILS =====
+    function showSection(name) {
+      CURRENT_SECTION = name;
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById('sec-' + name).classList.add('active');
+
+      document.querySelectorAll('.nav-item[data-section]').forEach(i => i.classList.remove('active'));
+      const navEl = document.querySelector(`.nav-item[data-section="${name}"]`);
+      if (navEl) navEl.classList.add('active');
+
+      const titles = {
+        dashboard: 'Dashboard',
+        book: 'Zarezerwuj trening',
+        trainings: 'Moje treningi',
+        chat: 'Chat',
+        payments: 'Płatności',
+        plans: 'Plan treningowy',
+        profile: 'Mój profil'
+      };
+      document.getElementById('topbarTitle').textContent = titles[name] || '';
+
+      if (name === 'chat') {
+        loadChat();
+      } else if (name === 'book') {
+        loadTrainers();
+        resetBooking();
+      } else if (name === 'trainings') {
+        loadMyTrainings();
+      } else if (name === 'payments') {
+        loadPayments();
+      } else if (name === 'plans') {
+        loadTrainingPlans();
+      } else if (name === 'measurements') {
+        loadMeasurements();
+      } else if (name === 'dashboard') {
+        loadDashboard();
+        loadPackageInfo();
+      }
+    }
+
+    function switchTab(btn, tabName) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(tabName).classList.add('active');
+    }
+
+    function logout() {
+      sessionStorage.removeItem('client_token');
+      sessionStorage.removeItem('client_data');
+      CLIENT = null;
+      BOOKING = { step: 1, trainerId: null, trainer: null, date: null, time: null, type: null, payment: null, message: '' };
+      LocalApi._logoutServer && LocalApi._logoutServer().catch(()=>{});
+      window.location.href = window.location.protocol === 'file:' ? 'login.html' : '/login';
+    }
+
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.className = `toast show ${type}`;
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    function formatDate(dateStr) {
+      const d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('pl-PL', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function parseDate(dateStr) {
+      return new Date(dateStr + 'T00:00:00');
+    }
+
+    function escapeHtml(text) {
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    // ===== PACKAGES =====
+    let SELECTED_PACKAGE_SESSIONS = 0;
+
+    function selectPackage(sessions) {
+      if (!sessions || sessions < 1) return;
+      SELECTED_PACKAGE_SESSIONS = sessions;
+      document.querySelectorAll('.package-option').forEach(el => {
+        el.classList.toggle('selected', parseInt(el.dataset.sessions) === sessions);
+      });
+      // Clear custom input if standard button was clicked
+      const std = [4, 8, 12, 16];
+      if (std.includes(sessions)) {
+        const customEl = document.getElementById('packageCustom');
+        if (customEl) customEl.value = '';
+      }
+      const price = LocalApi.getClientPrice ? LocalApi.getClientPrice(CLIENT.trainerId||'', CLIENT.phone||'') : 200;
+      const total = sessions * price;
+      const priceEl = document.getElementById('packagePrice');
+      if (priceEl) priceEl.innerHTML = `<strong>${sessions} sesji</strong> × ${price} PLN = <strong style="color:var(--green)">${total} PLN</strong>`;
+    }
+
+    function buyPackage() {
+      // Also read custom input
+      const customVal = parseInt((document.getElementById('packageCustom')||{}).value||'0');
+      if (customVal > 0) SELECTED_PACKAGE_SESSIONS = customVal;
+      if (!SELECTED_PACKAGE_SESSIONS || SELECTED_PACKAGE_SESSIONS < 1) { showToast('Wybierz lub wpisz liczbę sesji', 'error'); return; }
+      const price = LocalApi.getClientPrice ? LocalApi.getClientPrice(CLIENT.trainerId||'', CLIENT.phone||'') : 200;
+      const trainerId = CLIENT.trainerId || '';
+      const pkg = LocalApi.buyPackage(CLIENT.id, trainerId, SELECTED_PACKAGE_SESSIONS, price, 'bank');
+      showToast(`✅ Pakiet ${SELECTED_PACKAGE_SESSIONS} sesji zakupiony! Przelej ${pkg.totalPrice} PLN.`, 'success');
+      SELECTED_PACKAGE_SESSIONS = 0;
+      document.querySelectorAll('.package-option').forEach(el => el.classList.remove('selected'));
+      const customEl2 = document.getElementById('packageCustom');
+      if (customEl2) customEl2.value = '';
+      const priceEl = document.getElementById('packagePrice');
+      if (priceEl) priceEl.textContent = '';
+      loadPackagesList();
+    }
+
+    function loadPackagesList() {
+      const pkgs = LocalApi.getClientPackages ? LocalApi.getClientPackages(CLIENT.id) : [];
+      const cont = document.getElementById('packagesList');
+      if(!cont) return;
+      if(!pkgs.length) {
+        cont.innerHTML = '<p style="color:var(--text-light);font-size:13px;padding:8px 0;">Brak pakietów</p>';
+        return;
+      }
+      cont.innerHTML = pkgs.map(p => {
+        const remaining   = p.totalSessions - (p.usedSessions||0);
+        const usedSess    = p.usedSessions||0;
+        const pct         = Math.round(usedSess / p.totalSessions * 100);
+        const price       = p.pricePerSession||200;
+        const totalCost   = p.totalSessions * price;          // pełna wartość pakietu
+        const usedCost    = usedSess * price;                  // zużyte PLN
+        const creditLeft  = totalCost - usedCost;             // saldo = ile PLN zostało
+        const isActive    = remaining > 0;
+        const since       = p.purchasedAt
+          ? new Date(p.purchasedAt).toLocaleDateString('pl-PL',{day:'numeric',month:'short',year:'numeric'})
+          : '';
+        const methodMap   = {blik:'📱 BLIK',bank:'🏦 Przelew',cash:'💵 Gotówka',card:'💳 Karta',package:'📦 Pakiet'};
+        const border  = isActive ? 'var(--green)' : '#ddd';
+        const bg      = isActive ? 'rgba(108,192,74,.06)' : '#fafafa';
+        return `
+        <div style="background:${bg};border:1.5px solid ${border};border-radius:12px;padding:14px;margin-bottom:10px;">
+          <!-- Nagłówek -->
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+            <div>
+              <div style="font-weight:800;font-size:.95rem;">${isActive?'📦 Aktywny pakiet':'✅ Wykorzystany pakiet'}</div>
+              <div style="font-size:.75rem;color:var(--text-light);margin-top:2px;">${p.totalSessions} sesji × ${price} PLN = ${totalCost.toLocaleString('pl-PL')} PLN${since?' · kupiony '+since:''}${p.method?` · ${methodMap[p.method]||p.method}`:''}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:1.9rem;font-weight:900;line-height:1;color:${isActive?'var(--green)':'#aaa'}">${remaining}</div>
+              <div style="font-size:.65rem;color:var(--text-light);">sesji</div>
+            </div>
+          </div>
+
+          <!-- Bilans finansowy pakietu -->
+          <div style="background:#fff;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:.8rem;">
+            <div style="display:flex;justify-content:space-between;padding:3px 0;">
+              <span style="color:#555;">💳 Zapłacono za pakiet</span>
+              <span style="font-weight:700;color:#276749;">+${totalCost.toLocaleString('pl-PL')} PLN</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:3px 0;">
+              <span style="color:#555;">🏋️ Zrealizowano (${usedSess} sesji)</span>
+              <span style="font-weight:700;color:#c53030;">−${usedCost.toLocaleString('pl-PL')} PLN</span>
+            </div>
+            <div style="border-top:1px solid #eee;margin-top:4px;padding-top:6px;display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-weight:800;">Saldo pakietu</span>
+              <span style="font-size:1.15rem;font-weight:900;color:${creditLeft>0?'var(--green)':creditLeft<0?'var(--danger)':'#888'};">${creditLeft>0?'+':''}${creditLeft.toLocaleString('pl-PL')} PLN</span>
+            </div>
+          </div>
+
+          <!-- Pasek postępu sesji -->
+          <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--text-light);margin-bottom:4px;">
+            <span>${usedSess} / ${p.totalSessions} sesji</span>
+            <span>${pct}%</span>
+          </div>
+          <div style="height:7px;background:#e0e0e0;border-radius:4px;overflow:hidden;">
+            <div style="height:100%;width:${pct}%;background:${isActive?'var(--green)':'#aaa'};border-radius:4px;transition:width .4s;"></div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // Show active package info on home/dashboard
+    function loadPackageInfo() {
+      const pkgs = LocalApi.getClientPackages ? LocalApi.getClientPackages(CLIENT.id) : [];
+      const activePkg = pkgs.find(p => p.status === 'active' && (p.usedSessions||0) < p.totalSessions);
+      const card = document.getElementById('packageCard');
+      const info = document.getElementById('packageInfo');
+      if (!card || !info) return;
+      if (activePkg) {
+        const remaining = activePkg.totalSessions - (activePkg.usedSessions||0);
+        const pct = Math.round((activePkg.usedSessions||0) / activePkg.totalSessions * 100);
+        const since = activePkg.purchasedAt ? new Date(activePkg.purchasedAt).toLocaleDateString('pl-PL',{day:'numeric',month:'long'}) : '';
+        info.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <div>
+              <div style="font-size:13px;color:var(--text-light);">Wykorzystano: ${activePkg.usedSessions||0} z ${activePkg.totalSessions} sesji</div>
+              ${since ? `<div style="font-size:12px;color:#bbb;">Zakupiony: ${since}</div>` : ''}
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:38px;font-weight:900;color:var(--green);line-height:1;">${remaining}</div>
+              <div style="font-size:11px;color:var(--text-light);">pozostało</div>
+            </div>
+          </div>
+          <div style="height:8px;background:#e8f5e2;border-radius:4px;overflow:hidden;">
+            <div style="height:100%;width:${pct}%;background:var(--green);border-radius:4px;transition:width .4s;"></div>
+          </div>`;
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    }
+
+    // cancelTraining defined above in renderTrainingList section
+
+    function checkUpcomingReminders() {
+      if(!CLIENT || Notification.permission !== 'granted') return;
+      const bookings = LocalApi.getAdminBookings() || [];
+      const upcoming = bookings.filter(b => b.phone === CLIENT.phone && b.status === 'confirmed');
+      const now = new Date();
+      upcoming.forEach(b => {
+        const trainingDT = new Date(b.date + 'T' + (b.time||'10:00') + ':00');
+        const hoursLeft = (trainingDT - now) / 3600000;
+        const remKey = 'rem_' + b.id;
+        if(hoursLeft > 23 && hoursLeft < 25 && !sessionStorage.getItem(remKey)) {
+          sessionStorage.setItem(remKey, '1');
+          new Notification('SAMtrening – Przypomnienie 🏋️', {
+            body: `Trening jutro o ${b.time} z ${b.trainer||'trenerem'}`,
+            icon: 'icon-192.svg',
+          });
+        }
+      });
+    }
+
+    // ===== TRAINING PLANS =====
+    function loadTrainingPlans() {
+      const plans = LocalApi.getTrainingPlan ? LocalApi.getTrainingPlan(CLIENT.id) : [];
+      const cont = document.getElementById('plansList');
+      if (!cont) return;
+      if (!plans || plans.length === 0) {
+        cont.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><p>Brak planów treningowych. Trener jeszcze nie dodał planu.</p></div>';
+        return;
+      }
+      cont.innerHTML = plans.slice().reverse().map(p => {
+        const date = p.uploadedAt ? new Date(p.uploadedAt).toLocaleDateString('pl-PL', {day:'numeric',month:'long',year:'numeric'}) : '';
+        const hasFile = !!p.data;
+        const hasLink = !!p.link;
+        return `<div class="bcard" style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+            <div style="flex:1;">
+              <div style="font-weight:700;font-size:15px;margin-bottom:4px;">📋 ${escapeHtml(p.name||'Plan treningowy')}</div>
+              ${p.notes ? `<div style="font-size:13px;color:var(--text-light);margin-bottom:8px;">${escapeHtml(p.notes)}</div>` : ''}
+              <div style="font-size:12px;color:#bbb;">Dodany: ${date}</div>
+              ${p.fileSize ? `<div style="font-size:11px;color:#ccc;">${(p.fileSize/1024).toFixed(0)} KB</div>` : ''}
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;min-width:110px;">
+              ${hasFile ? `<button onclick="downloadPlan('${p.id}')" style="padding:8px 12px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">⬇️ Pobierz</button>` : ''}
+              ${hasLink ? `<a href="${escapeHtml(p.link)}" target="_blank" style="padding:8px 12px;background:#ebf4ff;color:#2b6cb0;border:1px solid #4299e1;border-radius:8px;font-size:12px;font-weight:700;text-align:center;text-decoration:none;display:block;">🔗 Otwórz link</a>` : ''}
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+      // Store plans data for download
+      window._PLANS_DATA = plans;
+    }
+
+    function downloadPlan(planId) {
+      const plans = window._PLANS_DATA || (LocalApi.getTrainingPlan ? LocalApi.getTrainingPlan(CLIENT.id) : []);
+      const plan = plans.find(p => p.id === planId);
+      if (!plan || !plan.data) { showToast('Brak pliku do pobrania', 'error'); return; }
+      const a = document.createElement('a');
+      a.href = plan.data;
+      a.download = plan.name || 'plan_treningowy';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    // ===== WYNIKI POMIARÓW =====
+    function loadMeasurements() {
+      const ms = LocalApi.getMeasurements ? LocalApi.getMeasurements(CLIENT.id) : [];
+      const cont = document.getElementById('measurementsList');
+      if (!cont) return;
+      if (!ms || ms.length === 0) {
+        cont.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><p>Brak wyników pomiarów. Trener jeszcze nie dodał żadnych pomiarów.</p></div>';
+        return;
+      }
+      cont.innerHTML = ms.map(m => {
+        const d = m.takenAt ? new Date(m.takenAt).toLocaleDateString('pl-PL', {day:'numeric', month:'long', year:'numeric'}) : '';
+        const hasFile = !!m.data;
+        const commentedAt = m.commentedAt ? new Date(m.commentedAt).toLocaleDateString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+        return `<div class="bcard" style="margin-bottom:12px;" id="mcard-${m.id}">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+            <div style="flex:1;">
+              <div style="font-weight:700;font-size:15px;margin-bottom:4px;">📊 ${escapeHtml(m.title||'Pomiar Tanita')}</div>
+              <div style="font-size:13px;color:var(--text-light);margin-bottom:4px;">📅 ${d}</div>
+              ${m.notes ? `<div style="font-size:12px;color:var(--text-light);margin-bottom:4px;">${escapeHtml(m.notes)}</div>` : ''}
+              ${m.fileSize ? `<div style="font-size:11px;color:#bbb;">${(m.fileSize/1024).toFixed(0)} KB · PDF</div>` : ''}
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;min-width:120px;">
+              ${hasFile ? `
+                <button onclick="openPdfPreview('${m.id}')" style="padding:8px 12px;background:#ebf4ff;color:#2b6cb0;border:1.5px solid #4299e1;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">👁️ Podgląd</button>
+                <button onclick="downloadMeasurementClient('${m.id}')" style="padding:8px 12px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">⬇️ Pobierz PDF</button>
+              ` : '<div style="font-size:12px;color:#bbb;text-align:center;">Brak pliku</div>'}
+            </div>
+          </div>
+          <!-- Client comment section -->
+          ${m.clientComment ? `
+            <div style="margin-top:10px;padding:9px 12px;background:#f0fff4;border-left:3px solid var(--green);border-radius:6px;">
+              <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:3px;">💬 Twój komentarz <span style="font-weight:400;color:#999;">(${commentedAt})</span></div>
+              <div style="font-size:13px;color:#2d3748;" id="cmt-txt-${m.id}">${escapeHtml(m.clientComment)}</div>
+              <button onclick="editComment('${m.id}')" style="margin-top:5px;padding:3px 10px;background:none;border:1px solid #9ae6b4;border-radius:5px;font-size:11px;color:var(--green);cursor:pointer;">✏️ Edytuj</button>
+            </div>
+          ` : `
+            <button onclick="showCommentBox('${m.id}')" id="add-cmt-btn-${m.id}" style="margin-top:8px;padding:6px 12px;background:none;border:1.5px dashed #ccc;border-radius:7px;font-size:12px;color:#888;cursor:pointer;width:100%;">+ Dodaj komentarz do pomiaru</button>
+          `}
+          <div id="cmt-box-${m.id}" style="display:none;margin-top:8px;">
+            <textarea id="cmt-input-${m.id}" rows="3" placeholder="Napisz swoje odczucia, obserwacje po tym pomiarze..." style="width:100%;padding:9px 12px;border:1.5px solid var(--green);border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;outline:none;box-sizing:border-box;"></textarea>
+            <div style="display:flex;gap:8px;margin-top:6px;">
+              <button onclick="saveComment('${m.id}')" style="padding:7px 16px;background:var(--green);color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;">💾 Zapisz</button>
+              <button onclick="cancelComment('${m.id}')" style="padding:7px 14px;background:#f7f7f7;color:#666;border:1px solid #ddd;border-radius:7px;font-size:13px;cursor:pointer;">✕ Anuluj</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+      window._MEAS_DATA = ms;
+    }
+
+    function showCommentBox(measId) {
+      const box = document.getElementById('cmt-box-' + measId);
+      const btn = document.getElementById('add-cmt-btn-' + measId);
+      if (box) { box.style.display = 'block'; document.getElementById('cmt-input-'+measId).focus(); }
+      if (btn) btn.style.display = 'none';
+    }
+
+    function editComment(measId) {
+      const ms = window._MEAS_DATA || (LocalApi.getMeasurements ? LocalApi.getMeasurements(CLIENT.id) : []);
+      const m = ms.find(x=>x.id===measId);
+      const box = document.getElementById('cmt-box-' + measId);
+      const inp = document.getElementById('cmt-input-' + measId);
+      if (box && inp) {
+        inp.value = m ? (m.clientComment||'') : '';
+        box.style.display = 'block';
+        inp.focus();
+      }
+    }
+
+    function cancelComment(measId) {
+      const box = document.getElementById('cmt-box-' + measId);
+      const btn = document.getElementById('add-cmt-btn-' + measId);
+      if (box) box.style.display = 'none';
+      if (btn) btn.style.display = 'block';
+    }
+
+    function saveComment(measId) {
+      const inp = document.getElementById('cmt-input-' + measId);
+      if (!inp) return;
+      const comment = inp.value.trim();
+      if (!comment) { showToast('Wpisz treść komentarza', 'error'); return; }
+      const result = LocalApi.addMeasurementComment ? LocalApi.addMeasurementComment(CLIENT.id, measId, comment) : null;
+      if (result && result.error) { showToast('❌ ' + result.error, 'error'); return; }
+      showToast('✅ Komentarz zapisany', 'success');
+      loadMeasurements(); // re-render
+    }
+
+    function openPdfPreview(measId) {
+      const ms = window._MEAS_DATA || (LocalApi.getMeasurements ? LocalApi.getMeasurements(CLIENT.id) : []);
+      const m = ms.find(x=>x.id===measId);
+      if (!m||!m.data) { showToast('Brak pliku PDF', 'error'); return; }
+      const modal = document.getElementById('pdfPreviewModal');
+      const frame = document.getElementById('pdfPreviewFrame');
+      const title = document.getElementById('pdfPreviewTitle');
+      const dlBtn = document.getElementById('pdfDownloadBtn');
+      if (!modal||!frame) return;
+      title.textContent = m.title || 'Pomiar Tanita';
+      frame.src = m.data;
+      dlBtn.onclick = () => downloadMeasurementClient(measId);
+      modal.style.display = 'flex';
+    }
+
+    function closePdfPreview() {
+      const modal = document.getElementById('pdfPreviewModal');
+      if (modal) { modal.style.display = 'none'; }
+      const frame = document.getElementById('pdfPreviewFrame');
+      if (frame) frame.src = 'about:blank';
+    }
+
+    function downloadMeasurementClient(measId) {
+      const ms = window._MEAS_DATA || (LocalApi.getMeasurements ? LocalApi.getMeasurements(CLIENT.id) : []);
+      const m = ms.find(x=>x.id===measId);
+      if (!m||!m.data) { showToast('Brak pliku', 'error'); return; }
+      const a = document.createElement('a');
+      a.href = m.data; a.download = (m.title||'pomiar_tanita')+'.pdf';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
+  </script>
+</body>
+</html>

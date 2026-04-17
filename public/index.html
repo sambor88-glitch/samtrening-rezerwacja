@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="pl" id="htmlRoot">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#6CC04A"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon-192.svg"/>
+<title>SAMtrening – Zarezerwuj Trening / Book Training</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--green:#6CC04A;--gd:#58a63a;--gl:#e8f7e0;--dark:#1a1a1a;--gray:#555;--light:#f5f5f5;--gs:#00B8D9;--ge:#0066FF;--border:#e0e0e0;--shadow:0 4px 24px rgba(0,0,0,.10);--radius:14px;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--light);color:var(--dark);min-height:100vh;}
+header{background:#fff;border-bottom:3px solid var(--green);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:72px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.07);}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.lc{width:46px;height:46px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:13px;}
+.lt{font-size:1.35rem;font-weight:700;color:var(--dark);} .lt span{color:var(--green);}
+.hdr-right{display:flex;align-items:center;gap:8px;}
+.htag{background:var(--green);color:#fff;padding:6px 16px;border-radius:20px;font-size:.82rem;font-weight:600;}
+.lang-btn{padding:7px 16px;border:2px solid var(--border);border-radius:20px;font-size:.85rem;font-weight:700;cursor:pointer;background:#fff;color:var(--dark);transition:all .2s;font-family:inherit;}
+.lang-btn:hover,.lang-btn.act{border-color:var(--green);color:var(--green);background:var(--gl);}
+.hero{background:linear-gradient(135deg,#1a1a1a,#2d2d2d);color:#fff;text-align:center;padding:56px 2rem 46px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;left:-60px;width:200px;height:200px;background:var(--green);border-radius:50%;opacity:.08;}
+.hero::after{content:'';position:absolute;bottom:-80px;right:-40px;width:260px;height:260px;background:var(--green);border-radius:50%;opacity:.06;}
+.hero h1{font-size:2.3rem;font-weight:900;line-height:1.15;margin-bottom:12px;}
+.grad{background:linear-gradient(90deg,var(--gs),var(--ge));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{font-size:1.02rem;color:rgba(255,255,255,.75);max-width:520px;margin:0 auto;line-height:1.6;}
+.container{max-width:960px;margin:0 auto;padding:38px 1.5rem 60px;}
+.steps-bar{display:flex;align-items:center;justify-content:center;margin-bottom:38px;}
+.si{display:flex;flex-direction:column;align-items:center;position:relative;flex:1;max-width:160px;}
+.si:not(:last-child)::after{content:'';position:absolute;top:18px;left:calc(50% + 18px);width:calc(100% - 36px);height:2px;background:var(--border);}
+.si.done:not(:last-child)::after,.si.active:not(:last-child)::after{background:var(--green);}
+.sd{width:36px;height:36px;border-radius:50%;background:var(--border);color:#aaa;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.95rem;margin-bottom:6px;transition:all .3s;position:relative;z-index:1;}
+.si.active .sd{background:var(--green);color:#fff;box-shadow:0 0 0 4px rgba(108,192,74,.2);}
+.si.done .sd{background:var(--green);color:#fff;}
+.sl{font-size:.7rem;color:#aaa;text-align:center;font-weight:600;letter-spacing:.4px;text-transform:uppercase;}
+.si.active .sl,.si.done .sl{color:var(--green);}
+.card{background:#fff;border-radius:var(--radius);padding:34px;box-shadow:var(--shadow);margin-bottom:22px;}
+.card h2{font-size:1.35rem;font-weight:800;margin-bottom:6px;} .card .sub{color:var(--gray);font-size:.9rem;margin-bottom:26px;}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media(max-width:600px){.tgrid{grid-template-columns:1fr;}.hero h1{font-size:1.65rem;}.card{padding:20px;}}
+.tc{border:2px solid var(--border);border-radius:var(--radius);padding:22px 18px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;background:#fff;}
+.tc:hover{border-color:var(--green);box-shadow:0 6px 20px rgba(108,192,74,.15);transform:translateY(-2px);}
+.tc.sel{border-color:var(--green);background:var(--gl);}
+.tc.sel::after{content:'✓';position:absolute;top:10px;right:12px;background:var(--green);color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;line-height:24px;text-align:center;}
+.tav{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:900;color:#fff;margin-bottom:12px;}
+.tn{font-size:1.1rem;font-weight:800;color:var(--dark);margin-bottom:2px;}
+.tr{font-size:.73rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+.td{font-size:.83rem;color:var(--gray);line-height:1.55;}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
+.tag{background:var(--light);border-radius:20px;padding:3px 9px;font-size:.7rem;color:var(--gray);font-weight:600;}
+.tc.sel .tag{background:rgba(108,192,74,.15);color:var(--gd);}
+/* Training type */
+.type-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;}
+.tbtn{border:2px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;text-align:center;font-weight:700;font-size:.88rem;transition:all .2s;color:var(--gray);background:#fff;user-select:none;}
+.tbtn:hover{border-color:var(--green);color:var(--gd);} .tbtn.sel{border-color:var(--green);background:var(--gl);color:var(--gd);}
+.tbtn .tbi{font-size:1.4rem;display:block;margin-bottom:5px;}
+.meet-info{background:#e8f0fe;border-left:4px solid #4285F4;border-radius:8px;padding:12px 16px;font-size:.84rem;color:#1a3c8f;margin-top:10px;line-height:1.5;display:none;}
+.meet-info.show{display:block;}
+/* Calendar */
+.calnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.calnav button{background:none;border:1.5px solid var(--border);border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:1rem;color:var(--gray);transition:all .2s;}
+.calnav button:hover{border-color:var(--green);color:var(--green);}
+.calmth{font-weight:800;font-size:1.05rem;}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.calhdr{text-align:center;font-size:.7rem;font-weight:700;color:#aaa;text-transform:uppercase;padding:4px 0 8px;}
+.calday{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:10px;font-size:.86rem;cursor:pointer;transition:all .2s;font-weight:500;border:2px solid transparent;}
+.calday:hover:not(.dis):not(.emp){background:var(--gl);border-color:var(--green);color:var(--gd);}
+.calday.sel{background:var(--green);color:#fff;font-weight:700;} .calday.today{border-color:var(--green);color:var(--gd);font-weight:700;}
+.calday.dis{color:#ccc;cursor:not-allowed;} .calday.emp{cursor:default;}
+.tgridslots{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:9px;margin-top:16px;}
+.tslot{border:2px solid var(--border);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;font-size:.9rem;font-weight:600;transition:all .2s;color:var(--dark);}
+.tslot:hover:not(.booked){border-color:var(--green);color:var(--gd);background:var(--gl);}
+.tslot.sel{background:var(--green);border-color:var(--green);color:#fff;}
+.tslot.booked{background:#f0f0f0;color:#bbb;cursor:not-allowed;text-decoration:line-through;}
+/* Recurring */
+.rec-box{background:var(--light);border-radius:10px;padding:16px 18px;margin-top:14px;display:none;}
+.rec-box.show{display:block;}
+.rec-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.rec-lbl{font-size:.85rem;font-weight:700;color:var(--dark);}
+.wk-btns{display:flex;gap:7px;flex-wrap:wrap;}
+.wk-btn{padding:6px 14px;border:2px solid var(--border);border-radius:20px;font-size:.82rem;font-weight:700;cursor:pointer;background:#fff;color:var(--gray);transition:all .2s;}
+.wk-btn:hover,.wk-btn.sel{border-color:var(--green);color:var(--gd);background:var(--gl);}
+/* Form */
+.fg{margin-bottom:18px;}
+label{display:block;font-size:.84rem;font-weight:700;color:var(--dark);margin-bottom:6px;}
+input[type=text],input[type=tel],input[type=email]{width:100%;padding:12px 15px;border:2px solid var(--border);border-radius:10px;font-size:1rem;color:var(--dark);transition:border .2s;outline:none;font-family:inherit;}
+input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(108,192,74,.12);}
+textarea.cinput{width:100%;padding:12px 15px;border:2px solid var(--border);border-radius:10px;font-size:.93rem;color:var(--dark);transition:border .2s;outline:none;font-family:inherit;resize:vertical;min-height:85px;}
+textarea.cinput:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(108,192,74,.12);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px;} @media(max-width:500px){.frow{grid-template-columns:1fr;}}
+.ibox{background:linear-gradient(90deg,rgba(0,184,217,.08),rgba(0,102,255,.08));border-left:4px solid var(--gs);border-radius:8px;padding:13px 17px;font-size:.86rem;color:#1a5276;margin-bottom:20px;line-height:1.5;}
+.errmsg{color:#e53e3e;font-size:.78rem;margin-top:4px;display:none;} .haserr .errmsg{display:block;} .haserr input,.haserr textarea{border-color:#e53e3e;}
+/* Summary */
+.sbox{background:var(--light);border-radius:12px;padding:18px;margin-bottom:20px;}
+.srow{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--border);}
+.srow:last-child{border-bottom:none;}
+.slbl{font-size:.8rem;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+.sval{font-size:.93rem;font-weight:700;color:var(--dark);text-align:right;max-width:70%;word-break:break-word;}
+/* Payment */
+.pay-box{background:linear-gradient(135deg,#f0fff4,var(--gl));border:2px solid var(--green);border-radius:var(--radius);padding:20px;margin-bottom:20px;}
+.pay-price{font-size:1.55rem;font-weight:900;color:var(--gd);margin-bottom:3px;}
+.pay-methods{font-size:.8rem;color:var(--gray);margin-bottom:14px;}
+.pay-plan-lbl{font-size:.78rem;font-weight:700;color:var(--gray);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px;}
+.pay-choice{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;}
+.pchoice{border:2px solid #b7e6a0;border-radius:10px;padding:11px 9px;cursor:pointer;text-align:center;transition:all .2s;color:var(--gray);font-size:.8rem;font-weight:700;background:#fff;user-select:none;}
+.pchoice:hover{border-color:var(--green);} .pchoice.sel{border-color:var(--green);background:var(--green);color:#fff;}
+.pchoice .pci{font-size:1.3rem;display:block;margin-bottom:3px;}
+.prepay-box{background:#fff;border-radius:10px;padding:13px 15px;font-size:.84rem;border:1.5px solid #b7e6a0;display:none;} .prepay-box.show{display:block;}
+.prepay-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);} .prepay-row:last-child{border-bottom:none;}
+.prl{color:var(--gray);font-size:.77rem;} .prv{font-weight:700;color:var(--dark);font-size:.86rem;word-break:break-all;}
+.prepay-note{font-size:.74rem;color:var(--gray);margin-top:9px;line-height:1.5;border-top:1px solid var(--border);padding-top:7px;}
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 30px;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;border:none;transition:all .25s;}
+.btn-p{background:var(--green);color:#fff;} .btn-p:hover:not(:disabled){background:var(--gd);transform:translateY(-1px);box-shadow:0 6px 16px rgba(108,192,74,.35);} .btn-p:disabled{background:#c5e4b4;cursor:not-allowed;}
+.btn-o{background:#fff;color:var(--dark);border:2px solid var(--border);} .btn-o:hover{border-color:var(--green);color:var(--gd);}
+.brow{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:10px;}
+/* Success */
+.success-card{text-align:center;padding:48px 24px;}
+.sc-icon{font-size:4rem;margin-bottom:16px;}
+.sc-title{font-size:1.8rem;font-weight:900;color:var(--dark);margin-bottom:8px;}
+.sc-sub{font-size:1rem;color:var(--gray);max-width:480px;margin:0 auto 28px;line-height:1.6;}
+.sc-box{background:var(--light);border-radius:12px;padding:20px 24px;margin-bottom:24px;text-align:left;}
+.sc-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.88rem;}
+.sc-row:last-child{border-bottom:none;}
+.sc-lbl{color:var(--gray);font-weight:600;} .sc-val{font-weight:700;color:var(--dark);}
+.meet-confirm{background:#e8f0fe;border-left:4px solid #4285F4;border-radius:8px;padding:14px 18px;font-size:.87rem;color:#1a3c8f;line-height:1.6;margin-bottom:20px;display:none;}
+.meet-confirm.show{display:block;}
+.spinner{display:inline-block;width:20px;height:20px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+/* Lang */
+[data-pl],[data-en]{display:none;}
+body.pl [data-pl]{display:revert;} body.en [data-en]{display:revert;}
+span[data-pl],span[data-en]{display:none;} body.pl span[data-pl]{display:inline;} body.en span[data-en]{display:inline;}
+.stepmsg{display:none;} body.pl .stepmsg.pl{display:block;} body.en .stepmsg.en{display:block;}
+</style>
+</head>
+<script src="local-api.js"></script>
+<body class="pl">
+
+<header>
+  <a class="logo" href="https://www.samtrening.com" target="_blank" rel="noopener">
+    <div class="lc">sam</div>
+    <div class="lt"><span>sam</span>trening</div>
+  </a>
+  <div class="hdr-right">
+    <span class="htag" data-pl>🏋️ Rezerwacja Treningu</span>
+    <span class="htag" data-en>🏋️ Book Training</span>
+    <button class="lang-btn" id="btnPL" onclick="setLang('pl')">🇵🇱 PL</button>
+    <button class="lang-btn" id="btnEN" onclick="setLang('en')">🇬🇧 EN</button>
+  </div>
+</header>
+
+<div class="hero">
+  <h1 data-pl>Zarezerwuj<br>Trening <span class="grad">Personalny</span></h1>
+  <h1 data-en>Book Your<br><span class="grad">Personal Training</span></h1>
+  <p data-pl>Wybierz trenera, termin i typ treningu. Trening kosztuje <strong>200 PLN</strong>. Potwierdzenie otrzymasz SMS-em i e-mailem z zaproszeniem do kalendarza Google.</p>
+  <p data-en>Choose your trainer, schedule and training type. Training costs <strong>200 PLN</strong>. You'll receive confirmation by SMS and email with a Google Calendar invite.</p>
+</div>
+
+<div class="container">
+
+  <!-- Steps bar -->
+  <div class="steps-bar">
+    <div class="si active" id="step-ind-1"><div class="sd">1</div><div class="sl"><span data-pl>Trener</span><span data-en>Trainer</span></div></div>
+    <div class="si" id="step-ind-2"><div class="sd">2</div><div class="sl"><span data-pl>Termin</span><span data-en>Schedule</span></div></div>
+    <div class="si" id="step-ind-3"><div class="sd">3</div><div class="sl"><span data-pl>Twoje dane</span><span data-en>Your details</span></div></div>
+    <div class="si" id="step-ind-4"><div class="sd">4</div><div class="sl"><span data-pl>Potwierdzenie</span><span data-en>Confirmation</span></div></div>
+  </div>
+
+  <!-- STEP 1 – Trainer -->
+  <div id="step1">
+    <div class="card">
+      <h2><span data-pl>Wybierz trenera</span><span data-en>Choose your trainer</span></h2>
+      <div class="sub"><span data-pl>Zaznacz trenera, z którym chcesz pracować</span><span data-en>Select the trainer you'd like to work with</span></div>
+      <div class="tgrid" id="trainerGrid">
+        <div style="grid-column:1/-1;text-align:center;padding:40px;color:#aaa;">⏳</div>
+      </div>
+    </div>
+    <div class="brow">
+      <div></div>
+      <button class="btn btn-p" onclick="goStep(2)" id="btn1Next" disabled><span data-pl>Dalej →</span><span data-en>Next →</span></button>
+    </div>
+  </div>
+
+  <!-- STEP 2 – Schedule + type -->
+  <div id="step2" style="display:none;">
+    <div class="card">
+      <h2><span data-pl>Typ treningu</span><span data-en>Training type</span></h2>
+      <div class="sub"><span data-pl>Stacjonarny w studio lub wideorozmowa przez Google Meet</span><span data-en>In-person at the studio or video call via Google Meet</span></div>
+      <div class="type-row">
+        <div class="tbtn" id="typeInperson" onclick="setType('inperson')">
+          <span class="tbi">🏋️</span>
+          <span data-pl>Stacjonarny</span><span data-en>In-Person</span>
+        </div>
+        <div class="tbtn" id="typeOnline" onclick="setType('online')">
+          <span class="tbi">🎥</span>
+          Online (Google Meet)
+        </div>
+      </div>
+      <div class="meet-info" id="meetInfo">
+        <span data-pl>🔗 Link do Google Meet zostanie wygenerowany po potwierdzeniu rezerwacji przez trenera i wysłany SMS-em oraz na email jako część zaproszenia kalendarza.</span>
+        <span data-en>🔗 A Google Meet link will be generated after the trainer confirms and sent via SMS and as part of your Google Calendar invite.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span data-pl>Wybierz termin</span><span data-en>Choose date & time</span></h2>
+      <div class="sub"><span data-pl>Dostępne terminy trenera</span><span data-en>Available slots for your trainer</span></div>
+      <div class="calnav">
+        <button onclick="changeMonth(-1)">‹</button>
+        <div class="calmth" id="calMonth"></div>
+        <button onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="calgrid" id="calGrid"></div>
+      <div id="slotsWrap" style="display:none;">
+        <div style="font-size:.88rem;font-weight:700;color:var(--dark);margin-top:18px;margin-bottom:4px;" id="slotDate"></div>
+        <div class="tgridslots" id="slotsGrid"></div>
+      </div>
+      <!-- Basket — wybrane terminy -->
+      <div id="slotBasket" style="display:none;margin-top:16px;border-top:1.5px solid var(--border);padding-top:14px;">
+        <div style="font-size:.82rem;font-weight:700;color:var(--dark);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">
+          🛒 <span data-pl>Wybrane terminy</span><span data-en>Selected sessions</span>
+          (<span id="basketCount">0</span>)
+        </div>
+        <div id="basketList" style="display:flex;flex-wrap:wrap;gap:7px;"></div>
+      </div>
+      <!-- Recurring -->
+      <div style="margin-top:16px;">
+        <label style="display:flex;align-items:center;gap:9px;cursor:pointer;font-size:.9rem;font-weight:700;">
+          <input type="checkbox" id="chkRecurring" onchange="toggleRecurring()" style="width:18px;height:18px;accent-color:var(--green);">
+          <span data-pl>Stały termin (cotygodniowy)</span><span data-en>Recurring (weekly)</span>
+        </label>
+        <div class="rec-box" id="recBox">
+          <div class="rec-lbl" style="margin-bottom:10px;">
+            <span data-pl>Liczba tygodni:</span><span data-en>Number of weeks:</span>
+          </div>
+          <div class="wk-btns" id="wkBtns">
+            <div class="wk-btn sel" data-w="4" onclick="setWeeks(4,this)"><span data-pl>4 tyg.</span><span data-en>4 wks</span></div>
+            <div class="wk-btn" data-w="8" onclick="setWeeks(8,this)"><span data-pl>8 tyg.</span><span data-en>8 wks</span></div>
+            <div class="wk-btn" data-w="12" onclick="setWeeks(12,this)"><span data-pl>12 tyg.</span><span data-en>12 wks</span></div>
+            <div class="wk-btn" data-w="24" onclick="setWeeks(24,this)"><span data-pl>24 tyg.</span><span data-en>24 wks</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="brow">
+      <button class="btn btn-o" onclick="goStep(1)"><span data-pl>← Wróć</span><span data-en>← Back</span></button>
+      <button class="btn btn-p" onclick="goStep(3)" id="btn2Next" disabled><span data-pl>Dalej →</span><span data-en>Next →</span></button>
+    </div>
+  </div>
+
+  <!-- STEP 3 – Client data -->
+  <div id="step3" style="display:none;">
+    <div class="card">
+      <h2><span data-pl>Twoje dane</span><span data-en>Your details</span></h2>
+      <div class="sub"><span data-pl>Podaj dane do rezerwacji i opcjonalną wiadomość dla trenera</span><span data-en>Enter your booking details and an optional message for your trainer</span></div>
+
+      <div class="ibox" id="reminderBox">
+        <span data-pl>💡 Trener potwierdzi termin SMS-em w ciągu 12 godzin. Na email otrzymasz zaproszenie do kalendarza Google z linkiem do spotkania (jeśli online).</span>
+        <span data-en>💡 Your trainer will confirm by SMS within 12 hours. You'll receive a Google Calendar invite by email (with a meeting link if training online).</span>
+      </div>
+
+      <div class="frow">
+        <div class="fg" id="fg-name">
+          <label><span data-pl>Imię *</span><span data-en>First name *</span></label>
+          <input type="text" id="inpName" placeholder="Jan / John">
+          <div class="errmsg" data-pl>Podaj imię</div>
+          <div class="errmsg" data-en>Please enter your first name</div>
+        </div>
+        <div class="fg" id="fg-surname">
+          <label><span data-pl>Nazwisko *</span><span data-en>Last name *</span></label>
+          <input type="text" id="inpSurname" placeholder="Kowalski / Smith">
+          <div class="errmsg" data-pl>Podaj nazwisko</div>
+          <div class="errmsg" data-en>Please enter your last name</div>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fg" id="fg-phone">
+          <label><span data-pl>Numer telefonu *</span><span data-en>Phone number *</span></label>
+          <input type="tel" id="inpPhone" placeholder="+48 000 000 000">
+          <div class="errmsg" data-pl>Podaj numer telefonu</div>
+          <div class="errmsg" data-en>Please enter your phone number</div>
+        </div>
+        <div class="fg" id="fg-email">
+          <label><span data-pl>Adres email *</span><span data-en>Email address *</span></label>
+          <input type="email" id="inpEmail" placeholder="jan@email.com">
+          <div class="errmsg" data-pl>Podaj poprawny adres email</div>
+          <div class="errmsg" data-en>Please enter a valid email</div>
+        </div>
+      </div>
+      <div class="fg" id="fg-msg">
+        <label>
+          <span data-pl>Wiadomość do trenera <span style="font-weight:400;color:var(--gray);">(opcjonalnie)</span></span>
+          <span data-en>Message to trainer <span style="font-weight:400;color:var(--gray);">(optional)</span></span>
+        </label>
+        <textarea class="cinput" id="inpMsg" rows="3">
+        </textarea>
+        <div style="font-size:.77rem;color:var(--gray);margin-top:5px;" data-pl>Np. jaki trening Cię interesuje, czy masz przeciwwskazania zdrowotne, czym chciałbyś podzielić się z trenerem...</div>
+        <div style="font-size:.77rem;color:var(--gray);margin-top:5px;" data-en>E.g. what type of training you're interested in, any health conditions or contraindications, anything you'd like your trainer to know...</div>
+      </div>
+    </div>
+
+    <!-- Payment -->
+    <div class="card">
+      <h2><span data-pl>Płatność</span><span data-en>Payment</span></h2>
+      <div class="sub"><span data-pl>Cena treningu i opcje płatności</span><span data-en>Session price and payment options</span></div>
+      <div class="pay-box">
+        <div class="pay-price">200 PLN</div>
+        <div class="pay-methods" data-pl>💳 Gotówka · Karta · BLIK · Szybki przelew</div>
+        <div class="pay-methods" data-en>💳 Cash · Card · BLIK · Fast transfer</div>
+        <div class="pay-plan-lbl" data-pl>Kiedy płacisz?</div>
+        <div class="pay-plan-lbl" data-en>When do you pay?</div>
+        <div class="pay-choice">
+          <div class="pchoice sel" id="pc-onsite" onclick="setPayment('onsite')">
+            <span class="pci">💰</span>
+            <span data-pl>Na miejscu</span><span data-en>On-site</span>
+          </div>
+          <div class="pchoice" id="pc-prepaid" onclick="setPayment('prepaid')">
+            <span class="pci">✅</span>
+            <span data-pl>Przedpłata</span><span data-en>Prepayment</span>
+          </div>
+        </div>
+        <div class="prepay-box" id="prepayBox">
+          <div style="font-size:.82rem;font-weight:700;color:var(--dark);margin-bottom:10px;" data-pl>📲 Dane do przedpłaty</div>
+          <div style="font-size:.82rem;font-weight:700;color:var(--dark);margin-bottom:10px;" data-en>📲 Prepayment details</div>
+          <div class="prepay-row"><span class="prl" data-pl>Konto bankowe:</span><span class="prl" data-en>Bank account:</span><span class="prv" id="payBankAcc">–</span></div>
+          <div class="prepay-row"><span class="prl">BLIK:</span><span class="prv" id="payBlikPhone">–</span></div>
+          <div class="prepay-note" data-pl>Przelej 200 PLN bezpośrednio na konto trenera lub wyślij BLIK na podany numer. W tytule podaj swoje imię i nazwisko.</div>
+          <div class="prepay-note" data-en>Transfer 200 PLN directly to the trainer's account or send BLIK to the number shown. Include your full name in the payment title.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="brow">
+      <button class="btn btn-o" onclick="goStep(2)"><span data-pl>← Wróć</span><span data-en>← Back</span></button>
+      <button class="btn btn-p" onclick="goStep(4)" id="btn3Next"><span data-pl>Przejdź do podsumowania →</span><span data-en>Review booking →</span></button>
+    </div>
+  </div>
+
+  <!-- STEP 4 – Confirm -->
+  <div id="step4" style="display:none;">
+    <div class="card">
+      <h2><span data-pl>Podsumowanie rezerwacji</span><span data-en>Booking summary</span></h2>
+      <div class="sub"><span data-pl>Sprawdź dane przed wysłaniem</span><span data-en>Please review your booking before submitting</span></div>
+      <div class="sbox" id="summaryBox"></div>
+      <div id="errMsg" style="background:#fff5f5;border-left:4px solid #e53e3e;border-radius:8px;padding:12px 16px;font-size:.87rem;color:#c53030;display:none;margin-bottom:16px;"></div>
+    </div>
+    <div class="brow">
+      <button class="btn btn-o" onclick="goStep(3)"><span data-pl>← Edytuj</span><span data-en>← Edit</span></button>
+      <button class="btn btn-p" onclick="submitBooking()" id="btnSubmit">
+        <span id="submitTxt"><span data-pl>✓ Zatwierdź rezerwację</span><span data-en>✓ Confirm booking</span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div id="stepSuccess" style="display:none;">
+    <div class="card success-card">
+      <div class="sc-icon">✅</div>
+      <div class="sc-title" data-pl>Rezerwacja wysłana!</div>
+      <div class="sc-title" data-en>Booking submitted!</div>
+      <div class="sc-sub" data-pl>Trener potwierdzi termin SMS-em w ciągu 12 godzin. Na podany email wyślemy zaproszenie do kalendarza Google.</div>
+      <div class="sc-sub" data-en>Your trainer will confirm by SMS within 12 hours. A Google Calendar invite will be sent to your email.</div>
+      <div class="sc-box" id="successDetails"></div>
+      <div class="meet-confirm" id="meetConfirmBox">
+        <span data-pl>🎥 <strong>Trening online:</strong> Link do Google Meet zostanie wysłany SMS-em i emailem po potwierdzeniu przez trenera.</span>
+        <span data-en>🎥 <strong>Online training:</strong> Your Google Meet link will be sent via SMS and email when your trainer confirms.</span>
+      </div>
+      <button class="btn btn-p" onclick="resetForm()"><span data-pl>+ Zarezerwuj kolejny</span><span data-en>+ Book another session</span></button>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ─── State ────────────────────────────────────────────────────────────────────
+const state = {
+  lang: 'pl', step: 1,
+  trainer: null, trainerId: null,
+  trainingType: 'inperson',
+  date: null,
+  selectedSlots: [],  // [{date, time}, ...] — multi-wybór terminów
+  recurring: false, recurringWeeks: 4,
+  paymentChoice: 'onsite',
+  calYear: null, calMonth: null,
+  bookedSlots: [],
+  availableSlots: [],
+  trainers: [],
+};
+
+// ─── Translations ─────────────────────────────────────────────────────────────
+const T = {
+  pl: {
+    stepsLabel: ['Trener','Termin','Twoje dane','Potwierdzenie'],
+    months: ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'],
+    days: ['Nd','Pn','Wt','Śr','Cz','Pt','Sb'],
+    noSlots: 'Brak wolnych terminów',
+    trainType_inperson: '🏋️ Stacjonarny',
+    trainType_online: '🎥 Online (Google Meet)',
+    payOnsite: '💰 Na miejscu',
+    payPrepaid: '✅ Przedpłata',
+    recurring_yes: n => `Co tydzień × ${n} tygodni`,
+    weeks: n => `${n} tyg.`,
+  },
+  en: {
+    stepsLabel: ['Trainer','Schedule','Your details','Confirmation'],
+    months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+    days: ['Su','Mo','Tu','We','Th','Fr','Sa'],
+    noSlots: 'No available slots',
+    trainType_inperson: '🏋️ In-Person',
+    trainType_online: '🎥 Online (Google Meet)',
+    payOnsite: '💰 On-site',
+    payPrepaid: '✅ Prepayment',
+    recurring_yes: n => `Weekly × ${n} weeks`,
+    weeks: n => `${n} wks`,
+  },
+};
+
+function t(key) { return (T[state.lang]||T.pl)[key]; }
+
+// ─── Language ─────────────────────────────────────────────────────────────────
+function setLang(lang) {
+  state.lang = lang;
+  document.body.className = lang;
+  document.getElementById('htmlRoot').lang = lang;
+  document.getElementById('btnPL').classList.toggle('act', lang==='pl');
+  document.getElementById('btnEN').classList.toggle('act', lang==='en');
+  renderTrainerGrid(); // re-render trainer bios in correct language
+  renderCalendar();
+}
+
+// ─── Trainers ─────────────────────────────────────────────────────────────────
+const TRAINER_COLORS = {kasia:'linear-gradient(135deg,#f093fb,#f5576c)', maciek:'linear-gradient(135deg,#4facfe,#00f2fe)'};
+function trainerInitials(name) { return name.split(' ').map(w=>w[0]).join('').slice(0,3).toUpperCase(); }
+
+async function loadTrainers() {
+  try {
+    const res = await fetch('/api/trainers');
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    state.trainers = await res.json();
+  } catch(e) {
+    // Fallback: LocalApi (localStorage)
+    state.trainers = LocalApi.getTrainersList();
+  }
+  renderTrainerGrid();
+}
+
+function renderTrainerGrid() {
+  const grid = document.getElementById('trainerGrid');
+  const isEN = state.lang === 'en';
+  // Fallback descriptions & roles – Polish and English
+  const FALLBACK_DESC = {
+    pl: {
+      kasia:  'Trenerka kobiet z 13-letnim doświadczeniem. Absolwentka AWF Kraków (gimnastyka korekcyjna, trenerka lekkoatletyczna II kl.). Specjalizuje się w pracy z kobietami na każdym etapie życia — sylwetka, ciąża, powrót do formy po porodzie. Holistyczne podejście, pełna dyskrecja i trwałe efekty, które zmieniają życie.',
+      maciek: 'Trener przedsiębiorców, lekarzy i osób medialnych. Absolwent AWF Kraków, były lekkoatleta z doświadczeniem na Mistrzostwach Świata i Europy. Specjalizuje się w treningu siłowym, dynamicznym i bieganiu. Efektywne treningi dla zapracowanych — krótkie, intensywne, z mierzalnym wynikiem.',
+    },
+    en: {
+      kasia:  'Women\'s training specialist with 13 years of experience. Graduate of AWF Kraków (corrective gymnastics & athletics coaching). She works with women at every stage of life — body transformation, pregnancy, postnatal recovery. Holistic approach, full discretion, lasting results.',
+      maciek: 'Personal trainer for entrepreneurs, doctors and public figures who need to look and feel their best every day. AWF Kraków graduate, former athlete at World & European Championships. Short, intense sessions with measurable results — built for busy people.',
+    },
+  };
+  const FALLBACK_ROLE = {
+    pl: { kasia: 'Trenerka kobiet | 13 lat doświadczenia', maciek: 'Trener przedsiębiorców | b. lekkoatleta MŚ' },
+    en: { kasia: 'Women\'s Trainer | 13 years experience',  maciek: 'Entrepreneur Coach | ex-World Championship athlete' },
+  };
+  const FALLBACK_TAGS = {
+    pl: {
+      kasia:  ['Trening kobiet','Ciąża & połóg','Sylwetka','Zdrowie'],
+      maciek: ['Przedsiębiorcy','Siła & dynamika','Bieganie','HIIT'],
+    },
+    en: {
+      kasia:  ['Women\'s Training','Pregnancy & Postnatal','Body Transformation','Health'],
+      maciek: ['Entrepreneurs','Strength & Power','Running','HIIT'],
+    },
+  };
+  const langKey = isEN ? 'en' : 'pl';
+  grid.innerHTML = state.trainers.map(tr => {
+    const bg   = TRAINER_COLORS[tr.id]||'linear-gradient(135deg,#6CC04A,#58a63a)';
+    const ini  = trainerInitials(tr.name);
+    // Use language-specific description/role/tags when English is selected
+    const desc = isEN ? (FALLBACK_DESC.en[tr.id] || tr.description || FALLBACK_DESC.pl[tr.id] || '')
+                      : (tr.description || FALLBACK_DESC.pl[tr.id] || '');
+    const role = isEN ? (FALLBACK_ROLE.en[tr.id] || tr.role || 'Personal Trainer')
+                      : (tr.role || FALLBACK_ROLE.pl[tr.id] || 'Trener Personalny');
+    const specSrc = isEN ? (FALLBACK_TAGS.en[tr.id] || tr.specializations || [])
+                         : (tr.specializations || FALLBACK_TAGS.pl[tr.id] || []);
+    const tags = specSrc.map(s=>`<span class="tag">${s}</span>`).join('');
+    return `<div class="tc" id="tc-${tr.id}" onclick="selectTrainer('${tr.id}','${tr.name}')">
+      <div class="tav" style="background:${bg}">${ini}</div>
+      <div class="tn">${tr.name}</div>
+      <div class="tr">${role}</div>
+      ${desc ? `<div class="td" style="font-size:.82rem;color:var(--gray);line-height:1.55;margin:8px 0 6px;">${desc}</div>` : ''}
+      <div class="tags">${tags}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectTrainer(id, name) {
+  state.trainerId = id; state.trainer = name;
+  document.querySelectorAll('.tc').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('tc-'+id)?.classList.add('sel');
+  document.getElementById('btn1Next').disabled = false;
+  // update payment info
+  const tr = state.trainers.find(t=>t.id===id);
+  if (tr) {
+    document.getElementById('payBankAcc').textContent  = tr.bankAccount||'–';
+    document.getElementById('payBlikPhone').textContent = tr.blikPhone||'–';
+  }
+}
+
+// ─── Training type ─────────────────────────────────────────────────────────────
+function setType(type) {
+  state.trainingType = type;
+  document.getElementById('typeInperson').classList.toggle('sel', type==='inperson');
+  document.getElementById('typeOnline').classList.toggle('sel', type==='online');
+  document.getElementById('meetInfo').classList.toggle('show', type==='online');
+}
+
+// ─── Calendar ─────────────────────────────────────────────────────────────────
+const AVAILABLE_HOURS = [
+  '07:00','07:30','08:00','08:30','09:00','09:30',
+  '10:00','10:30','11:00','11:30','12:00','12:30',
+  '13:00','13:30','14:00','14:30','15:00','15:30',
+  '16:00','16:30','17:00','17:30','18:00','18:30',
+  '19:00','19:30','20:00','20:30',
+];
+
+function initCal() {
+  const now = new Date();
+  state.calYear  = now.getFullYear();
+  state.calMonth = now.getMonth();
+  renderCalendar();
+}
+
+function changeMonth(d) {
+  state.calMonth += d;
+  if (state.calMonth<0) { state.calMonth=11; state.calYear--; }
+  if (state.calMonth>11){ state.calMonth=0;  state.calYear++; }
+  state.date=null; state.time=null;
+  document.getElementById('slotsWrap').style.display='none';
+  document.getElementById('btn2Next').disabled=true;
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const lng = state.lang;
+  const months = T[lng].months;
+  const days   = T[lng].days;
+  document.getElementById('calMonth').textContent = `${months[state.calMonth]} ${state.calYear}`;
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = days.map(d=>`<div class="calhdr">${d}</div>`).join('');
+  const first = new Date(state.calYear, state.calMonth, 1);
+  const last  = new Date(state.calYear, state.calMonth+1, 0);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const startDay = (first.getDay()+6)%7;// Mon=0 for PL, but let's use Sun=0
+  const startDay2 = first.getDay();
+  for (let i=0;i<startDay2;i++) grid.innerHTML += `<div class="calday emp"></div>`;
+  for (let d=1;d<=last.getDate();d++) {
+    const dt = new Date(state.calYear, state.calMonth, d);
+    const ds = dt.toISOString().split('T')[0];
+    const isPast = dt < today;
+    const isSel  = ds===state.date;
+    const isToday= dt.toDateString()===today.toDateString();
+    let cls = 'calday';
+    if (isPast) cls+=' dis';
+    if (isSel)  cls+=' sel';
+    if (isToday && !isSel) cls+=' today';
+    grid.innerHTML += `<div class="${cls}" onclick="${isPast?'':` selectDate('${ds}')`}">${d}</div>`;
+  }
+}
+
+async function selectDate(ds) {
+  state.date = ds;
+  renderCalendar();
+  if (!state.trainerId) return;
+  // Show loading indicator
+  const wrap = document.getElementById('slotsWrap');
+  document.getElementById('slotsGrid').innerHTML = `<div style="grid-column:1/-1;text-align:center;color:#aaa;padding:20px;">⏳ ${state.lang==='en'?'Loading slots...':'Ładowanie godzin...'}</div>`;
+  wrap.style.display = 'block';
+  try {
+    const res = await fetch(`/api/availability?trainerId=${state.trainerId}&date=${ds}`);
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    state.bookedSlots    = data.booked   || [];
+    state.availableSlots = (data.available && data.available.length > 0) ? data.available : AVAILABLE_HOURS;
+  } catch(e) {
+    // Fallback: LocalApi (localStorage) — używa danych ustawionych przez trenera lokalnie
+    const local = LocalApi.getAvailForDate(state.trainerId, ds);
+    state.bookedSlots    = local.booked || [];
+    state.availableSlots = (local.available && local.available.length > 0) ? local.available : AVAILABLE_HOURS;
+  }
+  renderSlots(ds);
+}
+
+function renderSlots(ds) {
+  const wrap = document.getElementById('slotsWrap');
+  const dateObj = new Date(ds);
+  const fmt = dateObj.toLocaleDateString(state.lang==='en'?'en-GB':'pl-PL',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('slotDate').textContent = fmt;
+  const grid = document.getElementById('slotsGrid');
+  const slots = state.availableSlots || AVAILABLE_HOURS;
+  const freeCount = slots.filter(h => !state.bookedSlots.includes(h)).length;
+  if (freeCount === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:#e53e3e;padding:20px;font-weight:700;">
+      ${state.lang==='en'?'😔 No available slots for this day':'😔 Brak wolnych godzin w tym dniu'}</div>`;
+    wrap.style.display = 'block';
+    return;
+  }
+  grid.innerHTML = slots.map(h => {
+    const isBooked  = state.bookedSlots.includes(h);
+    const isSel     = state.selectedSlots.some(s=>s.date===ds&&s.time===h);
+    let cls = 'tslot';
+    if (isBooked) cls += ' booked';
+    if (isSel)    cls += ' sel';
+    return `<div class="${cls}" onclick="${isBooked ? '' : `toggleSlot('${ds}','${h}')`}">${h}</div>`;
+  }).join('');
+  wrap.style.display = 'block';
+}
+
+function toggleSlot(ds, h) {
+  const idx = state.selectedSlots.findIndex(s=>s.date===ds&&s.time===h);
+  if (idx>=0) {
+    state.selectedSlots.splice(idx,1);
+  } else {
+    state.selectedSlots.push({date:ds, time:h});
+    state.selectedSlots.sort((a,b)=>a.date===b.date?(a.time<b.time?-1:1):(a.date<b.date?-1:1));
+  }
+  renderSlots(ds);
+  renderBasket();
+  document.getElementById('btn2Next').disabled = state.selectedSlots.length===0;
+}
+
+function renderBasket() {
+  const basket = document.getElementById('slotBasket');
+  const list   = document.getElementById('basketList');
+  const count  = document.getElementById('basketCount');
+  if (state.selectedSlots.length===0) { basket.style.display='none'; return; }
+  basket.style.display='block';
+  count.textContent = state.selectedSlots.length;
+  list.innerHTML = state.selectedSlots.map((s,i)=>{
+    const dateObj = new Date(s.date);
+    const fmt = dateObj.toLocaleDateString(state.lang==='en'?'en-GB':'pl-PL',{weekday:'short',day:'numeric',month:'short'});
+    return `<div style="display:flex;align-items:center;gap:5px;background:#f0faf0;border:1.5px solid var(--green);border-radius:8px;padding:5px 9px;font-size:.82rem;font-weight:600;color:var(--dark);">
+      📅 ${fmt} ${s.time}
+      <span onclick="removeSlot(${i})" style="cursor:pointer;color:#e53e3e;font-weight:900;margin-left:4px;">✕</span>
+    </div>`;
+  }).join('');
+}
+
+function removeSlot(i) {
+  state.selectedSlots.splice(i,1);
+  renderBasket();
+  if (state.date) renderSlots(state.date);
+  document.getElementById('btn2Next').disabled = state.selectedSlots.length===0;
+}
+
+// ─── Recurring ────────────────────────────────────────────────────────────────
+function toggleRecurring() {
+  state.recurring = document.getElementById('chkRecurring').checked;
+  document.getElementById('recBox').classList.toggle('show', state.recurring);
+}
+function setWeeks(n, el) {
+  state.recurringWeeks = n;
+  document.querySelectorAll('.wk-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+// ─── Payment ──────────────────────────────────────────────────────────────────
+function setPayment(choice) {
+  state.paymentChoice = choice;
+  document.getElementById('pc-onsite').classList.toggle('sel', choice==='onsite');
+  document.getElementById('pc-prepaid').classList.toggle('sel', choice==='prepaid');
+  document.getElementById('prepayBox').classList.toggle('show', choice==='prepaid');
+}
+
+// ─── Steps ────────────────────────────────────────────────────────────────────
+function goStep(n) {
+  if (n===2 && !state.trainerId) return;
+  if (n===3 && state.selectedSlots.length===0) return;
+  if (n===4) {
+    if (!validateStep3()) return;
+    renderSummary();
+  }
+  state.step = n;
+  ['step1','step2','step3','step4','stepSuccess'].forEach((id,i)=>{
+    document.getElementById(id).style.display = (i===n-1)?'block':'none';
+  });
+  updateStepBar(n);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateStepBar(n) {
+  for (let i=1;i<=4;i++) {
+    const el = document.getElementById('step-ind-'+i);
+    el.classList.remove('active','done');
+    if (i===n) el.classList.add('active');
+    if (i<n)   el.classList.add('done');
+  }
+}
+
+// ─── Validate step 3 ─────────────────────────────────────────────────────────
+function validateStep3() {
+  let ok = true;
+  const fields = [
+    {id:'fg-name',    val:()=>document.getElementById('inpName').value.trim()},
+    {id:'fg-surname', val:()=>document.getElementById('inpSurname').value.trim()},
+    {id:'fg-phone',   val:()=>document.getElementById('inpPhone').value.trim()},
+    {id:'fg-email',   val:()=>{const v=document.getElementById('inpEmail').value.trim(); return v && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? v : '';}},
+  ];
+  fields.forEach(f=>{
+    const el = document.getElementById(f.id);
+    if (!f.val()) { el.classList.add('haserr'); ok=false; }
+    else el.classList.remove('haserr');
+  });
+  return ok;
+}
+
+// ─── Summary ──────────────────────────────────────────────────────────────────
+function renderSummary() {
+  const lng = state.lang;
+  const tr  = state.trainers.find(x=>x.id===state.trainerId)||{name:state.trainer};
+  // Format wybranych terminów
+  const slotLines = state.selectedSlots.map(s=>{
+    const fmt = new Date(s.date).toLocaleDateString(lng==='en'?'en-GB':'pl-PL',{weekday:'short',day:'numeric',month:'short'});
+    return `${fmt} ${s.time}`;
+  }).join(', ');
+  const rows = lng==='pl' ? [
+    ['Trener', tr.name],
+    ['Typ treningu', state.trainingType==='online'?'🎥 Online (Google Meet)':'🏋️ Stacjonarny'],
+    ['Wybrane terminy', `${slotLines} (${state.selectedSlots.length} szt.)`],
+    ['Stały termin', state.recurring ? `Co tydzień × ${state.recurringWeeks} tygodni` : 'Nie'],
+    ['Klient', `${document.getElementById('inpName').value} ${document.getElementById('inpSurname').value}`],
+    ['Telefon', document.getElementById('inpPhone').value],
+    ['Email', document.getElementById('inpEmail').value],
+    ['Łączna cena', `${state.selectedSlots.length * 200} PLN`],
+    ['Płatność', state.paymentChoice==='prepaid'?'✅ Przedpłata (przed treningiem)':'💰 Na miejscu'],
+  ] : [
+    ['Trainer', tr.name],
+    ['Training type', state.trainingType==='online'?'🎥 Online (Google Meet)':'🏋️ In-Person'],
+    ['Selected sessions', `${slotLines} (${state.selectedSlots.length})`],
+    ['Recurring', state.recurring ? `Weekly × ${state.recurringWeeks} weeks` : 'No'],
+    ['Client', `${document.getElementById('inpName').value} ${document.getElementById('inpSurname').value}`],
+    ['Phone', document.getElementById('inpPhone').value],
+    ['Email', document.getElementById('inpEmail').value],
+    ['Total price', `${state.selectedSlots.length * 200} PLN`],
+    ['Payment', state.paymentChoice==='prepaid'?'✅ Prepayment (before session)':'💰 On-site'],
+  ];
+  const msg = document.getElementById('inpMsg').value.trim();
+  if (msg) rows.push([lng==='pl'?'Wiadomość do trenera':'Message to trainer', msg]);
+  document.getElementById('summaryBox').innerHTML = rows.map(([l,v])=>`<div class="srow"><div class="slbl">${l}</div><div class="sval">${v}</div></div>`).join('');
+}
+
+// ─── Submit ───────────────────────────────────────────────────────────────────
+async function submitBooking() {
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true;
+  document.getElementById('submitTxt').innerHTML = '<span class="spinner"></span>';
+  document.getElementById('errMsg').style.display='none';
+
+  const tr = state.trainers.find(x=>x.id===state.trainerId)||{name:state.trainer};
+  const commonPayload = {
+    trainer: tr.name, trainerId: state.trainerId,
+    name: document.getElementById('inpName').value.trim(),
+    surname: document.getElementById('inpSurname').value.trim(),
+    phone: document.getElementById('inpPhone').value.trim(),
+    email: document.getElementById('inpEmail').value.trim(),
+    trainingType: state.trainingType,
+    clientMessage: document.getElementById('inpMsg').value.trim(),
+    language: state.lang,
+    recurring: state.recurring,
+    recurringWeeks: state.recurringWeeks,
+    paymentChoice: state.paymentChoice,
+  };
+
+  // Dla każdego wybranego slotu tworzymy osobną rezerwację
+  let created=0, errors=[], lastData=null;
+  for (const slot of state.selectedSlots) {
+    const payload = {...commonPayload, date:slot.date, time:slot.time};
+    let data;
+    try {
+      const res = await fetch('/api/booking',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      data = await res.json();
+      if (!res.ok) throw new Error(data.error||'Błąd serwera');
+    } catch(fetchErr) {
+      data = LocalApi.createClientBooking(payload);
+      if (data.error) { errors.push(`${slot.date} ${slot.time}: ${data.error}`); continue; }
+    }
+    created++; lastData=data;
+  }
+
+  if (created===0) {
+    const errEl = document.getElementById('errMsg');
+    errEl.textContent = errors[0]||'Nie udało się zarezerwować żadnego terminu.'; errEl.style.display='block';
+    btn.disabled=false; document.getElementById('submitTxt').innerHTML = state.lang==='pl'?'Potwierdź rezerwację →':'Confirm Booking →';
+    return;
+  }
+  try {
+    showSuccess({...commonPayload, date:state.selectedSlots[0].date, time:state.selectedSlots[0].time}, {
+      ...lastData, totalBookings:created, slotsCount:state.selectedSlots.length, errors,
+    });
+  } catch(e) {
+    const errEl = document.getElementById('errMsg');
+    errEl.textContent = e.message; errEl.style.display='block';
+    btn.disabled=false;
+    setTimeout(()=>setLang(state.lang),50);
+  }
+}
+
+function showSuccess(payload, data) {
+  const lng = state.lang;
+  const tr = state.trainers.find(x=>x.id===payload.trainerId)||{name:payload.trainer};
+  const slotsFmt = state.selectedSlots.map(s=>{
+    const fmt = new Date(s.date).toLocaleDateString(lng==='en'?'en-GB':'pl-PL',{weekday:'short',day:'numeric',month:'short'});
+    return `${fmt} ${s.time}`;
+  }).join(' • ');
+  const rows = lng==='pl' ? [
+    ['Trener', tr.name],
+    ['Typ', payload.trainingType==='online'?'🎥 Online (Google Meet)':'🏋️ Stacjonarny'],
+    ['Zarezerwowane terminy', `${data.totalBookings||1} szt.: ${slotsFmt}`],
+    ...(data.errors&&data.errors.length?[['Pominięte (zajęte)',data.errors.join(', ')]]:[]),
+    ['Email do potwierdzeń', payload.email||'–'],
+  ] : [
+    ['Trainer', tr.name],
+    ['Type', payload.trainingType==='online'?'🎥 Online (Google Meet)':'🏋️ In-Person'],
+    ['Sessions booked', `${data.totalBookings||1}: ${slotsFmt}`],
+    ...(data.errors&&data.errors.length?[['Skipped (taken)',data.errors.join(', ')]]:[]),
+    ['Confirmation email', payload.email||'–'],
+  ];
+  document.getElementById('successDetails').innerHTML = rows.map(([l,v])=>`<div class="sc-row"><div class="sc-lbl">${l}</div><div class="sc-val">${v}</div></div>`).join('');
+  if (payload.trainingType==='online') document.getElementById('meetConfirmBox').classList.add('show');
+
+  ['step1','step2','step3','step4'].forEach(id=>{ document.getElementById(id).style.display='none'; });
+  document.getElementById('stepSuccess').style.display='block';
+  updateStepBar(5);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function resetForm() {
+  state.trainer=null; state.trainerId=null; state.date=null;
+  state.selectedSlots=[]; state.bookedSlots=[]; state.availableSlots=[];
+  state.trainingType='inperson'; state.recurring=false; state.recurringWeeks=4;
+  state.paymentChoice='onsite';
+  document.getElementById('inpName').value='';
+  document.getElementById('inpSurname').value='';
+  document.getElementById('inpPhone').value='';
+  document.getElementById('inpEmail').value='';
+  document.getElementById('inpMsg').value='';
+  document.getElementById('chkRecurring').checked=false;
+  document.getElementById('recBox').classList.remove('show');
+  document.getElementById('meetConfirmBox').classList.remove('show');
+  document.getElementById('slotsWrap').style.display='none';
+  document.getElementById('slotBasket').style.display='none';
+  document.getElementById('basketList').innerHTML='';
+  setType('inperson'); setPayment('onsite');
+  document.querySelectorAll('.tc').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('btn1Next').disabled=true;
+  goStep(1);
+  renderTrainerGrid();
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  loadTrainers();
+  initCal();
+  setLang('pl');
+  setType('inperson');
+});
+</script>
+</body>
+</html>

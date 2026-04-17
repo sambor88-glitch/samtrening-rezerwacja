@@ -1,0 +1,2284 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#6CC04A"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon-192.svg"/>
+<title>SAMtrening – Panel Admina</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--green:#6CC04A;--gd:#58a63a;--gl:#e8f7e0;--dark:#1a1a1a;--gray:#555;--light:#f0f2f5;--white:#fff;--gs:#00B8D9;--ge:#0066FF;--border:#e0e0e0;--shadow:0 4px 24px rgba(0,0,0,.10);--r:12px;--sb:248px;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--light);color:var(--dark);min-height:100vh;}
+/* LOGIN */
+.lw{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a,#2d2d2d);}
+.lb{background:#fff;border-radius:18px;padding:44px 40px;width:360px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.ll{display:flex;align-items:center;gap:10px;margin-bottom:32px;}
+.lc{background:var(--green);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:13px;}
+.lt{font-size:1.3rem;font-weight:700;color:var(--dark);} .lt span{color:var(--green);}
+.lb h2{font-size:1.25rem;font-weight:800;margin-bottom:6px;} .lb p{color:var(--gray);font-size:.88rem;margin-bottom:24px;}
+.lb input{width:100%;padding:13px 16px;border:2px solid var(--border);border-radius:10px;font-size:1rem;outline:none;transition:border .2s;font-family:inherit;}
+.lb input:focus{border-color:var(--green);}
+.btn-li{width:100%;margin-top:14px;padding:13px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-li:hover{background:var(--gd);}
+.le{color:#e53e3e;font-size:.83rem;margin-top:10px;display:none;}
+.lh{background:var(--light);border-radius:8px;padding:10px 14px;font-size:.78rem;color:var(--gray);margin-top:14px;}
+/* LAYOUT */
+.app{display:none;} .app.show{display:flex;min-height:100vh;}
+/* SIDEBAR */
+.sb{width:var(--sb);background:#1a1a1a;color:#fff;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;overflow-y:auto;}
+.sblogo{padding:18px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px;}
+.sblogo .lc{width:38px;height:38px;font-size:11px;flex-shrink:0;}
+.sblogo .lt{font-size:.95rem;}
+.sbsub{font-size:.68rem;color:rgba(255,255,255,.4);margin-top:1px;}
+.sbnav{padding:12px 0;flex:1;}
+.sblbl{font-size:.68rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1px;padding:8px 18px 4px;}
+.ni{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;color:rgba(255,255,255,.65);font-size:.86rem;font-weight:500;transition:all .2s;border-left:3px solid transparent;}
+.ni:hover{background:rgba(255,255,255,.05);color:#fff;}
+.ni.act{background:rgba(108,192,74,.12);color:var(--green);border-left-color:var(--green);}
+.ni .ic{font-size:.95rem;width:20px;text-align:center;}
+.bc,.nbdg{background:rgba(245,166,35,.2);color:#f5a623;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:auto;display:none;}
+.ni:has(.nbdg) .nbdg{display:inline-block;}
+.sbft{padding:14px 18px;border-top:1px solid rgba(255,255,255,.1);}
+.btn-lo{width:100%;padding:10px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.12);border-radius:8px;font-size:.82rem;cursor:pointer;transition:all .2s;font-family:inherit;}
+.btn-lo:hover{background:rgba(229,62,62,.15);color:#fc8181;}
+/* MAIN */
+.main{margin-left:var(--sb);flex:1;display:flex;flex-direction:column;}
+.topbar{background:#fff;padding:13px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:40;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+.topbar h1{font-size:1.08rem;font-weight:800;}
+.tbr{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.si{padding:9px 15px;border:2px solid var(--border);border-radius:20px;font-size:.83rem;outline:none;font-family:inherit;transition:border .2s;min-width:190px;}
+.si:focus{border-color:var(--green);}
+.rb{background:none;border:1.5px solid var(--border);border-radius:8px;padding:7px 13px;font-size:.81rem;cursor:pointer;color:var(--gray);font-family:inherit;font-weight:600;transition:all .2s;}
+.rb:hover{border-color:var(--green);color:var(--green);}
+.content{padding:22px;flex:1;}
+.section{display:none;} .section.act{display:block;}
+/* STATS */
+.stgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:22px;}
+@media(max-width:900px){.stgrid{grid-template-columns:repeat(2,1fr);}}
+.stc{background:#fff;border-radius:var(--r);padding:17px;box-shadow:var(--shadow);display:flex;align-items:center;gap:13px;}
+.sti{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;}
+.ig{background:rgba(108,192,74,.12);} .iy{background:rgba(245,166,35,.12);} .ib{background:rgba(0,102,255,.10);} .ip{background:rgba(240,93,251,.10);}
+.stn{font-size:1.65rem;font-weight:900;line-height:1;} .stl{font-size:.73rem;color:var(--gray);font-weight:600;margin-top:3px;}
+/* BOOKING CARDS */
+.blist{display:flex;flex-direction:column;gap:11px;}
+.bcard{background:#fff;border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow);display:grid;grid-template-columns:auto 1fr auto;gap:13px;align-items:start;border-left:4px solid var(--border);}
+.bcard.s-pending{border-left-color:#f5a623;} .bcard.s-confirmed{border-left-color:var(--green);} .bcard.s-cancelled{border-left-color:#e53e3e;opacity:.65;}
+.bav{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:.95rem;flex-shrink:0;}
+.bav.kasia{background:linear-gradient(135deg,#f093fb,#f5576c);} .bav.maciek{background:linear-gradient(135deg,#4facfe,#00f2fe);}
+.bname{font-size:.97rem;font-weight:800;margin-bottom:3px;}
+.bmeta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:7px;}
+.mi{font-size:.8rem;color:var(--gray);} .mi a{color:var(--green);font-weight:700;text-decoration:none;}
+.btags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:5px;}
+.bdg{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.69rem;font-weight:700;letter-spacing:.3px;}
+.dp{background:#fff8e1;color:#b7791f;} .dc{background:var(--gl);color:var(--gd);} .dn{background:#fff5f5;color:#c53030;} .dt{background:rgba(0,102,255,.08);color:#0066FF;}
+.dl{background:#e8f0fe;color:#1a3c8f;} .do{background:rgba(108,192,74,.1);color:var(--gd);} .dm{background:rgba(245,166,35,.1);color:#b7791f;}
+.bdt{font-size:.76rem;color:#aaa;margin-top:3px;}
+.bcmsg{background:#f0f9ff;border-left:3px solid #0099ff;border-radius:6px;padding:7px 11px;font-size:.78rem;color:#1a5276;margin-top:7px;line-height:1.5;}
+.bact{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;}
+.bsm{padding:7px 12px;border-radius:8px;font-size:.74rem;font-weight:700;cursor:pointer;border:none;transition:all .2s;font-family:inherit;white-space:nowrap;}
+.bok{background:var(--gl);color:var(--gd);} .bok:hover{background:var(--green);color:#fff;}
+.bno{background:#fff5f5;color:#c53030;} .bno:hover{background:#e53e3e;color:#fff;}
+.bsms{background:linear-gradient(90deg,var(--gs),var(--ge));color:#fff;} .bsms:hover{opacity:.88;}
+.bsms:disabled{opacity:.45;cursor:not-allowed;}
+.nota{width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.78rem;font-family:inherit;outline:none;color:var(--dark);resize:none;min-height:48px;margin-top:7px;transition:border .2s;}
+.nota:focus{border-color:var(--green);}
+.smshistwrap{margin-top:7px;padding-top:7px;border-top:1px solid var(--border);}
+.smshtit{font-size:.68rem;color:#aaa;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.smshi{background:#f8f8f8;border-radius:6px;padding:5px 9px;font-size:.75rem;color:var(--gray);margin-bottom:3px;}
+.smshit{font-size:.67rem;color:#bbb;margin-top:2px;}
+.empty{text-align:center;padding:56px 20px;color:#bbb;}
+.empty .ei{font-size:2.8rem;margin-bottom:12px;}
+/* MANUAL BOOKING FORM */
+.mbook-form{background:#fff;border-radius:var(--r);padding:28px;box-shadow:var(--shadow);max-width:760px;}
+.mbook-form h2{font-size:1.2rem;font-weight:800;margin-bottom:6px;}
+.mbook-form .sub{color:var(--gray);font-size:.87rem;margin-bottom:24px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;} @media(max-width:600px){.frow{grid-template-columns:1fr;}}
+.fg{margin-bottom:0;}
+.fg label{display:block;font-size:.82rem;font-weight:700;color:var(--dark);margin-bottom:5px;}
+.fg input,.fg select,.fg textarea{width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-size:.92rem;outline:none;transition:border .2s;font-family:inherit;color:var(--dark);}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--green);}
+.fg textarea{resize:vertical;min-height:72px;}
+.type-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.tbtn{border:2px solid var(--border);border-radius:10px;padding:11px;cursor:pointer;text-align:center;font-weight:700;font-size:.85rem;transition:all .2s;color:var(--gray);background:#fff;user-select:none;}
+.tbtn.sel{border-color:var(--green);background:var(--gl);color:var(--gd);}
+.mbook-actions{display:flex;gap:12px;align-items:center;margin-top:20px;}
+.btn-save{padding:12px 28px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;}
+.btn-save:hover{background:var(--gd);}
+.btn-save:disabled{background:#c5e4b4;cursor:not-allowed;}
+.btn-sv{padding:11px 18px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:.87rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;}
+.btn-sv:hover{background:var(--gd);}
+.suc-msg{background:var(--gl);border:1.5px solid var(--green);border-radius:10px;padding:12px 18px;font-size:.87rem;color:var(--gd);font-weight:600;display:none;margin-top:14px;}
+/* FINANCIAL REPORTS */
+.fin-header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+.per-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.per-btn{padding:7px 14px;border:2px solid var(--border);border-radius:20px;font-size:.81rem;font-weight:700;cursor:pointer;background:#fff;color:var(--gray);transition:all .2s;font-family:inherit;}
+.per-btn:hover,.per-btn.act{border-color:var(--green);color:var(--gd);background:var(--gl);}
+.fin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:22px;}
+@media(max-width:700px){.fin-grid{grid-template-columns:1fr 1fr;}}
+.finc{background:#fff;border-radius:var(--r);padding:18px;box-shadow:var(--shadow);}
+.finc-icon{font-size:1.6rem;margin-bottom:8px;}
+.finc-val{font-size:1.55rem;font-weight:900;color:var(--dark);}
+.finc-lbl{font-size:.74rem;color:var(--gray);font-weight:600;margin-top:3px;}
+.finc-sub{font-size:.78rem;color:var(--green);font-weight:600;margin-top:3px;}
+.fin-table{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;margin-bottom:22px;}
+.fin-table table{width:100%;border-collapse:collapse;}
+.fin-table th{background:#f8f8f8;padding:11px 16px;text-align:left;font-size:.77rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;border-bottom:1.5px solid var(--border);}
+.fin-table td{padding:11px 16px;font-size:.86rem;border-bottom:1px solid var(--border);vertical-align:middle;}
+.fin-table tr:last-child td{border-bottom:none;}
+.fin-table tr:hover td{background:#fafafa;}
+.fin-ttitle{font-size:1rem;font-weight:800;padding:16px 20px;border-bottom:1px solid var(--border);}
+.trainer-sel-tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.trtab{padding:8px 20px;border-radius:20px;border:2px solid var(--border);background:#fff;cursor:pointer;font-size:.87rem;font-weight:700;color:var(--gray);transition:all .2s;font-family:inherit;}
+.trtab:hover{border-color:var(--green);color:var(--gd);} .trtab.act{background:var(--green);border-color:var(--green);color:#fff;}
+/* CALENDAR */
+.cal-section{}
+.cal-trainer-tabs{display:flex;gap:10px;margin-bottom:18px;}
+.ctt{padding:9px 22px;border-radius:20px;border:2px solid var(--border);background:#fff;cursor:pointer;font-size:.88rem;font-weight:700;color:var(--gray);transition:all .2s;}
+.ctt:hover{border-color:var(--green);color:var(--gd);} .ctt.act{background:var(--green);border-color:var(--green);color:#fff;}
+.cal-wrap{display:grid;grid-template-columns:1fr 320px;gap:18px;}
+@media(max-width:900px){.cal-wrap{grid-template-columns:1fr;}}
+.cal-card{background:#fff;border-radius:var(--r);padding:22px;box-shadow:var(--shadow);}
+.calnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.calnav button{background:none;border:1.5px solid var(--border);border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:.95rem;color:var(--gray);transition:all .2s;}
+.calnav button:hover{border-color:var(--green);color:var(--green);}
+.calmnth{font-weight:800;font-size:1.02rem;}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.chdr{text-align:center;font-size:.7rem;font-weight:700;color:#aaa;text-transform:uppercase;padding:4px 0 7px;}
+.cday{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:9px;cursor:pointer;transition:all .2s;font-weight:500;border:2px solid transparent;position:relative;font-size:.8rem;}
+.cday:hover:not(.cdis):not(.cemp){background:var(--gl);border-color:var(--green);}
+.cday.csel{background:var(--green);color:#fff;font-weight:700;}
+.cday.ctoday{border-color:var(--green);color:var(--gd);font-weight:700;}
+.cday.cdis{color:#ccc;cursor:not-allowed;} .cday.cemp{cursor:default;}
+.cday .dot-booked{width:5px;height:5px;border-radius:50%;background:#3b82f6;position:absolute;bottom:3px;left:50%;transform:translateX(-50%);}
+.cday .dot-avail{width:5px;height:5px;border-radius:50%;background:var(--green);position:absolute;bottom:3px;left:calc(50% - 4px);}
+.cday .dot-avail.only{left:50%;transform:translateX(-50%);}
+.cday.csel .dot-booked,.cday.csel .dot-avail{background:rgba(255,255,255,.6);}
+.day-panel{background:#fff;border-radius:var(--r);padding:22px;box-shadow:var(--shadow);}
+.day-panel h3{font-size:1.02rem;font-weight:800;margin-bottom:4px;}
+.dp-sub{font-size:.8rem;color:var(--gray);margin-bottom:16px;}
+.slot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;}
+.aslot{padding:7px 3px;border-radius:8px;text-align:center;font-size:.76rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);transition:all .2s;color:var(--gray);}
+.aslot:hover:not(.abooked){border-color:var(--green);color:var(--gd);}
+.aslot.aon{background:var(--gl);border-color:var(--green);color:var(--gd);}
+.aslot.abooked{background:#eff6ff;border-color:#93c5fd;color:#1d4ed8;cursor:default;}
+.dp-empty{text-align:center;padding:38px 0;color:#bbb;font-size:.88rem;}
+.dp-bitem{background:#f8f8f8;border-radius:8px;padding:9px 12px;margin-bottom:5px;font-size:.8rem;}
+/* SMS MODAL */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+.ov.show{display:flex;}
+.modal{background:#fff;border-radius:18px;padding:28px;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:mIn .3s ease;}
+@keyframes mIn{from{transform:scale(.92);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal h3{font-size:1.12rem;font-weight:800;margin-bottom:4px;}
+.msb{color:var(--gray);font-size:.84rem;margin-bottom:16px;line-height:1.4;}
+.modal label{display:block;font-size:.79rem;font-weight:700;margin-bottom:5px;color:var(--dark);}
+.modal input,.modal textarea{width:100%;padding:10px 13px;border:2px solid var(--border);border-radius:10px;font-size:.88rem;font-family:inherit;outline:none;transition:border .2s;}
+.modal input:focus,.modal textarea:focus{border-color:var(--green);}
+.modal textarea{min-height:100px;resize:vertical;margin-bottom:10px;}
+.tpls-tabs{display:flex;gap:6px;margin-bottom:8px;}
+.tpltab{padding:5px 12px;border:1.5px solid var(--border);border-radius:20px;font-size:.74rem;cursor:pointer;font-family:inherit;font-weight:700;color:var(--gray);background:#fff;transition:all .2s;}
+.tpltab:hover,.tpltab.act{border-color:var(--green);color:var(--gd);background:var(--gl);}
+.tpls{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+.tpl{background:var(--light);border:1.5px solid var(--border);border-radius:8px;padding:5px 11px;font-size:.73rem;cursor:pointer;font-family:inherit;color:var(--gray);transition:all .2s;}
+.tpl:hover{border-color:var(--green);color:var(--gd);background:var(--gl);}
+.mft{display:flex;gap:10px;margin-top:4px;}
+.btn-mc{flex:1;padding:11px;background:var(--light);border:2px solid var(--border);border-radius:10px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;color:var(--gray);}
+.btn-ms{flex:2;padding:11px;background:linear-gradient(90deg,var(--gs),var(--ge));color:#fff;border:none;border-radius:10px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn-ms:hover{opacity:.9;} .btn-ms:disabled{opacity:.5;cursor:not-allowed;}
+.chs{font-size:.71rem;color:#aaa;text-align:right;margin-bottom:5px;}
+/* TOAST */
+.toast{position:fixed;bottom:26px;right:26px;background:#1a1a1a;color:#fff;padding:13px 18px;border-radius:10px;font-size:.88rem;font-weight:600;z-index:300;display:none;max-width:320px;line-height:1.4;}
+.toast.show{display:block;animation:tsu .3s ease;}
+.toast.err{background:#e53e3e;} .toast.ok{background:var(--green);}
+@keyframes tsu{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+/* NEW BUTTONS */
+.bgcal{background:#4285F4;color:#fff;} .bgcal:hover{opacity:.88;}
+.bemail{background:#EA4335;color:#fff;} .bemail:hover{opacity:.88;}
+/* CLIENT LIST */
+.cl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:13px;}
+.cc{background:#fff;border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow);border-left:4px solid var(--green);}
+.cc-head{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.cc-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:.95rem;flex-shrink:0;background:linear-gradient(135deg,#6CC04A,#00f2fe);}
+.cc-name{font-size:.97rem;font-weight:800;}.cc-sub{font-size:.77rem;color:var(--gray);margin-top:1px;}
+.cc-stats{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0;}
+.cc-stat{text-align:center;}.cc-stat-n{font-size:1.1rem;font-weight:900;color:var(--dark);}.cc-stat-l{font-size:.67rem;color:var(--gray);font-weight:600;}
+.cc-act{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;}
+.cc-hist{display:none;margin-top:10px;border-top:1px solid var(--border);padding-top:10px;}
+.cc-hist.show{display:block;}
+.cc-hi{background:#f8f8f8;border-radius:7px;padding:7px 10px;font-size:.77rem;color:var(--gray);margin-bottom:4px;}
+/* BULK SEND */
+.bulk-wrap{max-width:700px;}
+.bulk-card{background:#fff;border-radius:var(--r);padding:24px 28px;box-shadow:var(--shadow);margin-bottom:18px;}
+.bulk-card h3{font-size:1.05rem;font-weight:800;margin-bottom:14px;}
+.bulk-mode{display:flex;gap:10px;margin-bottom:18px;}
+.bmode-btn{flex:1;padding:11px;border:2px solid var(--border);border-radius:10px;cursor:pointer;font-weight:700;font-size:.87rem;text-align:center;transition:all .2s;background:#fff;color:var(--gray);font-family:inherit;}
+.bmode-btn.act{border-color:var(--green);background:var(--gl);color:var(--gd);}
+.bulk-target{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.btgt-btn{padding:7px 15px;border:2px solid var(--border);border-radius:20px;font-size:.81rem;font-weight:700;cursor:pointer;background:#fff;color:var(--gray);transition:all .2s;font-family:inherit;}
+.btgt-btn.act,.btgt-btn:hover{border-color:var(--green);color:var(--gd);background:var(--gl);}
+.bulk-preview{background:var(--light);border-radius:8px;padding:10px 14px;font-size:.84rem;color:var(--gray);margin-bottom:14px;}
+.bulk-preview strong{color:var(--gd);}
+/* AVAILABILITY ADMIN */
+.avadm-wrap{display:grid;grid-template-columns:1fr 310px;gap:18px;}
+@media(max-width:900px){.avadm-wrap{grid-template-columns:1fr;}}
+.avadm-trainer-tabs{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.avt{padding:9px 22px;border-radius:20px;border:2px solid var(--border);background:#fff;cursor:pointer;font-size:.88rem;font-weight:700;color:var(--gray);transition:all .2s;font-family:inherit;}
+.avt:hover{border-color:var(--green);color:var(--gd);} .avt.act{background:var(--green);border-color:var(--green);color:#fff;}
+.av-slot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:10px;}
+.avs{padding:7px 3px;border-radius:8px;text-align:center;font-size:.76rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);transition:all .2s;color:var(--gray);}
+.avs:hover:not(.avs-booked){border-color:var(--green);color:var(--gd);}
+.avs.avs-on{background:var(--gl);border-color:var(--green);color:var(--gd);}
+.avs.avs-booked{background:#eff6ff;border-color:#93c5fd;color:#1d4ed8;cursor:default;}
+/* IMPORT / EXPORT */
+.ie-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:760px;}
+@media(max-width:600px){.ie-grid{grid-template-columns:1fr;}}
+.ie-card{background:#fff;border-radius:var(--r);padding:24px;box-shadow:var(--shadow);}
+.ie-card h3{font-size:1rem;font-weight:800;margin-bottom:6px;}.ie-card p{font-size:.83rem;color:var(--gray);margin-bottom:16px;line-height:1.5;}
+.ie-btns{display:flex;flex-direction:column;gap:9px;}
+.ie-btn{padding:11px 18px;border-radius:9px;border:none;cursor:pointer;font-size:.86rem;font-weight:700;font-family:inherit;transition:all .2s;text-align:left;}
+.ie-btn-ex{background:var(--gl);color:var(--gd);border:1.5px solid var(--green);}
+.ie-btn-ex:hover{background:var(--green);color:#fff;}
+.ie-btn-im{background:#e8f0fe;color:#1a3c8f;border:1.5px solid #4285F4;}
+.ie-btn-im:hover{background:#4285F4;color:#fff;}
+.ie-drop{display:none;border:2px dashed var(--border);border-radius:10px;padding:22px;text-align:center;margin-top:12px;color:#aaa;font-size:.85rem;cursor:pointer;transition:border .2s;}
+.ie-drop.active{border-color:var(--green);color:var(--gd);}
+.ie-result{font-size:.82rem;margin-top:10px;padding:8px 12px;border-radius:8px;display:none;}
+.ie-result.ok{background:var(--gl);color:var(--gd);display:block;}
+.ie-result.err{background:#fff5f5;color:#c53030;display:block;}
+/* EMAIL MODAL EXTRA */
+.modal textarea.etxt{min-height:130px;}
+/* TOUCH SUPPORT */
+.cal-day, .slot-btn, .cday, .sa-btn, .per-btn, .bsm, .tpl, .btpl, .bmode-btn, .btgt-btn, .ie-btn {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.cday:active, .cal-day:active { opacity: 0.75; }
+/* CLIENT ACCOUNTS ADMIN */
+.ca-card{background:#fff;border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow);border-left:4px solid #4285F4;}
+.ca-card.inactive{opacity:.6;border-left-color:#ccc;}
+.ca-name{font-size:.97rem;font-weight:800;}
+.ca-email{font-size:.8rem;color:var(--gray);margin:2px 0 8px;}
+.ca-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.ca-badge{padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;}
+.ca-badge.trainer{background:#e8f7e0;color:#2d7d1a;}
+.ca-badge.status-active{background:#e8f7e0;color:#2d7d1a;}
+.ca-badge.status-inactive{background:#f5f5f5;color:#999;}
+.ca-actions{display:flex;gap:7px;flex-wrap:wrap;}
+.ca-expand{font-size:.78rem;color:#4285F4;cursor:pointer;margin-top:6px;text-decoration:underline;}
+.ca-detail{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:.82rem;color:var(--gray);}
+.ca-detail.show{display:block;}
+</style>
+<script src="local-api.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div class="lw" id="loginWrap">
+  <div class="lb">
+    <div class="ll"><div class="lc">sam</div><div class="lt"><span>sam</span>trening</div></div>
+    <h2>Panel Administratora</h2>
+    <p>Zaloguj się, aby zarządzać rezerwacjami</p>
+    <input type="password" id="lpi" placeholder="Hasło administratora" onkeydown="if(event.key==='Enter')login()"/>
+    <button class="btn-li" onclick="login()">Zaloguj się →</button>
+    <div class="le" id="le">Nieprawidłowe hasło.</div>
+    <div class="lh">Domyślne: <strong>samtrening2024</strong></div>
+  </div>
+</div>
+
+<div class="app" id="app">
+  <aside class="sb">
+    <div class="sblogo">
+      <div class="lc">sam</div>
+      <div><div class="lt"><span>sam</span>trening</div><div class="sbsub">Panel Admina</div></div>
+    </div>
+    <nav class="sbnav">
+      <div class="sblbl">Rezerwacje</div>
+      <div class="ni act" onclick="showSec('bookings',this)"><span class="ic">📋</span>Wszystkie<span class="bc" id="cnt-all">0</span></div>
+      <div class="ni" onclick="showSec('pending',this)"><span class="ic">⏳</span>Oczekujące<span class="bc" id="cnt-pend">0</span></div>
+      <div class="ni" onclick="showSec('confirmed',this)"><span class="ic">✅</span>Potwierdzone</div>
+      <div class="ni" onclick="showSec('cancelled',this)"><span class="ic">❌</span>Anulowane</div>
+      <div class="sblbl">Narzędzia</div>
+      <div class="ni" onclick="showSec('manual',this)"><span class="ic">➕</span>Dodaj Rezerwację</div>
+      <div class="ni" onclick="showSec('financial',this)"><span class="ic">💰</span>Finanse / Statystyki</div>
+      <div class="sblbl">Klienci Aplikacji</div>
+      <div class="ni" onclick="showSec('client-accounts',this)"><span class="ic">👤</span>Konta Klientów<span class="nbdg" id="nbdgClients" style="background:rgba(0,102,255,.25);color:#63b3ed;">0</span></div>
+      <div class="sblbl">Klienci</div>
+      <div class="ni" onclick="showSec('clients',this)"><span class="ic">👥</span>Lista Klientów</div>
+      <div class="sblbl">Komunikacja</div>
+      <div class="ni" onclick="showSec('bulk',this)"><span class="ic">📡</span>Wysyłka Zbiorcza</div>
+      <div class="sblbl">Trenerzy</div>
+      <div class="ni" onclick="showSec('avail-admin',this)"><span class="ic">🗓️</span>Dostępność Trenerów</div>
+      <div class="sblbl">Kalendarze</div>
+      <div class="ni" onclick="showSec('cal-kasia',this)"><span class="ic">📅</span>Kalendarz Kasi</div>
+      <div class="ni" onclick="showSec('cal-maciek',this)"><span class="ic">📅</span>Kalendarz Maćka</div>
+      <div class="sblbl">System</div>
+      <div class="ni" onclick="showSec('impexp',this)"><span class="ic">💾</span>Import / Export</div>
+      <div class="sblbl">Konfiguracja</div>
+      <div class="ni" onclick="showSec('settings',this)"><span class="ic">⚙️</span>Ustawienia i Ceny</div>
+    </nav>
+    <div class="sbft"><button class="btn-lo" onclick="logout()">← Wyloguj się</button></div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <h1 id="pageTitle">Wszystkie Rezerwacje</h1>
+      <div class="tbr">
+        <input type="text" class="si" id="searchIn" placeholder="🔍 Szukaj klienta..." oninput="renderAllLists()"/>
+        <button class="rb" onclick="refresh()">↻ Odśwież</button>
+        <a href="trainer.html" target="_blank" style="padding:8px 15px;background:var(--green);color:#fff;border-radius:8px;text-decoration:none;font-size:.81rem;font-weight:700;">Panel Trenera ↗</a>
+      </div>
+    </div>
+    <div class="content">
+      <!-- STATS -->
+      <div class="stgrid" id="statsGrid">
+        <div class="stc"><div class="sti ig">📅</div><div><div class="stn" id="st-tot">0</div><div class="stl">Wszystkich</div></div></div>
+        <div class="stc"><div class="sti iy">⏳</div><div><div class="stn" id="st-pnd">0</div><div class="stl">Oczekuje</div></div></div>
+        <div class="stc"><div class="sti ib">✅</div><div><div class="stn" id="st-cnf">0</div><div class="stl">Potwierdzone</div></div></div>
+        <div class="stc"><div class="sti ip">🗓️</div><div><div class="stn" id="st-today">0</div><div class="stl">Dzisiaj</div></div></div>
+      </div>
+      <!-- SECTIONS -->
+      <div id="sec-bookings" class="section act"><div class="blist" id="blistAll"></div></div>
+      <div id="sec-pending"  class="section"><div class="blist" id="blistPend"></div></div>
+      <div id="sec-confirmed" class="section"><div class="blist" id="blistConf"></div></div>
+      <div id="sec-cancelled" class="section"><div class="blist" id="blistCanc"></div></div>
+
+      <!-- MANUAL BOOKING -->
+      <div id="sec-manual" class="section">
+        <div class="mbook-form">
+          <h2>➕ Dodaj Rezerwację Ręcznie</h2>
+          <div class="sub">Administrator ręcznie wprowadza dane klienta. Rezerwacja jest od razu potwierdzona.</div>
+          <div class="frow">
+            <div class="fg"><label>Imię klienta *</label><input type="text" id="mb-name" placeholder="Jan"></div>
+            <div class="fg"><label>Nazwisko klienta *</label><input type="text" id="mb-surname" placeholder="Kowalski"></div>
+          </div>
+          <div class="frow">
+            <div class="fg"><label>Telefon *</label><input type="tel" id="mb-phone" placeholder="+48 000 000 000"></div>
+            <div class="fg"><label>Email (do zaproszenia kalendarza)</label><input type="email" id="mb-email" placeholder="jan@email.com"></div>
+          </div>
+          <div class="frow">
+            <div class="fg">
+              <label>Trener *</label>
+              <select id="mb-trainer" onchange="loadManualAvailability()">
+                <option value="">— wybierz trenera —</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label>Język klienta</label>
+              <select id="mb-lang">
+                <option value="pl">🇵🇱 Polski</option>
+                <option value="en">🇬🇧 English</option>
+              </select>
+            </div>
+          </div>
+          <div class="frow">
+            <div class="fg"><label>Data treningu *</label><input type="date" id="mb-date" onchange="loadManualAvailability()"></div>
+            <div class="fg">
+              <label>Godzina treningu * <span id="mb-av-info" style="font-size:.74rem;color:var(--green);font-weight:600;"></span></label>
+              <select id="mb-time">
+                <option value="">— najpierw wybierz trenera i datę —</option>
+              </select>
+            </div>
+          </div>
+          <label style="font-size:.82rem;font-weight:700;color:var(--dark);margin-bottom:8px;display:block;">Typ treningu</label>
+          <div class="type-row" style="margin-bottom:16px;">
+            <div class="tbtn sel" id="mb-inperson" onclick="mbSetType('inperson')">🏋️ Stacjonarny</div>
+            <div class="tbtn" id="mb-online" onclick="mbSetType('online')">🎥 Online (Google Meet)</div>
+          </div>
+          <div class="frow">
+            <div class="fg">
+              <label>Płatność</label>
+              <select id="mb-payment">
+                <option value="onsite">💰 Na miejscu (200 PLN)</option>
+                <option value="prepaid">✅ Przedpłata</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg" style="margin-bottom:16px;">
+            <label>Wiadomość/notatka od klienta (opcjonalnie)</label>
+            <textarea id="mb-msg" placeholder="Np. rodzaj treningu, przeciwwskazania, dodatkowe informacje..."></textarea>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.87rem;font-weight:700;margin-bottom:16px;">
+            <input type="checkbox" id="mb-notify" checked style="width:16px;height:16px;accent-color:var(--green);">
+            Powiadom trenera SMS-em o tej rezerwacji
+          </label>
+          <div class="mbook-actions">
+            <button class="btn-save" onclick="addManualBooking()" id="mb-btn">✓ Zapisz Rezerwację</button>
+            <button class="rb" onclick="clearManualForm()">↺ Wyczyść</button>
+          </div>
+          <div class="suc-msg" id="mb-suc">✅ Rezerwacja zapisana pomyślnie!</div>
+          <div id="mb-err" style="color:#e53e3e;font-size:.84rem;margin-top:10px;display:none;"></div>
+        </div>
+      </div>
+
+      <!-- FINANCIAL REPORTS -->
+      <div id="sec-financial" class="section">
+        <div class="fin-header">
+          <div class="trainer-sel-tabs" id="finTrainerTabs">
+            <button class="trtab act" onclick="setFinTrainer('all',this)">🏢 Całościowy</button>
+          </div>
+        </div>
+        <div class="fin-header">
+          <div class="per-btns" id="perBtns">
+            <button class="per-btn act" onclick="setFinPeriod('day',this)">Dzisiaj</button>
+            <button class="per-btn" onclick="setFinPeriod('week',this)">Tydzień</button>
+            <button class="per-btn" onclick="setFinPeriod('month',this)">Miesiąc</button>
+            <button class="per-btn" onclick="setFinPeriod('quarter',this)">Kwartał</button>
+            <button class="per-btn" onclick="setFinPeriod('year',this)">Rok</button>
+          </div>
+        </div>
+        <div id="finContent"></div>
+      </div>
+
+      <!-- CALENDAR -->
+      <div id="sec-cal-kasia"  class="section"><div id="calKasia"></div></div>
+      <div id="sec-cal-maciek" class="section"><div id="calMaciek"></div></div>
+
+      <!-- LISTA KLIENTÓW -->
+      <div id="sec-clients" class="section">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
+          <div>
+            <div style="font-size:1.1rem;font-weight:800;">👥 Lista Klientów</div>
+            <div style="font-size:.83rem;color:var(--gray);margin-top:3px;">Unikalni klienci na podstawie historii rezerwacji</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <select id="cl-filter-trainer" onchange="renderClients()" style="padding:8px 12px;border:2px solid var(--border);border-radius:9px;font-size:.83rem;font-family:inherit;outline:none;">
+              <option value="">Wszyscy trenerzy</option>
+            </select>
+            <input type="text" id="cl-search" oninput="renderClients()" placeholder="🔍 Szukaj klienta..." style="padding:8px 12px;border:2px solid var(--border);border-radius:9px;font-size:.83rem;font-family:inherit;outline:none;min-width:170px;">
+          </div>
+        </div>
+        <div id="cl-stats" style="display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;"></div>
+        <div class="cl-grid" id="clientGrid"></div>
+      </div>
+
+      <!-- CLIENT ACCOUNTS -->
+      <div id="sec-client-accounts" class="section">
+        <!-- REGISTER NEW CLIENT -->
+        <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:18px;align-items:start;margin-bottom:22px;">
+          <div style="background:#fff;border-radius:var(--r);padding:22px;box-shadow:var(--shadow);">
+            <h3 style="font-size:1rem;font-weight:800;margin-bottom:4px;">➕ Zarejestruj nowego klienta</h3>
+            <div style="font-size:.81rem;color:var(--gray);margin-bottom:16px;">Administrator rejestruje klienta i przypisuje mu trenera. Klient loguje się emailem i hasłem.</div>
+            <div class="fg"><label>Imię *</label><input type="text" id="ca-name" placeholder="np. Anna"/></div>
+            <div class="fg"><label>Nazwisko *</label><input type="text" id="ca-surname" placeholder="np. Kowalska"/></div>
+            <div class="fg"><label>Email * (login klienta)</label><input type="email" id="ca-email" placeholder="anna@email.com"/></div>
+            <div class="fg"><label>Telefon</label><input type="tel" id="ca-phone" placeholder="+48 000 000 000"/></div>
+            <div class="fg">
+              <label>Hasło tymczasowe *</label>
+              <div style="display:flex;gap:8px;">
+                <input type="text" id="ca-pass" placeholder="min. 6 znaków" style="flex:1;"/>
+                <button class="rb" onclick="caGenPass()" style="white-space:nowrap;">🎲 Generuj</button>
+              </div>
+            </div>
+            <div class="fg">
+              <label>Przypisz trenera</label>
+              <select id="ca-trainer" style="width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-size:.93rem;outline:none;font-family:inherit;">
+                <option value="">— brak przypisania —</option>
+              </select>
+            </div>
+            <div class="fg"><label>Cel treningowy</label><input type="text" id="ca-goal" placeholder="np. redukcja wagi, powrót po kontuzji..."/></div>
+            <div class="fg"><label>Notatka admina</label><textarea id="ca-notes" rows="2" style="width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-size:.9rem;font-family:inherit;outline:none;resize:vertical;" placeholder="Uwagi wewnętrzne..."></textarea></div>
+            <button class="btn-sv" onclick="registerClientAccount()" style="width:100%;">✅ Zarejestruj klienta</button>
+            <div id="ca-err" style="color:#e53e3e;font-size:.82rem;margin-top:8px;display:none;"></div>
+            <div id="ca-suc" class="suc-msg" style="margin-top:10px;display:none;"></div>
+          </div>
+          <div>
+            <!-- CLIENT LIST -->
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+              <input type="text" id="ca-search" placeholder="🔍 Szukaj klienta..." oninput="renderClientAccounts()"
+                style="flex:1;min-width:160px;padding:10px 14px;border:2px solid var(--border);border-radius:10px;font-size:.9rem;outline:none;font-family:inherit;background:#fff;"/>
+              <select id="ca-filter-trainer" onchange="renderClientAccounts()"
+                style="padding:10px 14px;border:2px solid var(--border);border-radius:10px;font-size:.88rem;outline:none;font-family:inherit;background:#fff;">
+                <option value="">Wszyscy trenerzy</option>
+              </select>
+            </div>
+            <div id="caList" style="display:flex;flex-direction:column;gap:10px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WYSYŁKA ZBIORCZA -->
+      <div id="sec-bulk" class="section">
+        <div class="bulk-wrap">
+          <div class="bulk-card">
+            <h3>📡 Wysyłka Zbiorcza — Tryb</h3>
+            <div class="bulk-mode">
+              <button class="bmode-btn act" id="bmode-sms" onclick="setBulkMode('sms',this)">📱 SMS</button>
+              <button class="bmode-btn" id="bmode-email" onclick="setBulkMode('email',this)">✉️ Email</button>
+            </div>
+            <div style="font-size:.82rem;font-weight:700;color:var(--dark);margin-bottom:8px;">Odbiorcy</div>
+            <div class="bulk-target" id="bulkTargetBtns">
+              <button class="btgt-btn act" onclick="setBulkTarget('all',this)">Wszyscy klienci</button>
+              <button class="btgt-btn" onclick="setBulkTarget('confirmed',this)">Tylko potwierdzone</button>
+              <button class="btgt-btn" onclick="setBulkTarget('pending',this)">Tylko oczekujące</button>
+              <button class="btgt-btn" onclick="setBulkTarget('kasia',this)">Klienci Kasi</button>
+              <button class="btgt-btn" onclick="setBulkTarget('maciek',this)">Klienci Maćka</button>
+            </div>
+            <div class="bulk-preview" id="bulkPreview">Wybierz odbiorców…</div>
+          </div>
+
+          <div class="bulk-card" id="bulkSmsCard">
+            <h3>📱 Treść SMS</h3>
+            <div class="tpls" id="bulkSmsTpls">
+              <button class="tpl" onclick="setBulkSmsTpl('promo')">🎁 Promocja</button>
+              <button class="tpl" onclick="setBulkSmsTpl('reminder')">🔔 Przypomnienie</button>
+              <button class="tpl" onclick="setBulkSmsTpl('news')">📢 Nowość</button>
+              <button class="tpl" onclick="setBulkSmsTpl('holiday')">🎄 Życzenia</button>
+            </div>
+            <textarea id="bulkSmsTxt" placeholder="Wpisz treść SMS... (max 160 znaków)" oninput="updBulkCh()" style="width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-size:.88rem;font-family:inherit;outline:none;min-height:90px;resize:vertical;transition:border .2s;margin-bottom:4px;"></textarea>
+            <div style="font-size:.71rem;color:#aaa;text-align:right;margin-bottom:14px;" id="bulkChs">0 / 160</div>
+            <button class="btn-save" onclick="sendBulkSMS()" id="btnBulkSms">📱 Wyślij SMS do wszystkich →</button>
+            <div id="bulk-sms-result" style="margin-top:10px;font-size:.84rem;display:none;"></div>
+          </div>
+
+          <div class="bulk-card" id="bulkEmailCard" style="display:none;">
+            <h3>✉️ Wiadomość Email</h3>
+            <div class="tpls">
+              <button class="tpl" onclick="setBulkEmailTpl('promo')">🎁 Promocja</button>
+              <button class="tpl" onclick="setBulkEmailTpl('newsletter')">📰 Newsletter</button>
+              <button class="tpl" onclick="setBulkEmailTpl('news')">📢 Nowość</button>
+              <button class="tpl" onclick="setBulkEmailTpl('holiday')">🎄 Życzenia</button>
+            </div>
+            <label style="font-size:.82rem;font-weight:700;display:block;margin-bottom:5px;">Temat emaila</label>
+            <input type="text" id="bulkEmailSubject" placeholder="Temat wiadomości..." style="width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-size:.88rem;font-family:inherit;outline:none;transition:border .2s;margin-bottom:10px;">
+            <label style="font-size:.82rem;font-weight:700;display:block;margin-bottom:5px;">Treść</label>
+            <textarea id="bulkEmailBody" placeholder="Treść wiadomości email..." style="width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-size:.88rem;font-family:inherit;outline:none;min-height:130px;resize:vertical;transition:border .2s;margin-bottom:14px;"></textarea>
+            <button class="btn-save" style="background:#EA4335;" onclick="sendBulkEmail()" id="btnBulkEmail">✉️ Wyślij Email do wszystkich →</button>
+            <div id="bulk-email-result" style="margin-top:10px;font-size:.84rem;display:none;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOSTĘPNOŚĆ TRENERÓW (ADMIN) -->
+      <div id="sec-avail-admin" class="section">
+        <div class="avadm-trainer-tabs" id="availAdminTabs">
+          <button class="avt act" onclick="selectAvailAdminTrainer('kasia',this)">🎀 Kasia</button>
+          <button class="avt" onclick="selectAvailAdminTrainer('maciek',this)">💙 Maciek</button>
+        </div>
+        <div class="avadm-wrap">
+          <div class="cal-card">
+            <div class="calnav">
+              <button onclick="avAdminChM(-1)">‹</button>
+              <div class="calmnth" id="avAdminMonth"></div>
+              <button onclick="avAdminChM(1)">›</button>
+            </div>
+            <div class="calgrid" id="avAdminGrid"></div>
+          </div>
+          <div>
+            <div class="day-panel" id="avAdminDayPanel">
+              <div class="dp-empty">← Wybierz dzień w kalendarzu</div>
+            </div>
+            <div class="bulk-card" style="margin-top:14px;padding:18px 20px;">
+              <h3 style="font-size:.92rem;margin-bottom:10px;">⚡ Szablon tygodniowy</h3>
+              <div style="font-size:.79rem;color:var(--gray);margin-bottom:10px;">Ustaw te same sloty na każdy dzień tygodnia (następne 4 tyg.)</div>
+              <div id="avAdminBulkDays" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;"></div>
+              <div class="av-slot-grid" id="avAdminBulkSlots" style="margin-bottom:12px;"></div>
+              <button class="btn-save" style="width:100%;font-size:.83rem;" onclick="applyAvailAdminBulk()">⚡ Zastosuj szablon</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IMPORT / EXPORT -->
+      <div id="sec-impexp" class="section">
+        <div style="font-size:1.1rem;font-weight:800;margin-bottom:6px;">💾 Import / Export danych</div>
+        <div style="font-size:.84rem;color:var(--gray);margin-bottom:24px;">Eksportuj całą bazę lub importuj dane z kopii zapasowej.</div>
+        <div class="ie-grid">
+          <div class="ie-card">
+            <h3>📤 Eksport</h3>
+            <p>Pobierz kopię zapasową całej bazy lub wybranych danych jako plik JSON lub CSV.</p>
+            <div class="ie-btns">
+              <button class="ie-btn ie-btn-ex" onclick="exportJSON()">📦 Eksport pełny JSON (wszystko)</button>
+              <button class="ie-btn ie-btn-ex" onclick="exportCSV()">📊 Eksport rezerwacji CSV</button>
+              <button class="ie-btn ie-btn-ex" onclick="exportClientsCSV()">👥 Eksport listy klientów CSV</button>
+              <button class="ie-btn ie-btn-ex" onclick="exportAvailJSON()">🗓️ Eksport dostępności JSON</button>
+            </div>
+          </div>
+          <div class="ie-card">
+            <h3>📥 Import</h3>
+            <p>Wgraj wcześniej wyeksportowany plik JSON, aby przywrócić dane (rezerwacje, dostępność).<br><strong>Uwaga:</strong> nadpisuje obecne dane lokalnie.</p>
+            <div class="ie-btns">
+              <button class="ie-btn ie-btn-im" onclick="document.getElementById('importFile').click()">📂 Wybierz plik JSON...</button>
+              <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importData(this)">
+            </div>
+            <div id="ie-result" class="ie-result"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div id="sec-settings" class="section">
+        <div style="max-width:600px;">
+          <div style="background:#fff;border-radius:var(--r);padding:24px;box-shadow:var(--shadow);margin-bottom:18px;">
+            <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:6px;">💰 Ceny sesji</h3>
+            <div style="color:var(--gray);font-size:.84rem;margin-bottom:18px;">Zmiana ceny wpłynie na obliczenia finansowe dla nowych rezerwacji.</div>
+            <div class="fg">
+              <label>Cena za sesję (PLN)</label>
+              <input type="number" id="settingPrice" min="50" max="2000" step="10" placeholder="200"/>
+              <div class="hint">Domyślna cena: 200 PLN. Zmiana wpływa na statystyki finansowe.</div>
+            </div>
+            <button class="btn-sv" onclick="saveSettings()">💾 Zapisz ustawienia</button>
+            <div class="suc-msg" id="settingsSuc" style="margin-top:12px;">✅ Ustawienia zapisane!</div>
+            <div style="background:var(--light);border-radius:8px;padding:12px 15px;margin-top:10px;font-size:.82rem;color:var(--gray);">
+              💡 Możesz nadpisać cenę indywidualnie dla każdego klienta w zakładce <strong>Lista Klientów</strong>. Indywidualna cena ma wyższy priorytet niż cena globalna.
+            </div>
+          </div>
+          <div style="background:#fff;border-radius:var(--r);padding:24px;box-shadow:var(--shadow);margin-bottom:18px;">
+            <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:6px;">🚫 Blokowanie terminów</h3>
+            <div style="color:var(--gray);font-size:.84rem;margin-bottom:18px;">Zablokuj konkretne godziny dla wybranego trenera (urlop, przerwa techniczna).</div>
+            <div class="fg">
+              <label>Trener</label>
+              <select id="blockTrainerId" style="width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-size:.93rem;outline:none;font-family:inherit;"></select>
+            </div>
+            <div class="fg">
+              <label>Data</label>
+              <input type="date" id="blockDate"/>
+            </div>
+            <div class="fg">
+              <label>Godziny do zablokowania</label>
+              <div id="blockSlotsGrid" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
+            </div>
+            <button class="btn-sv" onclick="saveBlockedSlots()">🚫 Zapisz blokadę</button>
+            <button class="btn-sv" style="background:#e53e3e;margin-left:10px;" onclick="clearBlockedDay()">🗑️ Usuń blokadę dnia</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- SMS MODAL -->
+<div class="ov" id="smsModal">
+  <div class="modal">
+    <h3>📱 Wyślij SMS do Klienta</h3>
+    <div class="msb" id="mSub"></div>
+    <div style="margin-bottom:12px;"><label>Numer telefonu</label><input type="tel" id="mPhone" readonly style="background:#f8f8f8;"/></div>
+    <label>Język szablonów</label>
+    <div class="tpls-tabs">
+      <button class="tpltab act" id="tpl-pl" onclick="setTplLang('pl',this)">🇵🇱 Polski</button>
+      <button class="tpltab" id="tpl-en" onclick="setTplLang('en',this)">🇬🇧 English</button>
+    </div>
+    <label>Szybkie szablony</label>
+    <div class="tpls" id="tplBtns"></div>
+    <label>Treść SMS</label>
+    <textarea id="mTxt" placeholder="Wpisz treść wiadomości..." oninput="updCh()"></textarea>
+    <div class="chs" id="mChs">0 / 160</div>
+    <div class="mft">
+      <button class="btn-mc" onclick="closeModal()">Anuluj</button>
+      <button class="btn-ms" onclick="sendSMSReal()" id="btnSendSms">Wyślij SMS →</button>
+    </div>
+  </div>
+</div>
+<!-- EMAIL MODAL (ADMIN) -->
+<div class="ov" id="emailModal">
+  <div class="modal">
+    <h3>✉️ Wyślij Email do Klienta</h3>
+    <div class="msb" id="eSub"></div>
+    <div style="margin-bottom:10px;"><label>Adres e-mail</label><input type="email" id="eAddr" readonly style="background:#f8f8f8;"/></div>
+    <label>Język szablonów</label>
+    <div class="tpls-tabs">
+      <button class="tpltab act" id="etpl-pl" onclick="setEmailTplLang('pl',this)">🇵🇱 Polski</button>
+      <button class="tpltab" id="etpl-en" onclick="setEmailTplLang('en',this)">🇬🇧 English</button>
+    </div>
+    <label>Szybkie szablony</label>
+    <div class="tpls" id="eTplBtns"></div>
+    <label>Temat</label>
+    <input type="text" id="eSubject" placeholder="Temat wiadomości..." style="margin-bottom:8px;"/>
+    <label>Treść</label>
+    <textarea id="eTxt" class="etxt" placeholder="Treść wiadomości..."></textarea>
+    <div class="mft">
+      <button class="btn-mc" onclick="closeEmailModal()">Anuluj</button>
+      <button class="btn-ms" onclick="sendEmailReal()" id="btnSendEmail" style="background:#EA4335;">Wyślij Email →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────────
+let TOKEN = sessionStorage.getItem('admin_token') || '';
+let allBookings = [];
+let allTrainers = [];
+let curSec = 'bookings';
+let curSmsB = null;
+let curEmailB = null;
+let emailTplLang = 'pl';
+let tplLang = 'pl';
+let bulkMode = 'sms';
+let bulkTarget = 'all';
+let avAdminTrainer = 'kasia';
+let avAdminYear = new Date().getFullYear();
+let avAdminMonth = new Date().getMonth();
+let avAdminSelDay = null;
+let avAdminData = {};
+let avAdminBulkSlots = [];
+let avAdminBulkDays = {0:false,1:false,2:false,3:false,4:false,5:false,6:false};
+let calState = { kasia:{date:new Date()}, maciek:{date:new Date()} };
+let calSelDay = { kasia:null, maciek:null };
+let mbType = 'inperson';
+let finTrainer = 'all';
+let finPeriod  = 'day';
+
+const MONTHS = ['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
+const DAYS   = ['Pn','Wt','Śr','Cz','Pt','Sb','Nd'];
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function pad(n){ return n.toString().padStart(2,'0'); }
+function allSlots(){ const s=[]; for(let h=6;h<=21;h++){s.push(pad(h)+':00'); if(h<21)s.push(pad(h)+':30');} return s; }
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+const ADMIN_PASS_FALLBACK = 'samtrening2024';
+
+function doLogin(pw) {
+  TOKEN = pw;
+  sessionStorage.setItem('admin_token', TOKEN);
+  document.getElementById('loginWrap').style.display='none';
+  document.getElementById('app').classList.add('show');
+  refresh();
+  loadTrainersAdmin();
+}
+
+async function login() {
+  const pw = document.getElementById('lpi').value.trim();
+  try {
+    const res  = await fetch('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})});
+    const data = await res.json();
+    if (data.success) {
+      doLogin(data.token);
+    } else {
+      document.getElementById('le').style.display='block';
+    }
+  } catch(e) {
+    // Fallback: serwer offline – sprawdź lokalne hasło
+    if (pw === ADMIN_PASS_FALLBACK || pw === (sessionStorage.getItem('admin_pass_custom')||'')) {
+      doLogin(pw); return;
+    }
+    document.getElementById('le').style.display='block';
+  }
+}
+function logout(){
+  sessionStorage.removeItem('admin_token');
+  window.location.href = window.location.protocol === 'file:' ? 'login.html' : '/login?role=admin';
+}
+function hdr(){ return {'Content-Type':'application/json','x-admin-token':TOKEN}; }
+
+// Auto-login if token stored
+window.addEventListener('DOMContentLoaded', () => {
+  if (TOKEN) {
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('app').classList.add('show');
+    refresh();
+    loadTrainersAdmin();
+    // Set min date for manual booking
+    document.getElementById('mb-date').min = new Date().toISOString().split('T')[0];
+  } else {
+    // Redirect to unified login
+    window.location.href = window.location.protocol === 'file:' ? 'login.html' : '/login?role=admin';
+  }
+});
+
+// ── LOAD TRAINERS ─────────────────────────────────────────────────────────────
+async function loadTrainersAdmin() {
+  try {
+    const res = await fetch('/api/admin/trainers',{headers:hdr()});
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    allTrainers = await res.json();
+  } catch(e) {
+    allTrainers = LocalApi.getTrainersList();
+  }
+  // Populate trainer selector in manual booking
+  const sel = document.getElementById('mb-trainer');
+  sel.innerHTML = '<option value="">— wybierz trenera —</option>' +
+    allTrainers.map(t=>`<option value="${t.id}" data-name="${esc(t.name)}">${t.name}</option>`).join('');
+  // Financial trainer tabs
+  const tabs = document.getElementById('finTrainerTabs');
+  allTrainers.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'trtab';
+    btn.textContent = t.nameShort||t.name;
+    btn.onclick = () => setFinTrainer(t.id, btn);
+    tabs.appendChild(btn);
+  });
+  // Client filter trainer selector
+  const clSel = document.getElementById('cl-filter-trainer');
+  if (clSel) {
+    clSel.innerHTML = '<option value="">Wszyscy trenerzy</option>' +
+      allTrainers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+  }
+}
+
+// ── REFRESH ───────────────────────────────────────────────────────────────────
+async function refresh() {
+  try {
+    const [bRes, sRes] = await Promise.all([
+      fetch('/api/admin/bookings',{headers:hdr()}),
+      fetch('/api/admin/stats',{headers:hdr()}),
+    ]);
+    if (!bRes.ok || !sRes.ok) throw new Error('HTTP error');
+    allBookings = await bRes.json();
+    const stats = await sRes.json();
+    document.getElementById('st-tot').textContent   = stats.total;
+    document.getElementById('st-pnd').textContent   = stats.pending;
+    document.getElementById('st-cnf').textContent   = stats.confirmed;
+    const tod = new Date().toISOString().split('T')[0];
+    document.getElementById('st-today').textContent = allBookings.filter(b=>b.date===tod&&b.status!=='cancelled').length;
+    document.getElementById('cnt-all').textContent  = stats.total;
+    document.getElementById('cnt-pend').textContent = stats.pending;
+    const pend = stats.pending;
+    document.title = pend > 0 ? `(${pend}) SAMtrening – Admin` : 'SAMtrening – Admin';
+  } catch(e) {
+    // Fallback: LocalApi
+    allBookings = LocalApi.getAdminBookings();
+    const stats = LocalApi.getStats();
+    document.getElementById('st-tot').textContent   = stats.total;
+    document.getElementById('st-pnd').textContent   = stats.pending;
+    document.getElementById('st-cnf').textContent   = stats.confirmed;
+    const tod = new Date().toISOString().split('T')[0];
+    document.getElementById('st-today').textContent = allBookings.filter(b=>b.date===tod&&b.status!=='cancelled').length;
+    document.getElementById('cnt-all').textContent  = stats.total;
+    document.getElementById('cnt-pend').textContent = stats.pending;
+    const pend = stats.pending;
+    document.title = pend > 0 ? `(${pend}) SAMtrening – Admin` : 'SAMtrening – Admin';
+  }
+  renderAllLists();
+  if (curSec.startsWith('cal-')) renderCal(curSec.replace('cal-',''));
+}
+
+// ── SECTION NAV ───────────────────────────────────────────────────────────────
+function showSec(sec, el) {
+  curSec = sec;
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('act'));
+  document.getElementById('sec-'+sec).classList.add('act');
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('act'));
+  el.classList.add('act');
+  const titles = {bookings:'Wszystkie Rezerwacje',pending:'Oczekujące',confirmed:'Potwierdzone',
+    cancelled:'Anulowane',manual:'Dodaj Rezerwację',financial:'Finanse i Statystyki',
+    'cal-kasia':'Kalendarz – Kasia','cal-maciek':'Kalendarz – Maciek',
+    clients:'Lista Klientów','client-accounts':'Konta Klientów',bulk:'Wysyłka Zbiorcza','avail-admin':'Dostępność Trenerów',impexp:'Import / Export',
+    settings:'Ustawienia i Ceny'};
+  document.getElementById('pageTitle').textContent = titles[sec]||'Rezerwacje';
+  if (sec==='financial') renderFinancial();
+  if (sec.startsWith('cal-')) renderCal(sec.replace('cal-',''));
+  if (sec==='clients') renderClients();
+  if (sec==='client-accounts') initClientAccounts();
+  if (sec==='bulk') renderBulkPreview();
+  if (sec==='avail-admin') { initAvailAdmin(); renderAvailAdminCal(); }
+  if (sec==='settings') { initSettings(); }
+  renderAllLists();
+}
+
+// ── BOOKING CARD ──────────────────────────────────────────────────────────────
+function bookingCard(b) {
+  const dp = new Date(b.date).toLocaleDateString('pl-PL',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  const cp = new Date(b.createdAt).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+  const init = (b.name[0]||'')+(b.surname[0]||'');
+  const statusLbl = {pending:'Oczekuje',confirmed:'Potwierdzone',cancelled:'Anulowane'};
+  const statusCls = {pending:'dp',confirmed:'dc',cancelled:'dn'};
+  const langBdg   = b.language==='en'?'<span class="bdg dl">🇬🇧 EN</span>':'<span class="bdg dl">🇵🇱 PL</span>';
+  const typeBdg   = b.trainingType==='online'?'<span class="bdg dm">🎥 Online</span>':'<span class="bdg do">🏋️ Stacj.</span>';
+  const payBdg    = b.paymentChoice==='prepaid'?'<span class="bdg dc">✅ Przedpłata</span>':'';
+  const meetBdg   = b.meetLink?`<span class="mi">🔗 <a href="${b.meetLink}" target="_blank" style="color:#4285F4;">Meet</a></span>`:'';
+  const msgBlock  = b.clientMessage?`<div class="bcmsg">💬 ${esc(b.clientMessage)}</div>`:'';
+  const bPrice = LocalApi.getBookingPrice(b);
+  const sh = (b.smsHistory||[]).length
+    ? `<div class="smshistwrap"><div class="smshtit">Historia SMS (${b.smsHistory.length})</div>${b.smsHistory.slice(-2).map(s=>`<div class="smshi">${esc(s.message)}<div class="smshit">${new Date(s.sentAt).toLocaleString('pl-PL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div></div>`).join('')}</div>` : '';
+  return `<div class="bcard s-${b.status}" id="bc-${b.id}">
+    <div class="bav ${b.trainerId||''}">${init}</div>
+    <div>
+      <div class="bname">${esc(b.name)} ${esc(b.surname)}</div>
+      <div class="bmeta">
+        <span class="mi">📱 <a href="tel:${b.phone}">${b.phone}</a></span>
+        ${b.email?`<span class="mi">✉️ ${esc(b.email)}</span>`:''}
+        <span class="mi">📅 ${dp}</span><span class="mi">🕐 ${b.time}</span><span class="mi">💰 ${bPrice} PLN</span>${meetBdg}
+      </div>
+      <div class="btags">
+        <span class="bdg ${statusCls[b.status]||'dp'}">${statusLbl[b.status]||b.status}</span>
+        <span class="bdg dt">${esc(b.trainer)}</span>
+        ${langBdg}${typeBdg}${payBdg}
+        ${b.bookedBy==='admin'?'<span class="bdg dm">Admin</span>':''}
+        ${b.recurring?`<span class="bdg dl">🔁 ×${b.recurringWeeks}</span>`:''}
+      </div>
+      ${msgBlock}
+      <div class="bdt">Zgłoszono: ${cp}</div>
+      <textarea class="nota" placeholder="Notatki..." onchange="saveNote('${b.id}',this.value)">${esc(b.adminNotes||'')}</textarea>
+      ${sh}
+    </div>
+    <div class="bact">
+      ${b.status!=='confirmed'&&b.status!=='cancelled'?`<button class="bsm bok" onclick="chSt('${b.id}','confirmed')">✅ Potwierdź</button>`:''}
+      ${b.status!=='cancelled'?`<button class="bsm bno" onclick="chSt('${b.id}','cancelled')">❌ Anuluj</button>`:''}
+      <button class="bsm bsms" onclick="openSMS('${b.id}')" ${b.status==='cancelled'?'disabled':''}>📱 SMS</button>
+      ${b.email?`<button class="bsm bemail" onclick="openEmail('${b.id}')" ${b.status==='cancelled'?'disabled':''}>✉️ Email</button>`:''}
+      ${b.status==='confirmed'?`<button class="bsm bgcal" onclick="addToGoogleCal('${b.id}')">📅 Kal.</button>`:''}
+    </div>
+  </div>`;
+}
+
+function renderAllLists() {
+  const q = document.getElementById('searchIn').value.toLowerCase();
+  const maps = {bookings:null,pending:'pending',confirmed:'confirmed',cancelled:'cancelled'};
+  const elIds = {bookings:'blistAll',pending:'blistPend',confirmed:'blistConf',cancelled:'blistCanc'};
+  Object.entries(maps).forEach(([sec,filter]) => {
+    const cont = document.getElementById(elIds[sec]);
+    if (!cont) return;
+    let list = [...allBookings];
+    if (filter) list = list.filter(b=>b.status===filter);
+    if (q) list = list.filter(b=>(b.name+' '+b.surname).toLowerCase().includes(q)||b.phone.includes(q)||(b.trainer||'').toLowerCase().includes(q));
+    if (!list.length) { cont.innerHTML='<div class="empty"><div class="ei">📭</div><p>Brak rezerwacji</p></div>'; return; }
+    cont.innerHTML = list.map(b=>bookingCard(b)).join('');
+  });
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────────────────
+async function chSt(id, status) {
+  try {
+    const res = await fetch(`/api/admin/booking/${id}`,{method:'PATCH',headers:hdr(),body:JSON.stringify({status})});
+    if (!res.ok) throw new Error('HTTP '+res.status);
+  } catch(e) {
+    LocalApi.patchBooking(id, null, {status});
+  }
+  toast(status==='confirmed'?'✅ Potwierdzone!':'❌ Anulowane', status==='cancelled');
+  refresh();
+}
+
+async function saveNote(id, note) {
+  try {
+    const res = await fetch(`/api/admin/booking/${id}`,{method:'PATCH',headers:hdr(),body:JSON.stringify({adminNotes:note})});
+    if (!res.ok) throw new Error('HTTP '+res.status);
+  } catch(e) { LocalApi.patchBooking(id, null, {adminNotes:note}); }
+}
+
+// ── MANUAL BOOKING ────────────────────────────────────────────────────────────
+function mbSetType(type) {
+  mbType = type;
+  document.getElementById('mb-inperson').classList.toggle('sel',type==='inperson');
+  document.getElementById('mb-online').classList.toggle('sel',type==='online');
+}
+
+// ── LOAD AVAILABILITY FOR MANUAL BOOKING ──────────────────────────────────────
+const MB_ALL_SLOTS = ['06:00','06:30','07:00','07:30','08:00','08:30','09:00','09:30',
+  '10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30',
+  '15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00'];
+
+async function loadManualAvailability() {
+  const trainerId = document.getElementById('mb-trainer').value;
+  const date      = document.getElementById('mb-date').value;
+  const sel       = document.getElementById('mb-time');
+  const info      = document.getElementById('mb-av-info');
+  if (!trainerId || !date) {
+    sel.innerHTML = '<option value="">— najpierw wybierz trenera i datę —</option>';
+    if (info) info.textContent = '';
+    return;
+  }
+  sel.innerHTML = '<option value="">⏳ Ładowanie...</option>';
+  let booked=[], available=[];
+  try {
+    const res  = await fetch(`/api/availability?trainerId=${trainerId}&date=${date}`);
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    booked    = data.booked    || [];
+    available = (data.available && data.available.length > 0) ? data.available : MB_ALL_SLOTS;
+  } catch(e) {
+    // Fallback: LocalApi
+    const local = LocalApi.getAvailForDate(trainerId, date);
+    booked    = local.booked    || [];
+    available = (local.available && local.available.length > 0) ? local.available : MB_ALL_SLOTS;
+  }
+  const freeCount = available.filter(h => !booked.includes(h)).length;
+  if (info) info.textContent = `(${freeCount} wolnych)`;
+  sel.innerHTML = '<option value="">— wybierz godzinę —</option>' +
+    available.map(h => {
+      const isBooked = booked.includes(h);
+      return `<option value="${h}" ${isBooked ? 'disabled style="color:#ccc"' : ''}>${h}${isBooked ? ' — zajęte' : ''}</option>`;
+    }).join('');
+}
+
+async function addManualBooking() {
+  const name    = document.getElementById('mb-name').value.trim();
+  const surname = document.getElementById('mb-surname').value.trim();
+  const phone   = document.getElementById('mb-phone').value.trim();
+  const email   = document.getElementById('mb-email').value.trim();
+  const trSel   = document.getElementById('mb-trainer');
+  const trainerId = trSel.value;
+  const trainer = trSel.options[trSel.selectedIndex]?.dataset.name || trSel.options[trSel.selectedIndex]?.text || '';
+  const date    = document.getElementById('mb-date').value;
+  const time    = document.getElementById('mb-time').value;
+  const lang    = document.getElementById('mb-lang').value;
+  const payment = document.getElementById('mb-payment').value;
+  const msg     = document.getElementById('mb-msg').value.trim();
+  const notify  = document.getElementById('mb-notify').checked;
+  const errEl   = document.getElementById('mb-err');
+  errEl.style.display='none';
+
+  if (!name||!surname||!phone||!trainerId||!date||!time) {
+    errEl.textContent='Wypełnij wszystkie wymagane pola (*).'; errEl.style.display='block'; return;
+  }
+  const btn = document.getElementById('mb-btn');
+  btn.disabled=true; btn.textContent='Zapisywanie...';
+  let result;
+  try {
+    const res = await fetch('/api/admin/booking',{method:'POST',headers:hdr(),body:JSON.stringify({
+      trainer, trainerId, date, time, name, surname, phone, email,
+      trainingType: mbType, clientMessage: msg, language: lang,
+      paymentChoice: payment, notifyTrainer: notify,
+    })});
+    result = await res.json();
+    if (!res.ok) throw new Error(result.error||'Błąd serwera');
+  } catch(fetchErr) {
+    // Fallback: zapisz rezerwację lokalnie
+    result = LocalApi.createAdminBooking({
+      trainer, trainerId, date, time, name, surname, phone, email,
+      trainingType: mbType, clientMessage: msg, language: lang,
+      paymentChoice: payment,
+    });
+  }
+  if (result && result.error) {
+    errEl.textContent = 'Błąd: '+result.error; errEl.style.display='block';
+  } else {
+    document.getElementById('mb-suc').style.display='block';
+    setTimeout(()=>document.getElementById('mb-suc').style.display='none',4000);
+    clearManualForm();
+    refresh();
+    toast('✅ Rezerwacja zapisana!'+(result._local?' (lokalnie)':''),false,true);
+  }
+  btn.disabled=false; btn.textContent='✓ Zapisz Rezerwację';
+}
+
+function clearManualForm() {
+  ['mb-name','mb-surname','mb-phone','mb-email','mb-msg'].forEach(id=>{ document.getElementById(id).value=''; });
+  document.getElementById('mb-trainer').value='';
+  document.getElementById('mb-date').value='';
+  document.getElementById('mb-time').value='';
+  document.getElementById('mb-lang').value='pl';
+  document.getElementById('mb-payment').value='onsite';
+  document.getElementById('mb-notify').checked=true;
+  document.getElementById('mb-err').style.display='none';
+  mbSetType('inperson');
+}
+
+// ── FINANCIAL ─────────────────────────────────────────────────────────────────
+function setFinTrainer(tid, el) {
+  finTrainer = tid;
+  document.querySelectorAll('.trtab').forEach(b=>b.classList.remove('act'));
+  el.classList.add('act');
+  renderFinancial();
+}
+function setFinPeriod(p, el) {
+  finPeriod = p;
+  document.querySelectorAll('.per-btn').forEach(b=>b.classList.remove('act'));
+  el.classList.add('act');
+  renderFinancial();
+}
+
+async function renderFinancial() {
+  const cont = document.getElementById('finContent');
+  const periodLabels = {day:'Dzisiaj',week:'Ten Tydzień',month:'Ten Miesiąc',quarter:'Ten Kwartał',year:'Ten Rok'};
+  cont.innerHTML='<div style="padding:40px;text-align:center;color:#aaa;">⏳ Ładowanie...</div>';
+  try {
+    const url = finTrainer==='all' ? '/api/admin/financial' : `/api/admin/financial?trainerId=${finTrainer}`;
+    const res  = await fetch(url,{headers:hdr()});
+    const data = await res.json();
+
+    let stats;
+    if (finTrainer==='all') {
+      stats = data.overall[finPeriod]||{count:0,revenue:0,prepaidCount:0,prepaidRevenue:0,onsiteCount:0,online:0,inperson:0};
+    } else {
+      stats = data[finPeriod]||{count:0,revenue:0,prepaidCount:0,prepaidRevenue:0,onsiteCount:0,online:0,inperson:0};
+    }
+
+    const trainerName = finTrainer==='all'?'Firma SAMtrening':(allTrainers.find(t=>t.id===finTrainer)?.name||finTrainer);
+
+    renderFinancialHtml(cont, data, periodLabels);
+  } catch(e) {
+    // Fallback: LocalApi
+    let data;
+    if (finTrainer === 'all') {
+      data = LocalApi.getAdminFinancial();
+    } else {
+      data = LocalApi.getFinancial(finTrainer);
+    }
+    renderFinancialHtml(cont, data, periodLabels);
+  }
+}
+function renderFinancialHtml(cont, data, periodLabels) {
+  if (!periodLabels) periodLabels = {day:'Dzisiaj',week:'Ten Tydzień',month:'Ten Miesiąc',quarter:'Ten Kwartał',year:'Ten Rok'};
+  let stats;
+  if (finTrainer === 'all') {
+    stats = (data.overall||{})[finPeriod]||{count:0,revenue:0,prepaidCount:0,prepaidRevenue:0,onsiteCount:0,onsiteRevenue:0,online:0,inperson:0};
+  } else {
+    stats = data[finPeriod]||{count:0,revenue:0,prepaidCount:0,prepaidRevenue:0,onsiteCount:0,onsiteRevenue:0,online:0,inperson:0};
+  }
+  const trainerName = finTrainer==='all'?'Firma SAMtrening':(allTrainers.find(t=>t.id===finTrainer)?.name||finTrainer);
+  let html = `<h3 style="font-size:1rem;font-weight:800;margin-bottom:16px;">💰 ${trainerName} – ${periodLabels[finPeriod]}</h3>
+  <div class="fin-grid">
+    <div class="finc"><div class="finc-icon">📅</div><div class="finc-val">${stats.count}</div><div class="finc-lbl">Treningów</div></div>
+    <div class="finc"><div class="finc-icon">💵</div><div class="finc-val">${stats.revenue.toLocaleString('pl-PL')} PLN</div><div class="finc-lbl">Łączny przychód</div></div>
+    <div class="finc"><div class="finc-icon">✅</div><div class="finc-val">${stats.prepaidCount}</div><div class="finc-lbl">Przedpłaty</div><div class="finc-sub">${(stats.prepaidRevenue||0).toLocaleString('pl-PL')} PLN</div></div>
+    <div class="finc"><div class="finc-icon">💰</div><div class="finc-val">${stats.onsiteCount}</div><div class="finc-lbl">Na miejscu</div><div class="finc-sub">${(stats.onsiteRevenue||0).toLocaleString('pl-PL')} PLN</div></div>
+    <div class="finc"><div class="finc-icon">🎥</div><div class="finc-val">${stats.online}</div><div class="finc-lbl">Online</div></div>
+    <div class="finc"><div class="finc-icon">🏋️</div><div class="finc-val">${stats.inperson}</div><div class="finc-lbl">Stacjonarnych</div></div>
+  </div>`;
+  if (finTrainer==='all' && data.byTrainer) {
+    html += `<div class="fin-table"><div class="fin-ttitle">Zestawienie per trener – ${periodLabels[finPeriod]}</div>
+    <table><thead><tr><th>Trener</th><th>Treningów</th><th>Przychód</th><th>Przedpłaty</th><th>Na miejscu</th><th>Online</th></tr></thead><tbody>`;
+    allTrainers.forEach(tr => {
+      const ts = (data.byTrainer[tr.id]||{})[finPeriod]||{count:0,revenue:0,prepaidCount:0,onsiteCount:0,online:0};
+      html += `<tr><td><strong>${tr.name}</strong></td><td>${ts.count}</td><td><strong>${ts.revenue.toLocaleString('pl-PL')} PLN</strong></td><td>${ts.prepaidCount}</td><td>${ts.onsiteCount}</td><td>${ts.online}</td></tr>`;
+    });
+    html += `</tbody></table></div>`;
+  }
+  html += `
+  <div style="background:#fff;border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-top:18px;">
+    <div style="font-size:.82rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px;">📈 Trendy miesięczne (ostatnie 6 miesięcy)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+      <div style="position:relative;height:200px;"><canvas id="adminFinChartBar"></canvas></div>
+      <div style="position:relative;height:200px;"><canvas id="adminFinChartDoughnut"></canvas></div>
+    </div>
+  </div>`;
+  cont.innerHTML = html;
+  setTimeout(()=>renderAdminFinCharts(data), 50);
+}
+
+// ── CALENDAR ──────────────────────────────────────────────────────────────────
+function renderCal(tid) {
+  const cont = document.getElementById('cal'+tid.charAt(0).toUpperCase()+tid.slice(1));
+  if (!cont) return;
+  const cd  = calState[tid].date;
+  const y=cd.getFullYear(), m=cd.getMonth();
+  const bookings = allBookings.filter(b=>b.trainerId===tid&&b.status!=='cancelled');
+  cont.innerHTML=`
+  <div class="cal-wrap">
+  <div class="cal-card">
+    <div class="calnav">
+      <button onclick="calChM('${tid}',-1)">‹</button>
+      <span class="calmnth">${MONTHS[m]} ${y}</span>
+      <button onclick="calChM('${tid}',1)">›</button>
+    </div>
+    <div class="calgrid" id="cg-${tid}"></div>
+  </div>
+  <div class="day-panel" id="dp-${tid}"><div class="dp-empty">← Kliknij dzień, aby zobaczyć szczegóły</div></div>
+  </div>`;
+  const g=document.getElementById('cg-'+tid);
+  DAYS.forEach(d=>{const h=document.createElement('div');h.className='chdr';h.textContent=d;g.appendChild(h);});
+  const first=new Date(y,m,1);let st=first.getDay();st=st===0?6:st-1;
+  for(let i=0;i<st;i++){const e=document.createElement('div');e.className='cday cemp';g.appendChild(e);}
+  const today=new Date();today.setHours(0,0,0,0);
+  for(let d=1;d<=new Date(y,m+1,0).getDate();d++){
+    const el=document.createElement('div');el.className='cday';el.textContent=d;
+    const dt=new Date(y,m,d),dk=dt.toISOString().split('T')[0];
+    if(dt<today)el.classList.add('cdis');
+    else{
+      if(dt.toDateString()===today.toDateString())el.classList.add('ctoday');
+      const dayBk=bookings.filter(b=>b.date===dk).length;
+      if(calSelDay[tid]===dk)el.classList.add('csel');
+      if(dayBk>0){const dot=document.createElement('div');dot.className='dot-booked';el.appendChild(dot);}
+      el.onclick=()=>openDayPanel(tid,dk,dt);
+    }
+    g.appendChild(el);
+  }
+  if(calSelDay[tid]){
+    const dt=new Date(calSelDay[tid]+'T12:00:00');
+    if(dt.getFullYear()===y&&dt.getMonth()===m)openDayPanel(tid,calSelDay[tid],dt,true);
+  }
+}
+
+function calChM(tid,dir){
+  calState[tid].date.setMonth(calState[tid].date.getMonth()+dir);
+  renderCal(tid);
+}
+
+function openDayPanel(tid,dk,dt,noScroll){
+  calSelDay[tid]=dk;
+  document.querySelectorAll(`#cg-${tid} .cday`).forEach(el=>{
+    if(el.textContent==dt.getDate()&&!el.classList.contains('cemp')&&!el.classList.contains('cdis'))
+      el.classList.add('csel');
+    else el.classList.remove('csel');
+  });
+  const bookings=allBookings.filter(b=>b.trainerId===tid&&b.date===dk&&b.status!=='cancelled');
+  const datePL=new Date(dk+'T12:00:00').toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const dp=document.getElementById('dp-'+tid);
+  const bookHTML=bookings.length?`<div style="margin-top:16px;"><div style="font-size:.77rem;font-weight:700;text-transform:uppercase;color:var(--gray);letter-spacing:.5px;margin-bottom:8px;">Rezerwacje (${bookings.length})</div>
+    ${bookings.map(b=>`<div class="dp-bitem"><div style="font-weight:700;">${esc(b.name)} ${esc(b.surname)}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:3px;font-size:.77rem;">
+        <span>🕐 ${b.time}</span>
+        <a href="tel:${b.phone}" style="color:var(--green);font-weight:700;">${b.phone}</a>
+        <span style="padding:2px 8px;border-radius:10px;font-weight:700;font-size:.68rem;background:${b.status==='confirmed'?'var(--gl)':'#fff8e1'};color:${b.status==='confirmed'?'var(--gd)':'#b7791f'};">${b.status==='confirmed'?'Potwierdzone':'Oczekuje'}</span>
+        ${b.language==='en'?'<span style="font-size:.68rem;">🇬🇧</span>':''}
+        ${b.trainingType==='online'?'<span style="font-size:.68rem;">🎥</span>':''}
+      </div>
+    </div>`).join('')}</div>` : '<div style="font-size:.82rem;color:#bbb;margin-top:12px;">Brak rezerwacji w tym dniu</div>';
+  dp.innerHTML=`<h3>📅 ${datePL}</h3><div class="dp-sub">${bookings.length} rezerwacji</div>${bookHTML}`;
+  if(!noScroll)dp.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── PAYMENT INFO ────────────────────────────────────────────────────────────────
+function getTrainerPaymentForBooking(booking) {
+  // Pobiera dane płatności trenera dla danej rezerwacji
+  const trainers = LocalApi.getTrainersList();
+  const tr = trainers.find(t => t.id === (booking?.trainerId || '')) || {};
+  // Pobierz też bezpośrednio z localStorage (pełne dane z bankAccount/blikPhone)
+  const fresh = LocalApi.getTrainerById(booking?.trainerId || '');
+  return {
+    bank: (fresh?.bankAccount) || (tr?.bankAccount) || '[numer konta]',
+    blik: (fresh?.blikPhone)   || (tr?.blikPhone)   || '[numer BLIK]',
+    name: tr?.nameShort || tr?.name || 'Trener',
+  };
+}
+
+// ── SMS MODAL ─────────────────────────────────────────────────────────────────
+function openSMS(id) {
+  const b = allBookings.find(x=>x.id===id);
+  if (!b) return;
+  curSmsB = b;
+  // Auto-select language based on booking language
+  tplLang = b.language||'pl';
+  document.getElementById('tpl-pl').classList.toggle('act',tplLang==='pl');
+  document.getElementById('tpl-en').classList.toggle('act',tplLang==='en');
+  const dp = new Date(b.date).toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('mSub').innerHTML = `<strong>${b.name} ${b.surname}</strong> | ${b.trainer}<br>📅 ${dp} ${b.time} | ${b.trainingType==='online'?'🎥 Online':'🏋️ Stacjonarny'}`;
+  document.getElementById('mPhone').value = b.phone;
+  document.getElementById('mTxt').value = '';
+  renderTplBtns();
+  updCh();
+  document.getElementById('smsModal').classList.add('show');
+}
+
+function setTplLang(lang, el) {
+  tplLang = lang;
+  document.querySelectorAll('.tpltab').forEach(b=>b.classList.remove('act'));
+  el.classList.add('act');
+  renderTplBtns();
+}
+
+function renderTplBtns() {
+  const container = document.getElementById('tplBtns');
+  const tpls = tplLang==='pl' ? [
+    {key:'confirm',lbl:'✅ Potwierdzenie'},{key:'meet',lbl:'🎥 Link Meet'},
+    {key:'reminder',lbl:'🔔 Przypomnienie'},{key:'reschedule',lbl:'📅 Zmiana terminu'},
+    {key:'cancel',lbl:'❌ Odwołanie'},{key:'custom',lbl:'✏️ Własna'},
+  ] : [
+    {key:'confirm_en',lbl:'✅ Confirmation'},{key:'meet_en',lbl:'🎥 Meet link'},
+    {key:'reminder_en',lbl:'🔔 Reminder'},{key:'reschedule_en',lbl:'📅 Reschedule'},
+    {key:'cancel_en',lbl:'❌ Cancellation'},{key:'custom_en',lbl:'✏️ Custom'},
+  ];
+  container.innerHTML = tpls.map(t=>`<button class="tpl" onclick="setTpl('${t.key}')">${t.lbl}</button>`).join('');
+}
+
+function setTpl(key) {
+  if (!curSmsB) return;
+  const b=curSmsB;
+  const dp = new Date(b.date).toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long'});
+  const de = new Date(b.date).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  const fn=b.name; const tn=(b.trainer||'').split(' ')[0];
+  const meet=b.meetLink||'[wygeneruj link]';
+  const msgs = {
+    confirm: `Cześć ${fn}! Potwierdzam Twój trening – ${dp} o ${b.time}. Do zobaczenia! ${tn} – SAMtrening`,
+    meet: `Cześć ${fn}! Link do Twojego treningu online (${b.time}): ${meet} ${tn} – SAMtrening`,
+    reminder: `Cześć ${fn}! Przypominam o jutrzejszym treningu o ${b.time}. Do zobaczenia! ${tn} – SAMtrening`,
+    reschedule: `Cześć ${fn}! Proszę o kontakt w sprawie zmiany terminu (${dp} ${b.time}). ${tn} – SAMtrening`,
+    cancel: `Cześć ${fn}! Niestety odwołuję trening ${dp} o ${b.time}. Zapraszam do ponownej rezerwacji. ${tn} – SAMtrening`,
+    custom: '',
+    confirm_en: `Hi ${fn}! I confirm your training – ${de} at ${b.time}. See you soon! ${tn} – SAMtrening`,
+    meet_en: `Hi ${fn}! Your online training link (${b.time}): ${meet} ${tn} – SAMtrening`,
+    reminder_en: `Hi ${fn}! Reminder: your training tomorrow at ${b.time}. See you! ${tn} – SAMtrening`,
+    reschedule_en: `Hi ${fn}! Please contact me to reschedule (${de} ${b.time}). ${tn} – SAMtrening`,
+    cancel_en: `Hi ${fn}! Unfortunately I need to cancel your session on ${de} at ${b.time}. Sorry! ${tn} – SAMtrening`,
+    custom_en: '',
+  };
+  document.getElementById('mTxt').value = msgs[key]||''; updCh();
+}
+
+function updCh(){ const l=document.getElementById('mTxt').value.length; document.getElementById('mChs').textContent=`${l} / 160`; }
+function closeModal(){ document.getElementById('smsModal').classList.remove('show'); curSmsB=null; }
+document.getElementById('smsModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+
+async function sendSMSReal() {
+  const msg  = document.getElementById('mTxt').value.trim();
+  if (!msg){ toast('Wpisz treść SMS-a',true); return; }
+  if (!curSmsB) return;
+  const btn = document.getElementById('btnSendSms');
+  btn.disabled=true; btn.textContent='Wysyłanie...';
+  try {
+    const res = await fetch('/api/admin/sms',{method:'POST',headers:hdr(),body:JSON.stringify({bookingId:curSmsB.id,phone:curSmsB.phone,message:msg})});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error||'Błąd');
+    closeModal(); refresh(); toast('✅ SMS wysłany!',false,true);
+  } catch(e) {
+    LocalApi.saveSmsHistory(curSmsB.id,{message:msg,sentBy:'Admin'});
+    closeModal(); refresh(); toast('✅ SMS zapisany lokalnie (brak serwera)',false,true);
+  }
+  btn.disabled=false; btn.textContent='Wyślij SMS →';
+}
+
+// ── GOOGLE CALENDAR ────────────────────────────────────────────────────────────
+function addToGoogleCal(id) {
+  const b = allBookings.find(x=>x.id===id);
+  if (!b) return;
+  const [y,mo,d] = b.date.split('-');
+  const [h,mi]   = b.time.split(':');
+  const startDt  = `${y}${mo}${d}T${h}${mi}00`;
+  const endDate  = new Date(`${b.date}T${b.time}:00`);
+  endDate.setMinutes(endDate.getMinutes()+60);
+  const ey=endDate.getFullYear(),em=String(endDate.getMonth()+1).padStart(2,'0');
+  const ed=String(endDate.getDate()).padStart(2,'0'),eh=String(endDate.getHours()).padStart(2,'0'),emi=String(endDate.getMinutes()).padStart(2,'0');
+  const endDt  = `${ey}${em}${ed}T${eh}${emi}00`;
+  const loc    = b.trainingType==='online'?(b.meetLink||'Google Meet'):'SAMtrening Studio, Kraków';
+  const det    = `Klient: ${b.name} ${b.surname}\nTel: ${b.phone}${b.email?'\nEmail: '+b.email:''}\nTyp: ${b.trainingType==='online'?'Online':'Stacjonarny'}${b.meetLink?'\nMeet: '+b.meetLink:''}`;
+  const url    = `https://calendar.google.com/calendar/render?action=TEMPLATE`
+    +`&text=${encodeURIComponent('SAMtrening – '+b.name+' '+b.surname)}`
+    +`&dates=${startDt}/${endDt}`
+    +`&details=${encodeURIComponent(det)}`+`&location=${encodeURIComponent(loc)}`;
+  window.open(url,'_blank');
+}
+
+// ── EMAIL MODAL ────────────────────────────────────────────────────────────────
+const ADM_EMAIL_TPLS = {
+  pl: [
+    {label:'Potwierdzenie', subject:'SAMtrening – Potwierdzenie treningu',
+     body:(b,d)=>`Cześć ${b.name},\n\nPotwierdzamy Twój trening:\n📅 ${d} o ${b.time}\n${b.trainingType==='online'?'🎥 Online'+(b.meetLink?'\n🔗 Meet: '+b.meetLink:''):'🏋️ Stacjonarny, studio SAMtrening'}\n\nDo zobaczenia!\nZespół SAMtrening`},
+    {label:'Przypomnienie', subject:'SAMtrening – Przypomnienie o treningu',
+     body:(b,d)=>`Cześć ${b.name},\n\nPrzypominamy o jutrzejszym treningu:\n📅 ${d} o ${b.time}\n\nDo zobaczenia!\nZespół SAMtrening`},
+    {label:'Anulowanie',   subject:'SAMtrening – Anulowanie treningu',
+     body:(b,d)=>`Cześć ${b.name},\n\nNiestety trening zaplanowany na ${d} o ${b.time} musi zostać odwołany.\nSkontaktujemy się wkrótce.\n\nZespół SAMtrening`},
+    {label:'Meet Link',    subject:'SAMtrening – Link do treningu online',
+     body:(b,d)=>`Cześć ${b.name},\n\nLink do Twojego treningu online:\n📅 ${d} o ${b.time}\n🔗 ${b.meetLink||'[link wkrótce]'}\n\nDo zobaczenia!\nZespół SAMtrening`},
+    {label:'Przedpłata',   subject:'SAMtrening – Instrukcja płatności',
+     body:(b,d,pay)=>`Cześć ${b.name},\n\nProsimy o przedpłatę za trening zaplanowany na ${d} o ${b.time}.\n\nKwota: 200 PLN\n\nDane do przelewu:\nKonto bankowe: ${pay?.bank||'[numer konta]'}\nBLIK: ${pay?.blik||'[numer BLIK]'}\nNazwa odbiorcy: ${pay?.name||'SAMtrening'}\n\nProszę o szybką płatność.\n\nZespół SAMtrening`},
+  ],
+  en: [
+    {label:'Confirmation', subject:'SAMtrening – Training Confirmation',
+     body:(b,d)=>`Hi ${b.name},\n\nYour training is confirmed:\n📅 ${d} at ${b.time}\n${b.trainingType==='online'?'🎥 Online'+(b.meetLink?'\n🔗 Meet: '+b.meetLink:''):'🏋️ In-person, SAMtrening studio'}\n\nSee you!\nSAMtrening Team`},
+    {label:'Reminder',     subject:'SAMtrening – Training Reminder',
+     body:(b,d)=>`Hi ${b.name},\n\nReminder for your training tomorrow:\n📅 ${d} at ${b.time}\n\nSee you!\nSAMtrening Team`},
+    {label:'Cancellation', subject:'SAMtrening – Session Cancelled',
+     body:(b,d)=>`Hi ${b.name},\n\nUnfortunately your session on ${d} at ${b.time} needs to be cancelled.\nWe will be in touch soon.\n\nSAMtrening Team`},
+    {label:'Meet Link',    subject:'SAMtrening – Your Online Training Link',
+     body:(b,d)=>`Hi ${b.name},\n\nYour online training link:\n📅 ${d} at ${b.time}\n🔗 ${b.meetLink||'[link soon]'}\n\nSee you!\nSAMtrening Team`},
+    {label:'Prepayment',   subject:'SAMtrening – Payment Instructions',
+     body:(b,d,pay)=>`Hi ${b.name},\n\nPlease prepay for your training scheduled on ${d} at ${b.time}.\n\nAmount: 200 PLN\n\nPayment details:\nBank account: ${pay?.bank||'[account number]'}\nBLIK: ${pay?.blik||'[BLIK number]'}\nRecipient name: ${pay?.name||'SAMtrening'}\n\nPlease pay as soon as possible.\n\nSAMtrening Team`},
+  ],
+};
+function setEmailTplLang(lang,el) {
+  emailTplLang=lang;
+  document.querySelectorAll('#emailModal .tpltab').forEach(b=>b.classList.remove('act'));
+  el.classList.add('act');
+  renderEmailTpls();
+}
+function renderEmailTpls() {
+  if(!curEmailB) return;
+  const b=curEmailB;
+  const dp=new Date(b.date).toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const tpls=(ADM_EMAIL_TPLS[emailTplLang]||ADM_EMAIL_TPLS.pl);
+  document.getElementById('eTplBtns').innerHTML=tpls.map((_,i)=>`<button class="tpl" onclick="applyEmailTpl(${i})">${tpls[i].label}</button>`).join('');
+}
+function applyEmailTpl(idx) {
+  if(!curEmailB) return;
+  const b=curEmailB;
+  const dp=new Date(b.date).toLocaleDateString(emailTplLang==='en'?'en-GB':'pl-PL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const tpl=(ADM_EMAIL_TPLS[emailTplLang]||ADM_EMAIL_TPLS.pl)[idx];
+  if(!tpl) return;
+  const pay=getTrainerPaymentForBooking(b);
+  document.getElementById('eSubject').value=tpl.subject;
+  document.getElementById('eTxt').value=tpl.body(b,dp,pay);
+}
+function openEmail(id) {
+  const b=allBookings.find(x=>x.id===id);
+  if(!b) return;
+  if(!b.email){toast('Brak adresu email klienta',true);return;}
+  curEmailB=b;
+  const dp=new Date(b.date).toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'short',year:'numeric'});
+  document.getElementById('eSub').innerHTML=`<strong>${b.name} ${b.surname}</strong> | ${b.trainer} | 📅 ${dp} ${b.time}`;
+  document.getElementById('eAddr').value=b.email;
+  document.getElementById('eSubject').value='';
+  document.getElementById('eTxt').value='';
+  emailTplLang=b.language==='en'?'en':'pl';
+  document.getElementById('etpl-pl').classList.toggle('act',emailTplLang==='pl');
+  document.getElementById('etpl-en').classList.toggle('act',emailTplLang==='en');
+  renderEmailTpls(); applyEmailTpl(0);
+  document.getElementById('emailModal').classList.add('show');
+}
+function closeEmailModal(){document.getElementById('emailModal').classList.remove('show');curEmailB=null;}
+document.getElementById('emailModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeEmailModal();});
+async function sendEmailReal() {
+  const subject=document.getElementById('eSubject').value.trim();
+  const body=document.getElementById('eTxt').value.trim();
+  if(!subject||!body){toast('Uzupełnij temat i treść',true);return;}
+  if(!curEmailB) return;
+  const btn=document.getElementById('btnSendEmail');
+  btn.disabled=true; btn.textContent='Wysyłanie...';
+  try {
+    const res=await fetch('/api/admin/email',{method:'POST',headers:hdr(),body:JSON.stringify({bookingId:curEmailB.id,to:curEmailB.email,subject,body})});
+    const data=await res.json(); if(!res.ok) throw new Error(data.error||'Błąd');
+    LocalApi.saveEmailHistory(curEmailB.id,{subject,sentBy:'Admin'});
+    closeEmailModal(); refresh(); toast('✅ Email wysłany!',false,true);
+  } catch(e) {
+    const mailto=`mailto:${curEmailB.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailto,'_blank');
+    LocalApi.saveEmailHistory(curEmailB.id,{subject,sentBy:'Admin'});
+    closeEmailModal(); refresh(); toast('✅ Otwarto klienta email lokalnie',false,true);
+  }
+  btn.disabled=false; btn.textContent='Wyślij Email →';
+}
+
+// ── LISTA KLIENTÓW ─────────────────────────────────────────────────────────────
+function renderClients() {
+  const tFilter=document.getElementById('cl-filter-trainer')?.value||'';
+  const q=(document.getElementById('cl-search')?.value||'').toLowerCase();
+  const bks=LocalApi.getAdminBookings();
+  // Unikalni klienci wg numeru telefonu
+  const clientMap={};
+  bks.forEach(b=>{
+    if(tFilter && b.trainerId!==tFilter) return;
+    const key=b.phone;
+    if(!clientMap[key]){
+      clientMap[key]={name:b.name,surname:b.surname,phone:b.phone,email:b.email||'',
+        trainers:new Set(),sessions:0,confirmed:0,prepaid:0,lastDate:null,bookings:[]};
+    }
+    const c=clientMap[key];
+    c.trainers.add(b.trainer||b.trainerId);
+    c.sessions++;
+    if(b.status==='confirmed') c.confirmed++;
+    if(b.paymentChoice==='prepaid') c.prepaid++;
+    if(!c.lastDate||b.date>c.lastDate) c.lastDate=b.date;
+    c.bookings.push(b);
+    // Update name/email if more complete
+    if(!c.email && b.email) c.email=b.email;
+  });
+  let clients=Object.values(clientMap);
+  if(q) clients=clients.filter(c=>(c.name+' '+c.surname).toLowerCase().includes(q)||c.phone.includes(q)||c.email.toLowerCase().includes(q));
+  clients.sort((a,b)=>b.sessions-a.sessions);
+  // Stats bar
+  document.getElementById('cl-stats').innerHTML=`
+    <div class="stc" style="flex:1;min-width:120px;"><div class="sti ig">👥</div><div><div class="stn">${clients.length}</div><div class="stl">Unikalnych klientów</div></div></div>
+    <div class="stc" style="flex:1;min-width:120px;"><div class="sti iy">📅</div><div><div class="stn">${bks.length}</div><div class="stl">Łącznie rezerwacji</div></div></div>
+    <div class="stc" style="flex:1;min-width:120px;"><div class="sti ib">💰</div><div><div class="stn">${bks.filter(b=>b.paymentChoice==='prepaid').length}</div><div class="stl">Przedpłaty</div></div></div>`;
+  if(!clients.length){
+    document.getElementById('clientGrid').innerHTML='<div class="empty"><div class="ei">👥</div><p>Brak klientów</p></div>';
+    return;
+  }
+  document.getElementById('clientGrid').innerHTML=clients.map((c,i)=>{
+    const initials=(c.name[0]||'')+(c.surname[0]||'');
+    const trainersStr=[...c.trainers].join(', ');
+    const lastFmt=c.lastDate?new Date(c.lastDate).toLocaleDateString('pl-PL',{day:'numeric',month:'short',year:'numeric'}):'–';
+    const hist=c.bookings.slice(-3).reverse().map(b=>{
+      const s={pending:'⏳',confirmed:'✅',cancelled:'❌'}[b.status]||'?';
+      const dp=new Date(b.date).toLocaleDateString('pl-PL',{day:'numeric',month:'short'});
+      return `<div class="cc-hi">${s} ${dp} ${b.time} – ${b.trainer||b.trainerId}</div>`;
+    }).join('');
+    const defaultPrice = LocalApi.getSettings().sessionPrice || 200;
+    // Sprawdź czy któryś trener ma ustawioną indywidualną cenę dla tego klienta
+    const allTrainerPrices = allTrainers.map(tr => {
+      const p = LocalApi.getClientPrice(tr.id, c.phone);
+      return p !== defaultPrice ? { trainer: tr.nameShort||tr.name, price: p } : null;
+    }).filter(Boolean);
+    return `<div class="cc">
+      <div class="cc-head">
+        <div class="cc-av">${initials}</div>
+        <div><div class="cc-name">${esc(c.name)} ${esc(c.surname)}</div>
+        <div class="cc-sub">📱 ${c.phone}${c.email?' | ✉️ '+esc(c.email):''}</div>
+        <div class="cc-sub" style="margin-top:2px;">👤 ${trainersStr}</div></div>
+      </div>
+      <div class="cc-stats">
+        <div class="cc-stat"><div class="cc-stat-n">${c.sessions}</div><div class="cc-stat-l">Sesji</div></div>
+        <div class="cc-stat"><div class="cc-stat-n">${c.confirmed}</div><div class="cc-stat-l">Potw.</div></div>
+        <div class="cc-stat"><div class="cc-stat-n">${c.prepaid}</div><div class="cc-stat-l">Przedpł.</div></div>
+        <div class="cc-stat"><div class="cc-stat-n">${(c.sessions*200).toLocaleString()}</div><div class="cc-stat-l">PLN est.</div></div>
+      </div>
+      <div style="font-size:.76rem;color:#aaa;">Ostatni trening: ${lastFmt}</div>
+      <div class="cc-price-admin" style="margin-top:10px;background:var(--light);border-radius:8px;padding:10px 12px;">
+        <div style="font-size:.78rem;font-weight:700;color:var(--gray);margin-bottom:8px;">💰 Indywidualna cena sesji (per trener)</div>
+        ${allTrainers.map(tr => {
+          const safeId = `${c.phone.replace(/\W/g,'')}_${tr.id}`;
+          const p = LocalApi.getClientPrice(tr.id, c.phone);
+          const isCustom = p !== defaultPrice;
+          return `<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">
+            <span style="font-size:.78rem;min-width:70px;font-weight:600;">${esc(tr.nameShort||tr.name)}:</span>
+            <input type="number" id="aprice-${safeId}" min="50" max="9999" step="10"
+              value="${isCustom ? p : ''}" placeholder="${defaultPrice}"
+              style="width:80px;padding:5px 8px;border:1.5px solid ${isCustom?'var(--green)':'var(--border)'};border-radius:7px;font-size:.82rem;font-family:inherit;outline:none;"/>
+            <span style="font-size:.77rem;color:var(--gray);">PLN</span>
+            <button class="bsm" style="background:var(--green);color:#fff;padding:4px 9px;"
+              onclick="saveAdminClientPrice('${tr.id}','${c.phone}')">💾</button>
+            ${isCustom ? `<span style="font-size:.72rem;color:var(--green);font-weight:700;">✓ indyw.</span>` : ''}
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="cc-act">
+        <button class="bsm bsms" onclick="openSMSForClient('${c.phone}')">📱 SMS</button>
+        ${c.email?`<button class="bsm bemail" onclick="openEmailForClient('${c.phone}')">✉️ Email</button>`:''}
+        <button class="bsm" style="background:var(--light);color:var(--dark);border:1.5px solid var(--border);font-size:.72rem;" onclick="toggleClientHist('ch-${i}')">📋 Historia</button>
+      </div>
+      <div class="cc-hist" id="ch-${i}">${hist}</div>
+    </div>`;
+  }).join('');
+}
+function toggleClientHist(id){document.getElementById(id)?.classList.toggle('show');}
+function openSMSForClient(phone) {
+  const b=allBookings.filter(x=>x.phone===phone&&x.status!=='cancelled').sort((a,c)=>c.date.localeCompare(a.date))[0];
+  if(b) openSMS(b.id); else toast('Brak aktywnych rezerwacji dla tego klienta',true);
+}
+function openEmailForClient(phone) {
+  const b=allBookings.filter(x=>x.phone===phone&&x.email&&x.status!=='cancelled').sort((a,c)=>c.date.localeCompare(a.date))[0];
+  if(b) openEmail(b.id); else toast('Brak adresu email lub aktywnych rezerwacji',true);
+}
+
+function saveAdminClientPrice(trainerId, phone) {
+  const safeId = `${phone.replace(/\W/g,'')}_${trainerId}`;
+  const inp = document.getElementById('aprice-'+safeId);
+  if (!inp) return;
+  const price = parseInt(inp.value) || 0;
+  LocalApi.saveClientPrice(trainerId, phone, price);
+  const trName = allTrainers.find(t=>t.id===trainerId)?.nameShort || trainerId;
+  toast(`✅ Cena ${price > 0 ? price+' PLN' : 'domyślna'} zapisana (${trName} → klient)`, false, true);
+  inp.style.borderColor = price > 0 ? 'var(--green)' : 'var(--border)';
+}
+
+// ── WYSYŁKA ZBIORCZA ──────────────────────────────────────────────────────────
+function setBulkMode(mode,el) {
+  bulkMode=mode;
+  document.querySelectorAll('.bmode-btn').forEach(b=>b.classList.remove('act'));
+  el.classList.add('act');
+  document.getElementById('bulkSmsCard').style.display=mode==='sms'?'block':'none';
+  document.getElementById('bulkEmailCard').style.display=mode==='email'?'block':'none';
+  renderBulkPreview();
+}
+function setBulkTarget(target,el) {
+  bulkTarget=target;
+  document.querySelectorAll('.btgt-btn').forEach(b=>b.classList.remove('act'));
+  el.classList.add('act');
+  renderBulkPreview();
+}
+function getBulkTargets() {
+  let bks=LocalApi.getAdminBookings();
+  if(bulkTarget==='confirmed') bks=bks.filter(b=>b.status==='confirmed');
+  else if(bulkTarget==='pending') bks=bks.filter(b=>b.status==='pending');
+  else if(bulkTarget==='kasia') bks=bks.filter(b=>b.trainerId==='kasia'&&b.status!=='cancelled');
+  else if(bulkTarget==='maciek') bks=bks.filter(b=>b.trainerId==='maciek'&&b.status!=='cancelled');
+  else bks=bks.filter(b=>b.status!=='cancelled');
+  // Unikalne telefony/emaile
+  const phones=[...new Set(bks.map(b=>b.phone))];
+  const emails=[...new Set(bks.filter(b=>b.email).map(b=>b.email))];
+  return {phones,emails,count:phones.length};
+}
+function renderBulkPreview() {
+  const t=getBulkTargets();
+  const mode=bulkMode==='sms'?`📱 SMS → <strong>${t.phones.length}</strong> odbiorców (unikalne numery)`:`✉️ Email → <strong>${t.emails.length}</strong> odbiorców (unikalne emaile)`;
+  document.getElementById('bulkPreview').innerHTML=mode;
+}
+function updBulkCh(){const l=document.getElementById('bulkSmsTxt').value.length;document.getElementById('bulkChs').textContent=`${l} / 160`;}
+function setBulkSmsTpl(key){
+  const tpls={
+    promo:'🎁 SAMtrening: Specjalna oferta na treningi personalne! Skontaktuj się z nami i odbierz bonus. Szczegóły: samtrening.com',
+    reminder:'🔔 SAMtrening: Pamiętaj o regularnych treningach! Zarezerwuj swój termin na samtrening.com',
+    news:'📢 SAMtrening: Nowe godziny, nowi trenerzy! Sprawdź aktualną ofertę na samtrening.com',
+    holiday:'🎄 SAMtrening: Wesołych Świąt i zdrowego Nowego Roku! Zapraszamy po nowych siłach w nowym roku.',
+  };
+  document.getElementById('bulkSmsTxt').value=tpls[key]||''; updBulkCh();
+}
+function setBulkEmailTpl(key){
+  const tpls={
+    promo:{subj:'🎁 Specjalna oferta SAMtrening',body:'Cześć,\n\nMamy dla Ciebie specjalną ofertę!\n\nJako nasz stały klient możesz skorzystać ze zniżki na kolejne treningi. Zarezerwuj termin na samtrening.com\n\nPozdrawiamy,\nZespół SAMtrening'},
+    newsletter:{subj:'SAMtrening – Aktualności',body:'Cześć,\n\nDzielimy się najnowszymi wiadomościami ze studia SAMtrening.\n\n[Tu wstaw aktualności]\n\nDo zobaczenia na treningu!\nZespół SAMtrening'},
+    news:{subj:'SAMtrening – Nowe funkcje i godziny',body:'Cześć,\n\nMamy nowości! Rozszerzyliśmy godziny i ofertę treningową.\n\nSprawdź nasze nowe terminy na samtrening.com\n\nZespół SAMtrening'},
+    holiday:{subj:'🎄 Życzenia od SAMtrening',body:'Cześć,\n\nWesołych Świąt i zdrowego Nowego Roku!\n\nDziękujemy za zaufanie i wspólne treningi. Zapraszamy w nowym roku!\n\nZespół SAMtrening'},
+  };
+  const t=tpls[key];
+  if(t){document.getElementById('bulkEmailSubject').value=t.subj;document.getElementById('bulkEmailBody').value=t.body;}
+}
+async function sendBulkSMS() {
+  const msg=document.getElementById('bulkSmsTxt').value.trim();
+  if(!msg){toast('Wpisz treść SMS',true);return;}
+  const {phones}=getBulkTargets();
+  if(!phones.length){toast('Brak odbiorców',true);return;}
+  if(!confirm(`Wyślij SMS do ${phones.length} odbiorców?\n\n"${msg.slice(0,80)}..."`)) return;
+  const btn=document.getElementById('btnBulkSms');
+  btn.disabled=true; btn.textContent=`Wysyłanie (0/${phones.length})…`;
+  let sent=0,failed=0;
+  for(const phone of phones){
+    const b=allBookings.find(x=>x.phone===phone&&x.status!=='cancelled');
+    try {
+      const res=await fetch('/api/admin/sms',{method:'POST',headers:hdr(),body:JSON.stringify({bookingId:b?.id||'bulk',phone,message:msg})});
+      if(!res.ok) throw new Error();
+      if(b) LocalApi.saveSmsHistory(b.id,{message:msg,sentBy:'Admin-Bulk'});
+      sent++;
+    } catch(e){
+      if(b) LocalApi.saveSmsHistory(b.id,{message:msg,sentBy:'Admin-Bulk'});
+      sent++; // Zapisz lokalnie nawet gdy serwer offline
+    }
+    btn.textContent=`Wysyłanie (${sent+failed}/${phones.length})…`;
+  }
+  btn.disabled=false; btn.textContent='📱 Wyślij SMS do wszystkich →';
+  const r=document.getElementById('bulk-sms-result');
+  r.style.cssText='display:block;background:var(--gl);color:var(--gd);border-radius:8px;padding:10px 14px;';
+  r.textContent=`✅ Wysłano/zapisano: ${sent} SMS-ów`;
+  toast(`✅ ${sent} SMS-ów wysłanych!`,false,true);
+}
+async function sendBulkEmail() {
+  const subject=document.getElementById('bulkEmailSubject').value.trim();
+  const body=document.getElementById('bulkEmailBody').value.trim();
+  if(!subject||!body){toast('Uzupełnij temat i treść',true);return;}
+  const {emails}=getBulkTargets();
+  if(!emails.length){toast('Brak odbiorców z emailem',true);return;}
+  if(!confirm(`Wyślij email do ${emails.length} odbiorców?\n\nTemat: "${subject}"`)) return;
+  const btn=document.getElementById('btnBulkEmail');
+  btn.disabled=true; btn.textContent=`Wysyłanie (0/${emails.length})…`;
+  let sent=0;
+  for(const email of emails){
+    const b=allBookings.find(x=>x.email===email&&x.status!=='cancelled');
+    try {
+      const res=await fetch('/api/admin/email',{method:'POST',headers:hdr(),body:JSON.stringify({to:email,subject,body,bookingId:b?.id})});
+      if(!res.ok) throw new Error();
+      if(b) LocalApi.saveEmailHistory(b.id,{subject,sentBy:'Admin-Bulk'});
+      sent++;
+    } catch(e){
+      if(b) LocalApi.saveEmailHistory(b.id,{subject,sentBy:'Admin-Bulk'});
+      sent++;
+    }
+    btn.textContent=`Wysyłanie (${sent}/${emails.length})…`;
+  }
+  btn.disabled=false; btn.textContent='✉️ Wyślij Email do wszystkich →';
+  const r=document.getElementById('bulk-email-result');
+  r.style.cssText='display:block;background:#e8f0fe;color:#1a3c8f;border-radius:8px;padding:10px 14px;';
+  r.textContent=`✅ Wysłano/zapisano: ${sent} emaili`;
+  toast(`✅ ${sent} emaili wysłanych!`,false,true);
+}
+
+// ── DOSTĘPNOŚĆ TRENERÓW (ADMIN) ────────────────────────────────────────────────
+const AVADM_ALL_SLOTS=(()=>{const s=[];for(let h=6;h<=21;h++){s.push(h.toString().padStart(2,'0')+':00');if(h<21)s.push(h.toString().padStart(2,'0')+':30');}return s;})();
+const AVADM_DAYS=['Pn','Wt','Śr','Cz','Pt','Sb','Nd'];
+const AVADM_MONTHS=['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
+
+function initAvailAdmin() {
+  avAdminData=LocalApi.getTrainerAvail(avAdminTrainer)||{};
+  renderAvailAdminBulkPanel();
+}
+function selectAvailAdminTrainer(tid,el) {
+  avAdminTrainer=tid; avAdminSelDay=null;
+  document.querySelectorAll('.avt').forEach(b=>b.classList.remove('act'));
+  el.classList.add('act');
+  avAdminData=LocalApi.getTrainerAvail(tid)||{};
+  avAdminBulkSlots=[]; avAdminBulkDays={0:false,1:false,2:false,3:false,4:false,5:false,6:false};
+  renderAvailAdminCal(); renderAvailAdminBulkPanel();
+  document.getElementById('avAdminDayPanel').innerHTML='<div class="dp-empty">← Wybierz dzień w kalendarzu</div>';
+}
+function avAdminChM(dir) { avAdminMonth+=dir; if(avAdminMonth<0){avAdminMonth=11;avAdminYear--;}if(avAdminMonth>11){avAdminMonth=0;avAdminYear++;} renderAvailAdminCal();}
+function renderAvailAdminCal() {
+  document.getElementById('avAdminMonth').textContent=`${AVADM_MONTHS[avAdminMonth]} ${avAdminYear}`;
+  const grid=document.getElementById('avAdminGrid');
+  const booked=LocalApi.getAdminBookings(avAdminTrainer).reduce((m,b)=>{(m[b.date]=m[b.date]||[]).push(b.time);return m;},{});
+  grid.innerHTML=AVADM_DAYS.map(d=>`<div class="chdr">${d}</div>`).join('');
+  const first=new Date(avAdminYear,avAdminMonth,1);
+  const last=new Date(avAdminYear,avAdminMonth+1,0);
+  const today=new Date();today.setHours(0,0,0,0);
+  const startDay=(first.getDay()+6)%7;
+  for(let i=0;i<startDay;i++) grid.innerHTML+=`<div class="cday cemp"></div>`;
+  for(let d=1;d<=last.getDate();d++){
+    const dt=new Date(avAdminYear,avAdminMonth,d);
+    const ds=dt.toISOString().split('T')[0];
+    const isPast=dt<today;
+    const isSel=ds===avAdminSelDay;
+    const av=(avAdminData[ds]||[]).length;
+    const bk=(booked[ds]||[]).length;
+    let cls='cday'+(isPast?' cdis':'')+(isSel?' csel':'')+(dt.toDateString()===today.toDateString()&&!isSel?' ctoday':'');
+    const dots=(av?`<div class="dot-avail${bk?'':' only'}"></div>`:'')+(bk?`<div class="dot-booked"></div>`:'');
+    grid.innerHTML+=`<div class="${cls}" onclick="${isPast?'':` avAdminSelectDay('${ds}')`}">${d}${dots}</div>`;
+  }
+}
+function avAdminSelectDay(ds) {
+  avAdminSelDay=ds;
+  renderAvailAdminCal();
+  const avail=avAdminData[ds]||[];
+  const booked=(LocalApi.getAdminBookings(avAdminTrainer)||[]).filter(b=>b.date===ds&&b.status!=='cancelled').map(b=>b.time);
+  const dp=new Date(ds).toLocaleDateString('pl-PL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const slots=AVADM_ALL_SLOTS.map(h=>{
+    const isBooked=booked.includes(h);
+    const isOn=avail.includes(h);
+    let cls='avs'+(isBooked?' avs-booked':isOn?' avs-on':'');
+    return `<div class="${cls}" onclick="${isBooked?'':` avAdminToggleSlot('${ds}','${h}')`}">${h}${isBooked?' 🔒':''}</div>`;
+  }).join('');
+  const panel=document.getElementById('avAdminDayPanel');
+  panel.innerHTML=`<h3>📅 ${dp}</h3>
+    <div class="dp-sub">Zaznaczone = dostępne | 🔒 = zajęte</div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px;">
+      <button class="rb" onclick="avAdminToggleAll('${ds}',true)">☑️ Wszystkie</button>
+      <button class="rb" onclick="avAdminToggleAll('${ds}',false)">☐ Żadne</button>
+      <button class="btn-save" style="padding:7px 14px;font-size:.8rem;" onclick="avAdminSave('${ds}')">💾 Zapisz</button>
+    </div>
+    <div class="av-slot-grid">${slots}</div>`;
+}
+function avAdminToggleSlot(ds,h) {
+  if(!avAdminData[ds]) avAdminData[ds]=[];
+  const idx=avAdminData[ds].indexOf(h);
+  if(idx>=0) avAdminData[ds].splice(idx,1); else avAdminData[ds].push(h);
+  avAdminData[ds].sort();
+  avAdminSelectDay(ds);
+}
+function avAdminToggleAll(ds,on) {
+  const booked=(LocalApi.getAdminBookings(avAdminTrainer)||[]).filter(b=>b.date===ds&&b.status!=='cancelled').map(b=>b.time);
+  avAdminData[ds]=on?AVADM_ALL_SLOTS.filter(h=>!booked.includes(h)):[];
+  avAdminSelectDay(ds);
+}
+async function avAdminSave(ds) {
+  const slots=avAdminData[ds]||[];
+  LocalApi.saveAvailDay(avAdminTrainer,ds,slots);
+  try {
+    const tk=sessionStorage.getItem('trainer_token')||TOKEN;
+    await fetch('/api/trainer/availability',{method:'POST',headers:{...hdr(),'x-trainer-token':tk},body:JSON.stringify({trainerId:avAdminTrainer,date:ds,slots})});
+  } catch(e){}
+  renderAvailAdminCal();
+  toast(`✅ Dostępność zapisana (${slots.length} slotów)`,false,true);
+}
+function renderAvailAdminBulkPanel() {
+  const daysEl=document.getElementById('avAdminBulkDays');
+  const labels=['Pon','Wto','Śro','Czw','Pią','Sob','Nie'];
+  daysEl.innerHTML=labels.map((l,i)=>`<button class="${avAdminBulkDays[i]?'btgt-btn act':'btgt-btn'}" onclick="avAdminBulkToggleDay(${i},this)">${l}</button>`).join('');
+  const slotsEl=document.getElementById('avAdminBulkSlots');
+  slotsEl.innerHTML=AVADM_ALL_SLOTS.map(h=>`<div class="${avAdminBulkSlots.includes(h)?'avs avs-on':'avs'}" onclick="avAdminBulkToggleSlot('${h}',this)">${h}</div>`).join('');
+}
+function avAdminBulkToggleDay(i,el) {
+  avAdminBulkDays[i]=!avAdminBulkDays[i];
+  el.classList.toggle('act',avAdminBulkDays[i]);
+}
+function avAdminBulkToggleSlot(h,el) {
+  const idx=avAdminBulkSlots.indexOf(h);
+  if(idx>=0) avAdminBulkSlots.splice(idx,1); else avAdminBulkSlots.push(h);
+  el.classList.toggle('avs-on',avAdminBulkSlots.includes(h));
+}
+async function applyAvailAdminBulk() {
+  const days=Object.entries(avAdminBulkDays).filter(([,v])=>v).map(([k])=>parseInt(k));
+  if(!days.length||!avAdminBulkSlots.length){toast('Wybierz dni i sloty szablonu',true);return;}
+  const now=new Date(); const dates={};
+  for(let w=0;w<4;w++){
+    for(let d=0;d<7;d++){
+      const dt=new Date(now); dt.setDate(now.getDate()+(w*7)+((d-((now.getDay()+6)%7)+7)%7));
+      if(dt<now) continue;
+      const dow=(dt.getDay()+6)%7;
+      if(days.includes(dow)){const ds=dt.toISOString().split('T')[0]; dates[ds]=[...avAdminBulkSlots];}
+    }
+  }
+  LocalApi.saveAvailBulk(avAdminTrainer,dates);
+  avAdminData=LocalApi.getTrainerAvail(avAdminTrainer)||{};
+  renderAvailAdminCal();
+  toast(`✅ Szablon zastosowany (${Object.keys(dates).length} dni)`,false,true);
+}
+
+// ── IMPORT / EXPORT ────────────────────────────────────────────────────────────
+function exportJSON() {
+  const data={
+    exportedAt:new Date().toISOString(), version:'1.0',
+    bookings:LocalApi.getAdminBookings(),
+    trainers:LocalApi.getTrainersList(),
+    availability:Object.fromEntries(
+      LocalApi.getTrainersList().map(t=>[t.id,LocalApi.getTrainerAvail(t.id)])
+    ),
+  };
+  dlFile(`samtrening-backup-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify(data,null,2),'application/json');
+  toast('✅ Eksport JSON gotowy',false,true);
+}
+function exportCSV() {
+  const bks=LocalApi.getAdminBookings();
+  const hdr2=['ID','Trener','Klient','Nazwisko','Telefon','Email','Data','Godzina','Typ','Status','Płatność','Język','Kwota','Zgłoszono'];
+  const rows=bks.map(b=>[b.id,b.trainer,b.name,b.surname,b.phone,b.email||'',b.date,b.time,b.trainingType,b.status,b.paymentChoice,b.language||'pl',200,b.createdAt]);
+  dlFile(`samtrening-rezerwacje-${new Date().toISOString().slice(0,10)}.csv`,csvStr([hdr2,...rows]),'text/csv;charset=utf-8');
+  toast('✅ Eksport CSV gotowy',false,true);
+}
+function exportClientsCSV() {
+  const bks=LocalApi.getAdminBookings();
+  const clientMap={};
+  bks.forEach(b=>{
+    if(!clientMap[b.phone]) clientMap[b.phone]={name:b.name,surname:b.surname,phone:b.phone,email:b.email||'',trainers:new Set(),sessions:0,confirmed:0};
+    clientMap[b.phone].trainers.add(b.trainer||b.trainerId);
+    clientMap[b.phone].sessions++;
+    if(b.status==='confirmed') clientMap[b.phone].confirmed++;
+  });
+  const hdr2=['Imię','Nazwisko','Telefon','Email','Trenerzy','Sesji','Potwierdzonych','Kwota est.'];
+  const rows=Object.values(clientMap).map(c=>[c.name,c.surname,c.phone,c.email,[...c.trainers].join(';'),c.sessions,c.confirmed,c.sessions*200]);
+  dlFile(`samtrening-klienci-${new Date().toISOString().slice(0,10)}.csv`,csvStr([hdr2,...rows]),'text/csv;charset=utf-8');
+  toast('✅ Eksport klientów CSV gotowy',false,true);
+}
+function exportAvailJSON() {
+  const data={};
+  LocalApi.getTrainersList().forEach(t=>{data[t.id]=LocalApi.getTrainerAvail(t.id);});
+  dlFile(`samtrening-dostepnosc-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify(data,null,2),'application/json');
+  toast('✅ Eksport dostępności gotowy',false,true);
+}
+function csvStr(rows){return rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');}
+function dlFile(name,content,type){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+content],{type}));
+  a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+function importData(input){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  const resultEl=document.getElementById('ie-result');
+  reader.onload=e=>{
+    try {
+      const data=JSON.parse(e.target.result);
+      let imported=0;
+      if(data.bookings&&Array.isArray(data.bookings)){
+        localStorage.setItem('sam_bookings',JSON.stringify(data.bookings));
+        imported+=data.bookings.length;
+      }
+      if(data.availability){
+        localStorage.setItem('sam_availability',JSON.stringify(data.availability));
+      }
+      if(data.trainers&&Array.isArray(data.trainers)){
+        const tMap={};data.trainers.forEach(t=>{tMap[t.id]=t;});
+        localStorage.setItem('sam_trainers',JSON.stringify(tMap));
+      }
+      resultEl.className='ie-result ok';
+      resultEl.textContent=`✅ Import udany! Wczytano ${imported} rezerwacji. Odśwież stronę.`;
+      refresh();
+    } catch(err){
+      resultEl.className='ie-result err';
+      resultEl.textContent='❌ Błąd: nieprawidłowy plik JSON. '+err.message;
+    }
+  };
+  reader.readAsText(file);
+  input.value='';
+}
+
+// ── ADMIN FINANCIAL CHARTS ────────────────────────────────────────────────────
+let adminFinChartBar = null, adminFinChartDoughnut = null;
+function renderAdminFinCharts(data) {
+  const barCanvas = document.getElementById('adminFinChartBar');
+  const doughnutCanvas = document.getElementById('adminFinChartDoughnut');
+  if (!barCanvas || !doughnutCanvas) return;
+  if (adminFinChartBar) { adminFinChartBar.destroy(); adminFinChartBar = null; }
+  if (adminFinChartDoughnut) { adminFinChartDoughnut.destroy(); adminFinChartDoughnut = null; }
+
+  const trend = LocalApi.getMonthlyTrend(finTrainer, 6);
+  const labels = trend.map(w=>w.label);
+  const counts = trend.map(w=>w.count);
+  const revenues = trend.map(w=>w.revenue);
+
+  adminFinChartBar = new Chart(barCanvas, {
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        {label:'Treningi', data:counts, backgroundColor:'rgba(108,192,74,.75)', borderColor:'#6CC04A', borderWidth:1.5, yAxisID:'y'},
+        {label:'Przychód (PLN)', data:revenues, type:'line', borderColor:'#0066FF', backgroundColor:'rgba(0,102,255,.08)', borderWidth:2, pointRadius:4, tension:.4, fill:true, yAxisID:'y2'},
+      ],
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'top',labels:{font:{size:10},padding:10}}},
+      scales:{
+        y:{position:'left',beginAtZero:true,ticks:{stepSize:1,font:{size:10}}},
+        y2:{position:'right',beginAtZero:true,grid:{drawOnChartArea:false},ticks:{callback:v=>v+' PLN',font:{size:10}}},
+      },
+    },
+  });
+
+  // Doughnut: payment methods
+  const overallPeriod = (data.overall||data)[finPeriod]||{prepaidCount:0,onsiteCount:0};
+  const prepaid = overallPeriod.prepaidCount||0;
+  const onsite  = overallPeriod.onsiteCount||0;
+  adminFinChartDoughnut = new Chart(doughnutCanvas, {
+    type:'doughnut',
+    data:{
+      labels:['Przedpłata','Na miejscu'],
+      datasets:[{data:[prepaid,onsite], backgroundColor:['rgba(108,192,74,.8)','rgba(0,102,255,.7)'], borderWidth:2, borderColor:'#fff'}],
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'bottom',labels:{font:{size:10},padding:10}},
+        title:{display:true,text:'Metody płatności',font:{size:11,weight:'bold'}},
+      },
+      cutout:'65%',
+    },
+  });
+}
+
+// ── SETTINGS ──────────────────────────────────────────────────────────────────
+function initSettings() {
+  const s = LocalApi.getSettings();
+  document.getElementById('settingPrice').value = s.sessionPrice || 200;
+  // Populate block trainer select
+  const sel = document.getElementById('blockTrainerId');
+  sel.innerHTML = allTrainers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+  renderBlockSlotsGrid();
+}
+
+function saveSettings() {
+  const price = parseInt(document.getElementById('settingPrice').value)||200;
+  LocalApi.saveSettings({ sessionPrice: price });
+  const suc = document.getElementById('settingsSuc');
+  suc.style.display='block';
+  setTimeout(()=>suc.style.display='none', 2500);
+}
+
+const BLOCK_SLOTS = ['06:00','06:30','07:00','07:30','08:00','08:30','09:00','09:30',
+  '10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30',
+  '14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30',
+  '18:00','18:30','19:00','19:30','20:00','20:30','21:00'];
+
+let selectedBlockSlots = [];
+
+function renderBlockSlotsGrid() {
+  const tid = document.getElementById('blockTrainerId')?.value;
+  const date = document.getElementById('blockDate')?.value;
+  const grid = document.getElementById('blockSlotsGrid');
+  if (!grid) return;
+  const blocked = date && tid ? (LocalApi.getBlockedSlots(tid)[date]||[]) : [];
+  selectedBlockSlots = [...blocked];
+  grid.innerHTML = BLOCK_SLOTS.map(s=>`<button class="per-btn${selectedBlockSlots.includes(s)?' act':''}"
+    onclick="toggleBlockSlot('${s}',this)" style="padding:5px 10px;font-size:.77rem;">${s}</button>`).join('');
+}
+
+function toggleBlockSlot(slot, el) {
+  if (selectedBlockSlots.includes(slot)) {
+    selectedBlockSlots = selectedBlockSlots.filter(s=>s!==slot);
+    el.classList.remove('act');
+  } else {
+    selectedBlockSlots.push(slot);
+    el.classList.add('act');
+  }
+}
+
+function saveBlockedSlots() {
+  const tid = document.getElementById('blockTrainerId').value;
+  const date = document.getElementById('blockDate').value;
+  if (!tid||!date) { toast('Wybierz trenera i datę',true); return; }
+  LocalApi.saveBlockedDay(tid, date, selectedBlockSlots);
+  toast(`🚫 Zablokowano ${selectedBlockSlots.length} slotów dla ${date}`,false,true);
+}
+
+function clearBlockedDay() {
+  const tid = document.getElementById('blockTrainerId').value;
+  const date = document.getElementById('blockDate').value;
+  if (!tid||!date) { toast('Wybierz trenera i datę',true); return; }
+  LocalApi.saveBlockedDay(tid, date, []);
+  selectedBlockSlots = [];
+  renderBlockSlotsGrid();
+  toast(`🔓 Blokada ${date} usunięta`,false,true);
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function toast(m,e=false,o=false){ const t=document.getElementById('toast'); t.textContent=m; t.className='toast show'+(e?' err':'')+(o?' ok':''); setTimeout(()=>t.className='toast',4000); }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── CLIENT ACCOUNTS (ADMIN) ───────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+
+function initClientAccounts() {
+  // Populate trainer selects
+  const opts = `<option value="">— brak przypisania —</option>` +
+    allTrainers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+  const sel = document.getElementById('ca-trainer');
+  const fil = document.getElementById('ca-filter-trainer');
+  if (sel) sel.innerHTML = opts;
+  if (fil) fil.innerHTML = `<option value="">Wszyscy trenerzy</option>` +
+    allTrainers.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+  renderClientAccounts();
+  // Update badge
+  const all = LocalApi.getClients();
+  const nbdg = document.getElementById('nbdgClients');
+  if (nbdg) { nbdg.textContent = all.length; nbdg.style.display = all.length?'inline-block':'none'; }
+}
+
+function caGenPass() {
+  const chars = 'abcdefghijkmnpqrstuvwxyz23456789';
+  const pass = Array.from({length:8},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+  const inp = document.getElementById('ca-pass');
+  if (inp) { inp.value = pass; inp.select(); }
+}
+
+function renderClientAccounts() {
+  const q = (document.getElementById('ca-search')?.value||'').toLowerCase();
+  const trFilter = document.getElementById('ca-filter-trainer')?.value||'';
+  let clients = LocalApi.getClients();
+  if (q) clients = clients.filter(c=>`${c.name} ${c.surname} ${c.email} ${c.phone||''}`.toLowerCase().includes(q));
+  if (trFilter) clients = clients.filter(c=>c.trainerId===trFilter);
+  clients.sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+  const cont = document.getElementById('caList');
+  if (!cont) return;
+  if (!clients.length) {
+    cont.innerHTML='<div class="empty"><div class="ei">👤</div><p>Brak zarejestrowanych klientów</p></div>';
+    return;
+  }
+  cont.innerHTML = clients.map(c=>{
+    const tr = allTrainers.find(t=>t.id===c.trainerId);
+    const bkgs = allBookings.filter(b=>b.phone===c.phone);
+    const confirmed = bkgs.filter(b=>b.status==='confirmed').length;
+    const upcoming = bkgs.filter(b=>b.status==='confirmed'&&b.date>=new Date().toISOString().split('T')[0]).length;
+    const lastB = bkgs.filter(b=>b.status==='confirmed').sort((a,b2)=>b2.date.localeCompare(a.date))[0];
+    return `<div class="ca-card ${c.status!=='active'?'inactive':''}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;">
+        <div>
+          <div class="ca-name">${esc(c.name)} ${esc(c.surname)}</div>
+          <div class="ca-email">✉️ ${esc(c.email)}${c.phone?` · 📱 ${c.phone}`:''}</div>
+          <div class="ca-meta">
+            <span class="ca-badge ${c.status==='active'?'status-active':'status-inactive'}">${c.status==='active'?'✅ Aktywny':'⏸ Nieaktywny'}</span>
+            ${tr?`<span class="ca-badge trainer">🏋️ ${esc(tr.nameShort||tr.name)}</span>`:'<span class="ca-badge" style="background:#fff3cd;color:#856404;">⚠️ Bez trenera</span>'}
+            <span class="ca-badge" style="background:var(--light);">📅 ${confirmed} treningów</span>
+            ${upcoming?`<span class="ca-badge" style="background:#e8f0fe;color:#1a73e8;">🗓️ ${upcoming} nadchodzących</span>`:''}
+          </div>
+        </div>
+        <div class="ca-actions">
+          <button class="bsm" style="background:#4285F4;color:#fff;" onclick="editClientAccount('${c.id}')">✏️ Edytuj</button>
+          <button class="bsm bsms" onclick="sendSMSToClientAccount('${c.id}')">📱 SMS</button>
+          ${c.status==='active'
+            ?`<button class="bsm bno" onclick="toggleClientStatus('${c.id}','inactive')">⏸ Dezaktywuj</button>`
+            :`<button class="bsm bok" onclick="toggleClientStatus('${c.id}','active')">▶ Aktywuj</button>`}
+        </div>
+      </div>
+      <div class="ca-expand" onclick="this.nextElementSibling.classList.toggle('show');this.textContent=this.nextElementSibling.classList.contains('show')?'▲ Ukryj szczegóły':'▼ Szczegóły';">▼ Szczegóły</div>
+      <div class="ca-detail">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div><strong>Hasło:</strong> <code style="background:#f5f5f5;padding:2px 6px;border-radius:4px;">${esc(c.password||'—')}</code></div>
+          <div><strong>Ostatni login:</strong> ${c.lastLogin?new Date(c.lastLogin).toLocaleDateString('pl-PL',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'Nigdy'}</div>
+          <div><strong>Rejestracja:</strong> ${new Date(c.createdAt).toLocaleDateString('pl-PL',{day:'numeric',month:'short',year:'numeric'})}</div>
+          <div><strong>Ostatni trening:</strong> ${lastB?new Date(lastB.date).toLocaleDateString('pl-PL',{day:'numeric',month:'short',year:'numeric'}):'—'}</div>
+        </div>
+        ${c.goal?`<div style="margin-bottom:4px;"><strong>Cel:</strong> ${esc(c.goal)}</div>`:''}
+        ${c.notes?`<div style="margin-bottom:10px;"><strong>Notatki:</strong> ${esc(c.notes)}</div>`:''}
+
+        <!-- Zmień trenera + hasło -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <div>
+            <label style="font-size:.78rem;font-weight:700;color:var(--gray);display:block;margin-bottom:4px;">Zmień trenera:</label>
+            <div style="display:flex;gap:6px;">
+              <select id="ca-chtr-${c.id}" style="flex:1;padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:.83rem;outline:none;font-family:inherit;">
+                <option value="">— brak —</option>
+                ${allTrainers.map(t=>`<option value="${t.id}" ${t.id===c.trainerId?'selected':''}>${t.name}</option>`).join('')}
+              </select>
+              <button class="bsm bok" onclick="changeClientTrainer('${c.id}')">💾</button>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:.78rem;font-weight:700;color:var(--gray);display:block;margin-bottom:4px;">Zmień hasło:</label>
+            <div style="display:flex;gap:6px;">
+              <input type="text" id="ca-newpass-${c.id}" placeholder="Nowe hasło" style="flex:1;padding:6px 10px;border:2px solid var(--border);border-radius:8px;font-size:.83rem;font-family:inherit;outline:none;"/>
+              <button class="bsm bok" onclick="changeClientPassword('${c.id}')">💾</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- HISTORIA TRENINGÓW -->
+        <div style="margin-bottom:10px;">
+          <div style="font-size:.78rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">📅 Historia treningów (${bkgs.length} łącznie)</div>
+          ${bkgs.length ? `
+          <div style="max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;">
+            ${bkgs.slice(0,15).map(b=>{
+              const bDate = new Date(b.date).toLocaleDateString('pl-PL',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+              const bStat = b.status==='confirmed'?'✅':b.status==='pending'?'⏳':'❌';
+              const bPay = b.paymentStatus==='paid'?'💰':'⏳';
+              return `<div style="background:#f8f8f8;border-radius:6px;padding:5px 10px;font-size:.76rem;display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                <span>${bStat} ${bDate} ${b.time} · ${esc(b.trainer||b.trainerId)}</span>
+                <span style="display:flex;gap:5px;align-items:center;">
+                  ${b.paymentStatus!=='paid'?`<button onclick="markTrainingPaid('${b.id}')" style="padding:2px 7px;font-size:.69rem;background:var(--gl);color:var(--gd);border:1px solid var(--green);border-radius:5px;cursor:pointer;font-family:inherit;">Opłać</button>`:'<span style="color:var(--gd);font-size:.74rem;">💰 Opłacony</span>'}
+                </span>
+              </div>`;
+            }).join('')}
+          </div>
+          ` : '<div style="font-size:.79rem;color:#bbb;padding:6px 0;">Brak treningów w systemie</div>'}
+          <div style="margin-top:7px;">
+            <button class="bsm" style="background:#e8f0fe;color:#1a3c8f;font-size:.74rem;" onclick="toggleAddTrainingForm('${c.id}')">➕ Dodaj trening ręcznie</button>
+            <div id="ca-addtrain-${c.id}" style="display:none;margin-top:8px;background:#f8f8f8;border-radius:8px;padding:10px;">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
+                <div><label style="font-size:.75rem;font-weight:700;">Trener</label>
+                  <select id="ca-tr-trainer-${c.id}" style="width:100%;padding:6px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:.82rem;font-family:inherit;outline:none;">
+                    ${allTrainers.map(t=>`<option value="${t.id}" ${t.id===c.trainerId?'selected':''}>${t.name}</option>`).join('')}
+                  </select></div>
+                <div><label style="font-size:.75rem;font-weight:700;">Data *</label>
+                  <input type="date" id="ca-tr-date-${c.id}" style="width:100%;padding:6px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:.82rem;font-family:inherit;outline:none;"/></div>
+                <div><label style="font-size:.75rem;font-weight:700;">Godzina</label>
+                  <input type="time" id="ca-tr-time-${c.id}" value="10:00" style="width:100%;padding:6px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:.82rem;font-family:inherit;outline:none;"/></div>
+                <div><label style="font-size:.75rem;font-weight:700;">Płatność</label>
+                  <select id="ca-tr-pay-${c.id}" style="width:100%;padding:6px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:.82rem;font-family:inherit;outline:none;">
+                    <option value="cash">💵 Gotówka</option><option value="blik">💳 BLIK</option><option value="bank">🏦 Przelew</option>
+                  </select></div>
+              </div>
+              <div style="display:flex;gap:6px;">
+                <input type="text" id="ca-tr-note-${c.id}" placeholder="Notatka (opcjonalnie)" style="flex:1;padding:6px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:.82rem;font-family:inherit;outline:none;"/>
+                <button class="bsm bok" onclick="addManualTraining('${c.id}')">✅ Dodaj</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PŁATNOŚCI KLIENTA -->
+        <div style="margin-bottom:10px;">
+          <div style="font-size:.78rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">💰 Płatności klienta</div>
+          ${(()=>{
+            const pays = LocalApi.getPayments(c.id)||[];
+            const pendingPays = pays.filter(p=>p.status==='pending');
+            const paidPays = pays.filter(p=>p.status==='paid'||p.status==='confirmed');
+            const totalPaid = paidPays.reduce((s,p)=>s+(p.amount||0),0);
+            if (!pays.length) return '<div style="font-size:.79rem;color:#bbb;padding:6px 0;">Brak płatności</div>';
+            return `<div style="font-size:.81rem;color:var(--gd);font-weight:700;margin-bottom:5px;">Wpłacono łącznie: ${totalPaid} PLN${pendingPays.length?` · <span style="color:#b7791f;">${pendingPays.length} oczekuje</span>`:''}</div>`+
+            `<div style="max-height:130px;overflow-y:auto;display:flex;flex-direction:column;gap:3px;">
+              ${pays.slice(0,10).map(p=>{
+                const pDate = p.date?new Date(p.date).toLocaleDateString('pl-PL',{day:'numeric',month:'short'}):'—';
+                const pStat = (p.status==='paid'||p.status==='confirmed')?'✅':p.status==='rejected'?'❌':'⏳';
+                return `<div style="background:#f8f8f8;border-radius:6px;padding:5px 10px;font-size:.75rem;display:flex;justify-content:space-between;align-items:center;gap:6px;">
+                  <span>${pStat} ${pDate} · ${p.amount} PLN · ${p.method==='blik'?'BLIK':p.method==='bank'?'Przelew':'Gotówka'} ${p.description?'· '+esc(p.description):''}</span>
+                  ${p.status==='pending'?`<span style="display:flex;gap:4px;">
+                    <button onclick="adminConfirmPayment('${p.id}')" style="padding:2px 6px;font-size:.69rem;background:var(--gl);color:var(--gd);border:1px solid var(--green);border-radius:5px;cursor:pointer;font-family:inherit;">✓</button>
+                    <button onclick="adminRejectPayment('${p.id}')" style="padding:2px 6px;font-size:.69rem;background:#fff5f5;color:#c53030;border:1px solid #fc8181;border-radius:5px;cursor:pointer;font-family:inherit;">✗</button>
+                  </span>`:''}
+                </div>`;
+              }).join('')}
+            </div>`;
+          })()}
+          <div style="margin-top:7px;">
+            <label style="font-size:.78rem;font-weight:700;color:var(--gray);display:block;margin-bottom:4px;">Dodaj płatność ręcznie:</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+              <input type="number" id="ca-pay-amount-${c.id}" placeholder="kwota" min="1" step="50" style="width:86px;padding:6px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:.83rem;font-family:inherit;outline:none;"/>
+              <select id="ca-pay-method-${c.id}" style="padding:6px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:.82rem;outline:none;font-family:inherit;">
+                <option value="blik">BLIK</option><option value="bank">Przelew</option><option value="cash">Gotówka</option><option value="package">Pakiet</option>
+              </select>
+              <input type="text" id="ca-pay-desc-${c.id}" placeholder="opis" style="flex:1;min-width:90px;padding:6px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:.83rem;font-family:inherit;outline:none;"/>
+              <button class="bsm bok" onclick="addClientPayment('${c.id}')">💾</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function registerClientAccount() {
+  const name    = document.getElementById('ca-name').value.trim();
+  const surname = document.getElementById('ca-surname').value.trim();
+  const email   = document.getElementById('ca-email').value.trim();
+  const phone   = document.getElementById('ca-phone').value.trim();
+  const pass    = document.getElementById('ca-pass').value.trim();
+  const trainer = document.getElementById('ca-trainer').value;
+  const goal    = document.getElementById('ca-goal').value.trim();
+  const notes   = document.getElementById('ca-notes').value.trim();
+  const errEl = document.getElementById('ca-err');
+  const sucEl = document.getElementById('ca-suc');
+  errEl.style.display='none'; sucEl.style.display='none';
+  if (!name||!surname) { errEl.textContent='Wpisz imię i nazwisko.'; errEl.style.display='block'; return; }
+  if (!email||!email.includes('@')) { errEl.textContent='Podaj prawidłowy adres email.'; errEl.style.display='block'; return; }
+  if (!pass||pass.length<4) { errEl.textContent='Hasło musi mieć min. 4 znaki.'; errEl.style.display='block'; return; }
+  const result = LocalApi.registerClient({ name, surname, email, phone, password:pass, trainerId:trainer||null, goal, notes });
+  if (result.error) { errEl.textContent=result.error; errEl.style.display='block'; return; }
+  const tr = allTrainers.find(t=>t.id===trainer);
+  sucEl.innerHTML = `✅ Klient <strong>${name} ${surname}</strong> zarejestrowany!<br>Login: <strong>${email}</strong> / Hasło: <strong>${pass}</strong>${tr?`<br>Trener: ${tr.name}`:''}`;
+  sucEl.style.display='block';
+  ['ca-name','ca-surname','ca-email','ca-phone','ca-pass','ca-goal'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('ca-notes').value='';
+  renderClientAccounts();
+  const nbdg = document.getElementById('nbdgClients');
+  const all = LocalApi.getClients();
+  if (nbdg) { nbdg.textContent=all.length; nbdg.style.display='inline-block'; }
+}
+
+function toggleClientStatus(id, status) {
+  LocalApi.updateClient(id, { status });
+  renderClientAccounts();
+  toast(status==='active'?'✅ Klient aktywowany':'⏸ Klient dezaktywowany', false, true);
+}
+
+function changeClientTrainer(id) {
+  const sel = document.getElementById('ca-chtr-'+id);
+  if (!sel) return;
+  LocalApi.updateClient(id, { trainerId: sel.value || null });
+  renderClientAccounts();
+  toast('✅ Trener przypisany', false, true);
+}
+
+function addClientPayment(clientId) {
+  const amountEl = document.getElementById('ca-pay-amount-'+clientId);
+  const methodEl = document.getElementById('ca-pay-method-'+clientId);
+  const descEl   = document.getElementById('ca-pay-desc-'+clientId);
+  const amount = parseInt(amountEl?.value)||0;
+  if (amount<=0) { toast('Podaj kwotę > 0', true); return; }
+  const client = LocalApi.getClientById(clientId);
+  LocalApi.addPayment({ clientId, trainerId:client?.trainerId||'', amount, method:methodEl.value, description:descEl?.value||'Płatność ręczna (admin)', status:'paid' });
+  if (amountEl) amountEl.value='';
+  if (descEl) descEl.value='';
+  toast(`✅ Płatność ${amount} PLN dodana`, false, true);
+  renderClientAccounts();
+}
+
+function sendSMSToClientAccount(clientId) {
+  const client = LocalApi.getClientById(clientId);
+  if (!client?.phone) { toast('Klient nie ma numeru telefonu', true); return; }
+  // Find any booking for this client or create a virtual one
+  const bkg = allBookings.find(b=>b.phone===client.phone);
+  if (bkg) { openSMS(bkg.id); }
+  else { toast('Brak rezerwacji — wpisz SMS ręcznie do: '+client.phone, false, true); }
+}
+
+function editClientAccount(id) {
+  const c = LocalApi.getClientById(id);
+  if (!c) return;
+  const newName = prompt('Imię:', c.name);
+  if (newName===null) return;
+  const newSurname = prompt('Nazwisko:', c.surname);
+  if (newSurname===null) return;
+  const newGoal = prompt('Cel treningowy:', c.goal||'');
+  LocalApi.updateClient(id, { name:newName.trim()||c.name, surname:newSurname.trim()||c.surname, goal:(newGoal||'').trim() });
+  renderClientAccounts();
+  toast('✅ Dane klienta zaktualizowane', false, true);
+}
+
+function changeClientPassword(id) {
+  const el = document.getElementById('ca-newpass-'+id);
+  const newPass = (el?.value||'').trim();
+  if (!newPass || newPass.length < 4) { toast('Hasło musi mieć min. 4 znaki', true); return; }
+  LocalApi.updateClient(id, { password: newPass });
+  if (el) el.value = '';
+  toast('✅ Hasło zmienione', false, true);
+}
+
+function toggleAddTrainingForm(clientId) {
+  const el = document.getElementById('ca-addtrain-'+clientId);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function addManualTraining(clientId) {
+  const c = LocalApi.getClientById(clientId);
+  if (!c) return;
+  const trainerId = document.getElementById('ca-tr-trainer-'+clientId)?.value||c.trainerId||'';
+  const date = document.getElementById('ca-tr-date-'+clientId)?.value||'';
+  const time = document.getElementById('ca-tr-time-'+clientId)?.value||'10:00';
+  const pay = document.getElementById('ca-tr-pay-'+clientId)?.value||'cash';
+  const note = document.getElementById('ca-tr-note-'+clientId)?.value||'';
+  if (!date) { toast('Podaj datę treningu', true); return; }
+  const trainer = allTrainers.find(t=>t.id===trainerId);
+  const result = LocalApi.addManualTrainingRecord({
+    trainer: trainer?.name||trainerId, trainerId,
+    date, time, name:c.name, surname:c.surname,
+    phone:c.phone, email:c.email,
+    paymentChoice:pay, paymentStatus:'paid',
+    note: note||'Trening dodany ręcznie przez administratora',
+  });
+  if (result?.success) {
+    const form = document.getElementById('ca-addtrain-'+clientId);
+    if (form) form.style.display = 'none';
+    allBookings = LocalApi.getAdminBookings();
+    renderClientAccounts();
+    toast(`✅ Trening ${date} dodany`, false, true);
+  }
+}
+
+function markTrainingPaid(bookingId) {
+  LocalApi.patchBooking(bookingId, null, { paymentStatus:'paid' });
+  allBookings = LocalApi.getAdminBookings();
+  renderClientAccounts();
+  toast('✅ Trening oznaczony jako opłacony', false, true);
+}
+
+function adminConfirmPayment(paymentId) {
+  const r = LocalApi.confirmPayment ? LocalApi.confirmPayment(paymentId) : null;
+  if (r) { renderClientAccounts(); toast('✅ Płatność potwierdzona', false, true); }
+}
+
+function adminRejectPayment(paymentId) {
+  const r = LocalApi.rejectPayment ? LocalApi.rejectPayment(paymentId) : null;
+  if (r) { renderClientAccounts(); toast('❌ Płatność odrzucona', false, true); }
+}
+
+setInterval(refresh, 20000);
+</script>
+</body>
+</html>
