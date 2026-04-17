@@ -29,15 +29,6 @@ class TrainerSeeder extends Seeder
                 'color'      => '#1976d2',
                 'gradient'   => 'linear-gradient(135deg, #1976d2, #42a5f5)',
             ],
-            [
-                'id'         => 'kuba',
-                'name'       => 'Kuba',
-                'name_short' => 'K',
-                'password'   => 'kuba123',
-                'role'       => 'trainer',
-                'color'      => '#388e3c',
-                'gradient'   => 'linear-gradient(135deg, #388e3c, #66bb6a)',
-            ],
         ];
 
         foreach ($trainers as $data) {
