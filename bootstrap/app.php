@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->statefulApi();
     })
+    ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
+        // Przypomnienia 24h przed treningiem — codziennie o 10:00
+        $schedule->command('bookings:reminders')->dailyAt('10:00');
+    })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, $request) {
             return response()->json(['error' => 'Nieautoryzowany'], 401);

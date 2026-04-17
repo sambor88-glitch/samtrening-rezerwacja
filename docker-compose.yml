@@ -21,6 +21,27 @@ services:
     networks:
       - samtrening
 
+  # ── Scheduler (przypomnienia email) ─────────────────────────────────────────
+  scheduler:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: samtrening_scheduler
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    environment:
+      - APP_ENV=${APP_ENV:-local}
+      - APP_DEBUG=${APP_DEBUG:-true}
+    command: sh -c "while true; do php artisan schedule:run --no-interaction >> /dev/null 2>&1; sleep 60; done"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - samtrening
+
   # ── Nginx ───────────────────────────────────────────────────────────────────
   nginx:
     image: nginx:1.25-alpine

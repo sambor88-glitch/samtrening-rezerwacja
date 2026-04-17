@@ -186,6 +186,12 @@ class TrainerController extends Controller
         $tid     = $this->trainerId($request);
         $booking = Booking::where('id', $id)->where('trainer_id', $tid)->firstOrFail();
         $booking->update(['status' => 'cancelled']);
+
+        // Wyślij email o odwołaniu do klienta
+        if ($booking->client_id) {
+            $this->notifications->bookingCancelled($booking);
+        }
+
         return response()->json($booking);
     }
 
@@ -304,6 +310,16 @@ class TrainerController extends Controller
         $tid     = $this->trainerId($request);
         $payment = Payment::where('id', $id)->where('trainer_id', $tid)->firstOrFail();
         $payment->update(['status' => 'confirmed']);
+
+        // Wyślij email z potwierdzeniem płatności do klienta
+        if ($payment->client_id && $payment->package_id) {
+            $client  = Client::find($payment->client_id);
+            $package = Package::find($payment->package_id);
+            if ($client && $package) {
+                $this->notifications->paymentConfirmed($client, $package);
+            }
+        }
+
         return response()->json($payment);
     }
 
