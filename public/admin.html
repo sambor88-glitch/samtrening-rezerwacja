@@ -2359,7 +2359,7 @@ async function changeTrainerPassword(trainerId) {
     const res = await fetch(`/api/admin/trainers/${trainerId}`, {
       method: 'PUT',
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
+      headers: hdr(),
       body: JSON.stringify({ password })
     });
 
